@@ -1,0 +1,30 @@
+{
+  "id": "TR004",
+  "title": "Oyuncaklar Evlerine",
+  "language": "tr-TR",
+  "theme": "Birlikte oyuncakları topluyoruz",
+  "core_idea": "Oyun bitince oyuncaklar kendi renkli kutularına döner; çocuklar takım olup odayı düzenler.",
+  "learning_goal": "Toplama, sınıflandırma ve iş birliği",
+  "target_age": "preschool",
+  "status": "awaiting_audio_upload",
+  "audio_file": "song.mp3",
+  "lyrics_file": "lyrics.txt",
+  "music_prompt_file": "music_prompt.txt",
+  "tempo_bpm": 112,
+  "music_style": "cheerful rhythmic kids-pop, ukulele strums, marimba, claps, light toms, bouncing bass, clear singalong chorus",
+  "lyrics_must_match_final_audio": true,
+  "audio_sha256": null,
+  "duration_seconds": null,
+  "video_status": "not_started",
+  "usage_status": "available",
+  "used_in_video_id": null,
+  "used_at": null,
+  "made_for_kids": true,
+  "visual_motifs": [
+    "renkli oyuncak kutuları",
+    "oyuncak tren",
+    "peluş ayı",
+    "kitap rafı"
+  ],
+  "notes": "MP3 Gemini sohbet ekranında üretildikten sonra song.mp3 adıyla bu klasöre yüklenmeli. Gemini sözleri değiştirdiyse lyrics.txt gerçek sesle eşleştirilmeli."
+}
