@@ -1,4 +1,0 @@
-GEMINI — MÜZİK OLUŞTUR PROMPT'U
-Başlık: Minik Bahçıvanlar
-
-Türkçe okul öncesi çocukları için özgün, vokalli ve neşeli bir öğrenme şarkısı oluştur. Hikâye: Çocuk bir tohum eker, sular, filizin çıkışını ve bitkinin büyümesini gözlemler. Sözler ilk 0–3 saniyede başlasın; uzun enstrümantal giriş ve 2 saniyeden uzun ara olmasın. Yaklaşık 104 BPM. Tarz: warm sunny acoustic pop, fingerpicked guitar, soft piano, glockenspiel, brushed percussion, gentle bouncing rhythm. Sıcak, umutlu ve melodik olsun; sakin ama ağır olmasın. Net Türkçe telaffuz, vokal ön planda. Sözleri başka dile çevirme. Bilinen şarkı veya sanatçı taklidi yapma. Tam sözler lyrics.txt dosyasındadır.
