@@ -1,0 +1,66 @@
+[
+  {
+    "id": "TR001",
+    "theme": "Renkleri öğreniyorum",
+    "core_idea": "Renkli balonlarla temel renkleri keşfeden bir çocuk ve sevimli hayvan arkadaşları",
+    "learning_goal": "Temel renkleri tanıma",
+    "visual_motifs": ["renkli balonlar", "oyun parkı", "sevimli hayvan arkadaşları"],
+    "status": "backlog"
+  },
+  {
+    "id": "TR002",
+    "theme": "Hayvanların sesleri",
+    "core_idea": "Çiftlikteki hayvanları ziyaret edip seslerini eğlenceli ritimlerle öğrenme",
+    "learning_goal": "Hayvanları ve seslerini eşleştirme",
+    "visual_motifs": ["çiftlik", "ördekler", "kuzu", "inek", "horoz"],
+    "status": "backlog"
+  },
+  {
+    "id": "TR003",
+    "theme": "Diş fırçalama zamanı",
+    "core_idea": "Uyumadan önce diş fırçalamayı eğlenceli bir rutin hâline getirme",
+    "learning_goal": "Günlük öz bakım alışkanlığı",
+    "visual_motifs": ["banyo", "renkli diş fırçaları", "köpük baloncukları"],
+    "status": "backlog"
+  },
+  {
+    "id": "TR004",
+    "theme": "Birlikte oyuncakları topluyoruz",
+    "core_idea": "Arkadaşların oyun sonrası oyuncakları birlikte toplaması",
+    "learning_goal": "Düzen ve iş birliği",
+    "visual_motifs": ["oyun odası", "oyuncak kutuları", "oyuncak tren"],
+    "status": "backlog"
+  },
+  {
+    "id": "TR005",
+    "theme": "Minik uzay yolculuğu",
+    "core_idea": "Sevimli karakterlerin gezegenleri ve yıldızları keşfettiği hayalî bir yolculuk",
+    "learning_goal": "Temel uzay kavramları",
+    "visual_motifs": ["renkli roket", "gezegenler", "yıldızlar"],
+    "status": "backlog"
+  },
+  {
+    "id": "TR006",
+    "theme": "Şekiller dans ediyor",
+    "core_idea": "Daire, kare ve üçgen karakterlerinin hareketlerle şekilleri tanıtması",
+    "learning_goal": "Temel geometrik şekilleri tanıma",
+    "visual_motifs": ["canlı şekil karakterleri", "dans sahnesi", "renkli zemin"],
+    "status": "backlog"
+  },
+  {
+    "id": "TR007",
+    "theme": "Yağmurdan sonra gökkuşağı",
+    "core_idea": "Yağmur, su birikintileri ve gökkuşağı üzerinden doğayı keşfetme",
+    "learning_goal": "Hava olaylarına dair temel farkındalık",
+    "visual_motifs": ["bahçe", "yağmur damlaları", "gökkuşağı"],
+    "status": "backlog"
+  },
+  {
+    "id": "TR008",
+    "theme": "Paylaşınca güzel",
+    "core_idea": "Arkadaşların meyvelerini ve oyuncaklarını paylaşarak birlikte eğlenmesi",
+    "learning_goal": "Paylaşma ve arkadaşlık",
+    "visual_motifs": ["piknik örtüsü", "meyve sepeti", "oyun alanı"],
+    "status": "backlog"
+  }
+]
