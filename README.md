@@ -33,6 +33,7 @@ GitHub Actions üzerinde çalışacak, Türkçe çocuk şarkıları için özgü
 - Kaynak/lisans araştırması: `docs/visual-production-strategy.md`; makinece okunabilir kayıt: `config/visual_asset_sources.json`.
 - **Actions → Blender CPU render smoke test → Run workflow:** GitHub Actions üzerinde küçük bir prosedürel 3D test sahnesi üretir ve `blender-cpu-smoke-test` artifact'i verir. Bu, yalnızca Blender/CPU render hattını sınar; nihai çocuk animasyonu değildir.
 - **Actions → Blender CPU animation smoke test → Run workflow:** 2 saniyelik, 24 FPS, 320×568 hareketli MP4 test sahnesi üretir; karaktere hafif zıplama ve kol sallama animasyonu ekler. `blender-cpu-animation-smoke-test` artifact'i MP4 ve FFprobe kalite kontrol raporunu içerir. Bu da teknik prototiptir; nihai video kalitesi veya tam şarkı üretimi anlamına gelmez.
+- **Actions → Prepare Blender project for SheepIt → Run workflow:** Blender sahnesini GitHub Actions üzerinde `.blend` dosyası olarak hazırlar; render etmez. `sheepit-blender-project-test` artifact'ini SheepIt'e manuel yükleyerek harici render kuyruğunu test edebilirsin. Bu yalnızca kısa prototiptir ve SheepIt'in puan/kuyruk kurallarına tabidir.
 - Kenney Mini Characters, resmî sayfasında CC0 ve animasyon özelliği gösterdiği için yalnızca ilk teknik prototip adayıdır. Nihai çocuk videosu kalitesi henüz kanıtlanmış değildir.
 - Bir sonraki teknik doğrulama, GitHub Actions CPU üzerinde kısa Blender sahnesi render edip çalışma süresi ve görsel sonucu değerlendirmektir. Bu prototip başarılı olmadan tüm şarkılara yayılmayacak.
 
