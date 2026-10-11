@@ -10,20 +10,26 @@ import sys
 from pathlib import Path
 
 
-def parse_output() -> Path:
+def parse_args() -> tuple[Path, Path, bool]:
     args = sys.argv[sys.argv.index("--") + 1:] if "--" in sys.argv else []
     output = Path("output/blender-animation-smoke.mp4")
+    blend_output = Path("output/sheepit-animation-test.blend")
+    skip_render = False
     for i, value in enumerate(args):
         if value == "--output" and i + 1 < len(args):
             output = Path(args[i + 1])
-    return output
+        elif value == "--save-blend" and i + 1 < len(args):
+            blend_output = Path(args[i + 1])
+        elif value == "--skip-render":
+            skip_render = True
+    return output, blend_output, skip_render
 
 
 def main() -> None:
     import bpy
     from mathutils import Vector
 
-    output = parse_output()
+    output, blend_output, skip_render = parse_args()
     bpy.ops.object.select_all(action="SELECT")
     bpy.ops.object.delete(use_global=False)
 
@@ -150,6 +156,14 @@ def main() -> None:
                 key.interpolation = "BEZIER"
 
     output.parent.mkdir(parents=True, exist_ok=True)
+    blend_output.parent.mkdir(parents=True, exist_ok=True)
+    # Save a self-contained native Blender project for optional SheepIt testing.
+    # The render farm receives the .blend file, not this Python generator.
+    bpy.ops.wm.save_as_mainfile(filepath=str(blend_output.resolve()))
+    if skip_render:
+        print("Saved Blender project for render farm: " + str(blend_output.resolve()))
+        return
+
     scene.render.image_settings.file_format = "FFMPEG"
     scene.render.ffmpeg.format = "MPEG4"
     scene.render.ffmpeg.codec = "H264"
