@@ -1,0 +1,48 @@
+name: Build storyboard drafts
+
+on:
+  workflow_dispatch:
+    inputs:
+      song_id:
+        description: "Boş bırakılırsa tüm şarkılar için taslak oluşturur (ör. TR001)"
+        required: false
+        type: string
+
+permissions:
+  contents: read
+
+jobs:
+  storyboard:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+
+      - name: Install ffprobe
+        run: |
+          sudo apt-get update
+          sudo apt-get install --yes ffmpeg
+
+      - name: Build storyboard drafts
+        env:
+          SONG_ID: ${{ inputs.song_id }}
+        run: |
+          if [ -n "$SONG_ID" ]; then
+            python app/build_storyboards.py --song-id "$SONG_ID"
+          else
+            python app/build_storyboards.py
+          fi
+
+      - name: Upload storyboard drafts
+        uses: actions/upload-artifact@v4
+        with:
+          name: storyboard-drafts
+          path: output/storyboards/*.json
+          if-no-files-found: error
+          retention-days: 14
