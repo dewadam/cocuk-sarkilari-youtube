@@ -1,0 +1,25 @@
+name: Free.ai provider check
+
+on:
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  check-provider:
+    runs-on: ubuntu-latest
+    timeout-minutes: 3
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+
+      - name: Check Free.ai API and discover music models
+        env:
+          FREEAI_API_KEY: ${{ secrets.FREEAI_API_KEY }}
+        run: python scripts/check_freeai_models.py
