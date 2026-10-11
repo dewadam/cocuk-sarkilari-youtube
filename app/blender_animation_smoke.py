@@ -10,11 +10,12 @@ import sys
 from pathlib import Path
 
 
-def parse_args() -> tuple[Path, Path, bool]:
+def parse_args() -> tuple[Path, Path, bool, int]:
     args = sys.argv[sys.argv.index("--") + 1:] if "--" in sys.argv else []
     output = Path("output/blender-animation-smoke.mp4")
     blend_output = Path("output/sheepit-animation-test.blend")
     skip_render = False
+    duration_seconds = 2
     for i, value in enumerate(args):
         if value == "--output" and i + 1 < len(args):
             output = Path(args[i + 1])
@@ -22,14 +23,16 @@ def parse_args() -> tuple[Path, Path, bool]:
             blend_output = Path(args[i + 1])
         elif value == "--skip-render":
             skip_render = True
-    return output, blend_output, skip_render
+        elif value == "--duration-seconds" and i + 1 < len(args):
+            duration_seconds = max(2, int(args[i + 1]))
+    return output, blend_output, skip_render, duration_seconds
 
 
 def main() -> None:
     import bpy
     from mathutils import Vector
 
-    output, blend_output, skip_render = parse_args()
+    output, blend_output, skip_render, duration_seconds = parse_args()
     bpy.ops.object.select_all(action="SELECT")
     bpy.ops.object.delete(use_global=False)
 
@@ -136,7 +139,7 @@ def main() -> None:
     scene.render.resolution_percentage = 100
     scene.render.fps = 24
     scene.frame_start = 1
-    scene.frame_end = 48
+    scene.frame_end = duration_seconds * scene.render.fps
     scene.render.film_transparent = False
     scene.render.image_settings.color_depth = "8"
     scene.view_settings.view_transform = "Standard"
@@ -154,6 +157,7 @@ def main() -> None:
         for fcurve in getattr(action, "fcurves", []):
             for key in fcurve.keyframe_points:
                 key.interpolation = "BEZIER"
+            fcurve.modifiers.new(type="CYCLES")
 
     output.parent.mkdir(parents=True, exist_ok=True)
     blend_output.parent.mkdir(parents=True, exist_ok=True)
