@@ -88,11 +88,10 @@ def render_video(root: Path, song_id: str, output_path: Path) -> dict:
         for index, image in enumerate(images):
             clip = temp / f"clip_{index:03d}.mp4"
             # The still fills the vertical frame, then a gentle zoom adds motion.
-            frames = max(1, round(segment_duration * fps))
             zoom_filter = (
                 "scale=1080:1920:force_original_aspect_ratio=increase,"
                 "crop=1080:1920,"
-                f"zoompan=z='min(zoom+0.0005,1.06)':d={frames}:"
+                "zoompan=z='min(zoom+0.0005,1.06)':d=1:"
                 "x='iw/2-(iw/zoom/2)':y='ih/2-(ih/zoom/2)':"
                 "s=1080x1920:fps=30,format=yuv420p"
             )
