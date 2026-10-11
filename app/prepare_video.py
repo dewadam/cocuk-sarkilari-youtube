@@ -86,10 +86,16 @@ def inspect_library(root: Path = ROOT) -> dict:
 
         if not lyrics_path.is_file():
             entry["blockers"].append("lyrics.txt eksik")
-        if metadata.get("lyrics_must_match_final_audio") and metadata.get("status") != "ready":
-            entry["blockers"].append("son vokal sözleri kontrol edilip status=ready yapılmalı")
-        if metadata.get("status") != "ready":
-            entry["blockers"].append("metadata status değeri ready değil")
+        # Visual-only previews do not require exact lyric transcription because
+        # on-screen lyrics are intentionally excluded from preschool videos.
+        # Keep "ready" as the release-approved state; uploaded audio can still
+        # be previewed before lyric verification.
+        preview_statuses = {"ready", "audio_uploaded_lyrics_check"}
+        if metadata.get("status") not in preview_statuses:
+            entry["blockers"].append(
+                "görsel ön izleme için status ready veya audio_uploaded_lyrics_check olmalı"
+            )
+        entry["preview_only"] = metadata.get("status") != "ready"
         if entry["usage_status"] != "available":
             entry["blockers"].append("şarkı available değil; tekrar kullanım engeli")
         if metadata.get("used_in_video_id"):
