@@ -1,0 +1,83 @@
+name: Theme-specific 3D character preview
+
+on:
+  workflow_dispatch:
+    inputs:
+      song_id:
+        description: "Temaya özel 3D ön izleme (TR001–TR008)"
+        required: true
+        type: choice
+        options:
+          - TR001
+          - TR002
+          - TR003
+          - TR004
+          - TR005
+          - TR006
+          - TR007
+          - TR008
+      duration_seconds:
+        description: "Ön izleme süresi (saniye)"
+        required: true
+        default: "5"
+        type: choice
+        options:
+          - "3"
+          - "5"
+          - "8"
+
+permissions:
+  contents: read
+
+jobs:
+  theme-preview:
+    runs-on: ubuntu-latest
+    timeout-minutes: 45
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Install Blender and FFmpeg
+        run: |
+          sudo apt-get update
+          sudo apt-get install --yes blender ffmpeg libegl1 libgl1 libxrender1 libxi6 libxkbcommon0 libsm6
+
+      - name: Render topic-specific 3D character and scene
+        env:
+          LIBGL_ALWAYS_SOFTWARE: "1"
+          QT_QPA_PLATFORM: "offscreen"
+          SONG_ID: ${{ inputs.song_id }}
+          DURATION_SECONDS: ${{ inputs.duration_seconds }}
+        run: |
+          mkdir -p output
+          START_TIME=$(date +%s)
+          blender --background --python app/blender_theme_preview.py -- --song-id "$SONG_ID" --duration-seconds "$DURATION_SECONDS" --output "output/${SONG_ID}_theme-preview.mp4"
+          END_TIME=$(date +%s)
+          echo "Render wall time: $((END_TIME - START_TIME)) seconds" | tee "output/${SONG_ID}_theme-preview-timing.txt"
+          test -s "output/${SONG_ID}_theme-preview.mp4"
+          ffprobe -v error -select_streams v:0 -show_entries stream=codec_name,width,height,r_frame_rate -show_entries format=duration -of json "output/${SONG_ID}_theme-preview.mp4" > "output/${SONG_ID}_theme-preview-qc.json"
+          python - <<'PY'
+          import json, os
+          from pathlib import Path
+          p = Path("output") / f"{os.environ['SONG_ID']}_theme-preview-qc.json"
+          report = json.loads(p.read_text())
+          stream = report["streams"][0]
+          duration = float(report["format"]["duration"])
+          assert stream["codec_name"] == "h264", stream
+          assert (stream["width"], stream["height"]) == (320, 568), stream
+          assert duration >= int(os.environ["DURATION_SECONDS"]) - 0.25, duration
+          print(f"QC passed: {stream['width']}x{stream['height']}, {duration:.2f}s, {stream['codec_name']}")
+          PY
+
+      - name: Upload video, still, report, and timing
+        uses: actions/upload-artifact@v4
+        with:
+          name: ${{ inputs.song_id }}-theme-specific-3d-preview
+          path: |
+            output/${{ inputs.song_id }}_theme-preview.mp4
+            output/${{ inputs.song_id }}_theme-preview.png
+            output/${{ inputs.song_id }}_theme-preview.json
+            output/${{ inputs.song_id }}_theme-preview-qc.json
+            output/${{ inputs.song_id }}_theme-preview-timing.txt
+          if-no-files-found: error
+          retention-days: 14
