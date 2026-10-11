@@ -23,10 +23,16 @@ GitHub Actions üzerinde çalışacak, Türkçe çocuk şarkıları için özgü
 3. Şarkı ön kontrolü: MP3 varlığı, söz kontrol durumu, SHA-256 ve tekrar kullanım engeli — ilk sürüm eklendi
 4. Şarkı konularından dikey 9:16 storyboard taslakları üretme — ilk sürüm eklendi
 5. Sahne görsellerinden hareketli dikey MP4 render ve müzik montajı — ilk sürüm eklendi
-6. Otomatik sahne görseli üretimi ve gelişmiş müzik/vokal senkronu
+6. Ücretsiz 3D varlıklar ve Blender tabanlı sahne prototipi — araştırma kararı belgelendi; otomatik render henüz uygulanmadı
 7. Tek videonun uçtan uca üretimi ve kalite kontrolü (önce dry-run)
 8. YouTube API bağlantısı ve manuel onaylı test yüklemesi
 9. Her dört günde bir yayın takvimi; otomatik yayın ancak testler tamamlandıktan sonra
+
+## Görsel üretim kararı
+- Ücretli görsel/video API'si zorunlu olmayacak. Seçilen başlangıç yaklaşımı Blender + lisansı doğrulanmış ücretsiz 3D varlıklar + FFmpeg; kullanıcı bilgisayarı üretimde kullanılmayacak.
+- Kaynak/lisans araştırması: `docs/visual-production-strategy.md`; makinece okunabilir kayıt: `config/visual_asset_sources.json`.
+- Kenney Mini Characters, resmî sayfasında CC0 ve animasyon özelliği gösterdiği için yalnızca ilk teknik prototip adayıdır. Nihai çocuk videosu kalitesi henüz kanıtlanmış değildir.
+- Bir sonraki teknik doğrulama, GitHub Actions CPU üzerinde kısa Blender sahnesi render edip çalışma süresi ve görsel sonucu değerlendirmektir. Bu prototip başarılı olmadan tüm şarkılara yayılmayacak.
 
 ## Müzik prompt standardı
 TR009 ve sonraki şarkılarda Gemini prompt'una `lyrics.txt` dosyasındaki sözlerin tamamı doğrudan eklenecek; yalnızca dosya yolu yazılmayacak. Her şarkının müzik tarzı besteye ve hikâyeye göre değiştirilecek; son dört şarkının tür/ritim/enstrüman kombinasyonu tekrar edilmeyecek. Şablon: `templates/music_prompt_template.txt`; ayrıntılar: `docs/music-prompt-rules.md`. Song library preflight yeni şarkılarda tam sözlerin prompt içinde olmasını kontrol eder.
