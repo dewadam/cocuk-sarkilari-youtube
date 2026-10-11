@@ -1,0 +1,30 @@
+{
+  "id": "TR003",
+  "title": "Fırça Fırça, Pırıl Pırıl",
+  "language": "tr-TR",
+  "theme": "Diş fırçalama zamanı",
+  "core_idea": "Uyku öncesi iki dakikalık diş fırçalama, ayna karşısında eğlenceli bir ritüele dönüşür.",
+  "learning_goal": "Günde iki kez diş fırçalama alışkanlığını eğlenceli şekilde hatırlatma",
+  "target_age": "preschool",
+  "status": "awaiting_audio_upload",
+  "audio_file": "song.mp3",
+  "lyrics_file": "lyrics.txt",
+  "music_prompt_file": "music_prompt.txt",
+  "tempo_bpm": 108,
+  "music_style": "bright bubblegum pop for preschoolers, muted guitar, claps, toy piano, gentle punchy drums, playful stop-start rhythm",
+  "lyrics_must_match_final_audio": true,
+  "audio_sha256": null,
+  "duration_seconds": null,
+  "video_status": "not_started",
+  "usage_status": "available",
+  "used_in_video_id": null,
+  "used_at": null,
+  "made_for_kids": true,
+  "visual_motifs": [
+    "lavabo ve ayna",
+    "renkli diş fırçası",
+    "köpük baloncukları",
+    "gülümseyen diş karakterleri"
+  ],
+  "notes": "MP3 Gemini sohbet ekranında üretildikten sonra song.mp3 adıyla bu klasöre yüklenmeli. Gemini sözleri değiştirdiyse lyrics.txt gerçek sesle eşleştirilmeli."
+}
