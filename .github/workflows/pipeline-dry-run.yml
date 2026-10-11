@@ -46,7 +46,7 @@ jobs:
         with:
           name: ${{ inputs.song_id }}-pipeline-dry-run
           path: |
-            output/${{ inputs.song_id }}_pipeline-dry-run.json
+            output/${{ format('{0}_pipeline-preflight.json', inputs.song_id) }}
             output/${{ inputs.song_id }}_pipeline-preflight.json
             output/storyboards/${{ inputs.song_id }}_storyboard.json
             output/visual-prompt-pack/${{ inputs.song_id }}/**
