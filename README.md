@@ -21,13 +21,15 @@ GitHub Actions üzerinde çalışacak, Türkçe çocuk şarkıları için özgü
 1. Yapılandırma ve GitHub Actions doğrulama akışı — tamamlandı
 2. Manuel Gemini müzik üretimi ve GitHub şarkı kütüphanesi — devam ediyor
 3. Şarkı ön kontrolü: MP3 varlığı, söz kontrol durumu, SHA-256 ve tekrar kullanım engeli — ilk sürüm eklendi
-4. Şarkıya bağlı storyboard ve stilize 3D sahne üretimi — sıradaki geliştirme
-5. Tek videonun uçtan uca üretimi ve kalite kontrolü (önce dry-run)
-6. YouTube API bağlantısı ve manuel onaylı test yüklemesi
-7. Her dört günde bir yayın takvimi; otomatik yayın ancak testler tamamlandıktan sonra
+4. Şarkı konularından dikey 9:16 storyboard taslakları üretme — ilk sürüm eklendi
+5. Storyboard'dan stilize 3D sahne render'ı ve müzikle montaj
+6. Tek videonun uçtan uca üretimi ve kalite kontrolü (önce dry-run)
+7. YouTube API bağlantısı ve manuel onaylı test yüklemesi
+8. Her dört günde bir yayın takvimi; otomatik yayın ancak testler tamamlandıktan sonra
 
 ## Testler
 - **Actions → Project validation → Run workflow:** proje ayarları ve birim testleri; video üretmez, YouTube'a yüklemez.
 - **Actions → Song library preflight → Run workflow:** şarkı kütüphanesini kontrol eder ve `song-preflight-report` adlı rapor artifact'i üretir. Yalnızca `metadata.json` içinde `status: ready` olan, MP3 ve söz dosyası bulunan, daha önce kullanılmamış şarkılar video üretimine uygun sayılır.
+- **Actions → Build storyboard drafts → Run workflow:** tüm şarkılar veya seçilen bir `TRxxx` kimliği için `storyboard-drafts` artifact'i üretir. Taslaklar 9:16 kadraj ve sahne zaman aralıkları içerir; gerçek 3D render ve vokalle kare-kare senkron henüz yapılmaz.
 
 Ön kontrol aşaması şarkıyı rezerve etmez veya `used` durumuna getirmez. Otomatik yayın kapalıdır; henüz video render'ı ya da YouTube yüklemesi yapılmaz.
