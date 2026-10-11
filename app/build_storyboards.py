@@ -64,7 +64,7 @@ def build_storyboard(topic: dict, package_dir: Path, project: dict) -> dict:
     scene_count = min(8, max(6, len(motifs)))
     scenes = []
     palettes = {
-        "color": "temiz ve canlı bir renk paleti; her ana renk görsel olarak kolay ayırt edilsin",
+        "renk": "temiz ve canlı bir renk paleti; her ana renk görsel olarak kolay ayırt edilsin",
         "hayvan": "sıcak çiftlik tonları, doğal yeşiller ve yumuşak saman sarıları",
         "diş": "temiz pastel mavi-beyaz tonlar, parlak ama yumuşak banyo ışığı",
         "oyuncak": "düzenli renk blokları, sıcak oda ışığı ve okunaklı oyuncak siluetleri",
@@ -74,14 +74,17 @@ def build_storyboard(topic: dict, package_dir: Path, project: dict) -> dict:
         "paylaş": "sıcak park yeşilleri, güneşli sarılar ve davetkâr pastel tonlar",
     }
     theme_text = (str(topic.get("theme", "")) + " " + str(topic.get("learning_goal", ""))).casefold()
-    palette_key = next((key for key in palettes if key in theme_text or
-        (key == "hayvan" and "hayvan" in theme_text) or
-        (key == "diş" and "diş" in theme_text) or
-        (key == "oyuncak" and "oyuncak" in theme_text) or
-        (key == "uzay" and "uzay" in theme_text) or
-        (key == "şekil" and "şekil" in theme_text) or
-        (key == "bahçıvan" and ("bitki" in theme_text or "tohum" in theme_text)) or
-        (key == "paylaş" and ("paylaş" in theme_text or "empati" in theme_text))), None)
+    palette_rules = [
+        ("renk", ("renk", "color")),
+        ("hayvan", ("hayvan", "çiftlik")),
+        ("diş", ("diş", "fırçalama")),
+        ("oyuncak", ("oyuncak", "düzen", "sınıflandırma")),
+        ("uzay", ("uzay", "gezegen", "roket")),
+        ("şekil", ("şekil", "daire", "üçgen", "kare")),
+        ("bahçıvan", ("bahçıvan", "bitki", "tohum", "çiçek")),
+        ("paylaş", ("paylaş", "empati", "sıra bekleme")),
+    ]
+    palette_key = next((key for key, words in palette_rules if any(word in theme_text for word in words)), None)
     palette = palettes.get(palette_key, "hikâyeye özgü, dengeli ve birbirinden ayırt edilebilir renk paleti")
     for index in range(scene_count):
         motif = motifs[index % len(motifs)]
