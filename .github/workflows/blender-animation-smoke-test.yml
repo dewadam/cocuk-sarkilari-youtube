@@ -1,0 +1,54 @@
+name: Blender CPU animation smoke test
+
+on:
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  animated-render:
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Install Blender and media probe
+        run: |
+          sudo apt-get update
+          sudo apt-get install --yes blender ffmpeg libegl1 libgl1 libxrender1 libxi6 libxkbcommon0 libsm6
+
+      - name: Render a two-second animated 3D test
+        env:
+          LIBGL_ALWAYS_SOFTWARE: "1"
+          QT_QPA_PLATFORM: "offscreen"
+        run: |
+          mkdir -p output
+          blender --background --python app/blender_animation_smoke.py -- --output output/blender-animation-smoke.mp4
+
+      - name: Verify animation video
+        run: |
+          test -s output/blender-animation-smoke.mp4
+          ffprobe -v error -select_streams v:0 -show_entries stream=codec_name,width,height,r_frame_rate -show_entries format=duration -of json output/blender-animation-smoke.mp4 > output/blender-animation-qc.json
+          python - <<'PY'
+          import json
+          from pathlib import Path
+          report = json.loads(Path("output/blender-animation-qc.json").read_text())
+          video = report["streams"][0]
+          duration = float(report["format"]["duration"])
+          assert video["codec_name"] == "h264", video
+          assert (video["width"], video["height"]) == (320, 568), video
+          assert duration >= 1.8, duration
+          print(f"Verified animated MP4: {video['width']}x{video['height']}, {duration:.2f}s, {video['codec_name']}")
+          PY
+
+      - name: Upload animated preview and QC report
+        uses: actions/upload-artifact@v4
+        with:
+          name: blender-cpu-animation-smoke-test
+          path: |
+            output/blender-animation-smoke.mp4
+            output/blender-animation-qc.json
+          if-no-files-found: error
+          retention-days: 7
