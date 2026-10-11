@@ -1,16 +1,16 @@
 {
   "id": "TR007",
-  "title": "Yağmur Bitti, Gökkuşağı Geldi",
+  "title": "Minik Bahçıvanlar",
   "language": "tr-TR",
-  "theme": "Yağmurdan sonra gökkuşağı",
-  "core_idea": "Kısa bir yağmurun ardından çocuklar su damlalarını, bulutları ve gökkuşağını gözlemler.",
-  "learning_goal": "Yağmur sonrası doğa gözlemi ve renk sıralarına dikkat",
+  "theme": "Tohumdan çiçeğe",
+  "core_idea": "Bir çocuk tohum eker, sular ve filizin yapraklara dönüşmesini gün gün gözlemler.",
+  "learning_goal": "Bitkilerin büyümesi için toprak, su, ışık ve zaman gerektiğini tanıma",
   "target_age": "preschool",
   "status": "awaiting_audio_upload",
   "audio_file": "song.mp3",
   "lyrics_file": "lyrics.txt",
   "music_prompt_file": "music_prompt.txt",
-  "tempo_bpm": 102,
+  "tempo_bpm": 104,
   "music_style": "warm sunny acoustic pop, fingerpicked guitar, soft piano, glockenspiel, brushed percussion, gentle bouncing rhythm",
   "lyrics_must_match_final_audio": true,
   "audio_sha256": null,
@@ -21,10 +21,10 @@
   "used_at": null,
   "made_for_kids": true,
   "visual_motifs": [
-    "yağmur damlaları",
-    "su birikintileri",
-    "güneş bulutların arasından çıkar",
-    "gökkuşağı"
+    "küçük saksı",
+    "tohum ve filiz",
+    "sulama kabı",
+    "açan çiçek"
   ],
   "notes": "MP3 Gemini'da üretildikten sonra song.mp3 adıyla yüklenmeli. Gemini sözleri değiştirirse lyrics.txt gerçek sesle eşleştirilmeli."
 }
