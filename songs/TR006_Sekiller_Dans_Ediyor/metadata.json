@@ -1,0 +1,30 @@
+{
+  "id": "TR006",
+  "title": "Şekiller Dans Ediyor",
+  "language": "tr-TR",
+  "theme": "Şekiller dans ediyor",
+  "core_idea": "Daire yuvarlanır, kare sağlam durur, üçgen tepe yapar; şekiller hareketleriyle kendilerini tanıtır.",
+  "learning_goal": "Daire, kare ve üçgeni ayırt etme",
+  "target_age": "preschool",
+  "status": "awaiting_audio_upload",
+  "audio_file": "song.mp3",
+  "lyrics_file": "lyrics.txt",
+  "music_prompt_file": "music_prompt.txt",
+  "tempo_bpm": 118,
+  "music_style": "funky but soft preschool dance-pop, muted guitar chops, marimba, hand claps, rounded bass, light drums, crisp playful rhythm",
+  "lyrics_must_match_final_audio": true,
+  "audio_sha256": null,
+  "duration_seconds": null,
+  "video_status": "not_started",
+  "usage_status": "available",
+  "used_in_video_id": null,
+  "used_at": null,
+  "made_for_kids": true,
+  "visual_motifs": [
+    "canlanan daire karakteri",
+    "kare bloklar",
+    "üçgen çatı",
+    "şekil dans pisti"
+  ],
+  "notes": "MP3 Gemini sohbet ekranında üretildikten sonra song.mp3 adıyla bu klasöre yüklenmeli. Gemini sözleri değiştirdiyse lyrics.txt gerçek sesle eşleştirilmeli."
+}
