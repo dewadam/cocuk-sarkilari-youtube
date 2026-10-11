@@ -1,0 +1,20 @@
+{
+  "id": "TR001",
+  "title": "Renkler Bahçesi",
+  "language": "tr-TR",
+  "theme": "Renkleri öğrenme",
+  "target_age": "preschool",
+  "status": "awaiting_audio_upload",
+  "audio_file": "song.mp3",
+  "lyrics_file": "lyrics.txt",
+  "music_prompt_file": "music_prompt.txt",
+  "lyrics_must_match_final_audio": true,
+  "duration_seconds": null,
+  "audio_sha256": null,
+  "video_status": "not_started",
+  "usage_status": "available",
+  "used_in_video_id": null,
+  "used_at": null,
+  "made_for_kids": true,
+  "notes": "Kullanıcı Gemini sohbet ekranında müzik oluşturdu. Gemini sözlere eklemeler yapmış olabilir; altyazı hazırlamadan önce lyrics.txt gerçek sesle eşleştirilmeli."
+}
