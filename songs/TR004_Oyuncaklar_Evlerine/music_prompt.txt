@@ -1,0 +1,52 @@
+GEMINI — MÜZİK OLUŞTUR PROMPT'U
+Başlık: Oyuncaklar Evlerine
+
+Türkçe okul öncesi çocukları için özgün, tam bir vokalli şarkı oluştur. Aşağıdaki sözleri temel al; gerektiğinde akışı ve kafiyeyi doğal biçimde zenginleştirebilirsin ama şarkının ana fikrini değiştirme. Türkçe telaffuz doğal, net ve anlaşılır olsun; sözleri başka dile çevirme.
+
+Müzik tarzı: cheerful rhythmic kids-pop, ukulele strums, marimba, claps, light toms, bouncing bass, clear singalong chorus. Tempo yaklaşık 112 BPM. Melodi hemen akılda kalmalı; vokal sıcak, canlı ve yumuşak olsun. Çocukların ilk dinleyişte nakarata katılabileceği basit ritim kullan.
+
+Zorunlu düzenleme talimatları:
+- Vokal ve sözler ilk 0–3 saniyede başlasın.
+- Uzun enstrümantal giriş veya 2 saniyeden uzun ara olmasın.
+- Vokal net ve müziğin önünde duyulsun.
+- Enerjik ve hareketli olsun ama sert rock, aşırı gürültülü davul veya robotik vokal kullanma.
+- Mevcut bir şarkının melodisini, sözlerini veya belirli bir sanatçıyı taklit etme.
+- Yalnızca enstrümantal üretme; Türkçe vokalli, tamamlanmış bir şarkı oluştur.
+
+ŞARKI SÖZLERİ:
+
+[Verse 1]
+Oyun bitti, akşam oldu,
+Odamızda oyuncak doldu.
+Ayıcık kutusunu arar,
+Tren rayına doğru kayar.
+
+[Chorus]
+Topla, topla, hadi gel,
+Her oyuncağın yeri özel.
+Birlikte yap, bir iki üç,
+Düzenlemek çok kolaymış!
+
+[Verse 2]
+Kırmızı blok kırmızı kutuya,
+Kitaplar gider raflarına.
+Arabalar garajına,
+Peluş dostlar yatağına.
+
+[Chorus]
+Topla, topla, hadi gel,
+Her oyuncağın yeri özel.
+Birlikte yap, bir iki üç,
+Düzenlemek çok kolaymış!
+
+[Bridge]
+Bir oyuncak, iki oyuncak,
+Hep birlikte daha kolay.
+Ben bir tane, sen bir tane,
+Odamız ışıldar bir anda!
+
+[Final Chorus]
+Topla, topla, hadi gel,
+Her oyuncağın yeri özel.
+El ele ver, gülümse,
+Yarın yine oyun bize!
