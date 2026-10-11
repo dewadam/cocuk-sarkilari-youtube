@@ -32,6 +32,8 @@ class StoryboardDraftTests(unittest.TestCase):
             storyboard["duration_seconds"],
         )
         self.assertTrue(storyboard["duration_is_provisional"])
+        self.assertIn("image_generation_prompt", storyboard["scenes"][0])
+        self.assertIn("lyric_cue_draft", storyboard["scenes"][0])
 
 
 if __name__ == "__main__":
