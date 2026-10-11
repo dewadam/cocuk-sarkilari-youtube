@@ -1,0 +1,56 @@
+name: Blender CPU 30-second benchmark
+
+on:
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  render-benchmark:
+    runs-on: ubuntu-latest
+    timeout-minutes: 60
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Install Blender and FFmpeg tools
+        run: |
+          sudo apt-get update
+          sudo apt-get install --yes blender ffmpeg libegl1 libgl1 libxrender1 libxi6 libxkbcommon0 libsm6
+
+      - name: Render 30-second looping animation
+        env:
+          LIBGL_ALWAYS_SOFTWARE: "1"
+          QT_QPA_PLATFORM: "offscreen"
+        run: |
+          mkdir -p output
+          START_TIME=$(date +%s)
+          blender --background --python app/blender_animation_smoke.py -- --output output/blender-30s-benchmark.mp4 --save-blend output/blender-30s-benchmark.blend --duration-seconds 30
+          END_TIME=$(date +%s)
+          echo "Render wall time: $((END_TIME - START_TIME)) seconds" | tee output/render-timing.txt
+          test -s output/blender-30s-benchmark.mp4
+          ffprobe -v error -select_streams v:0 -show_entries stream=codec_name,width,height,r_frame_rate,nb_frames -show_entries format=duration -of json output/blender-30s-benchmark.mp4 > output/render-qc.json
+          python - <<'PY'
+          import json
+          from pathlib import Path
+          data = json.loads(Path('output/render-qc.json').read_text())
+          stream = data['streams'][0]
+          duration = float(data['format']['duration'])
+          assert stream['codec_name'] == 'h264', stream
+          assert (stream['width'], stream['height']) == (320, 568), stream
+          assert duration >= 29.0, duration
+          print(f"QC passed: {stream['width']}x{stream['height']}, {duration:.2f}s, {stream['codec_name']}, frames={stream.get('nb_frames', 'unknown')}")
+          PY
+
+      - name: Upload benchmark, project, and timing report
+        uses: actions/upload-artifact@v4
+        with:
+          name: blender-cpu-30s-benchmark
+          path: |
+            output/blender-30s-benchmark.mp4
+            output/blender-30s-benchmark.blend
+            output/render-qc.json
+            output/render-timing.txt
+          if-no-files-found: error
+          retention-days: 7
