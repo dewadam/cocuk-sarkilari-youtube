@@ -11,7 +11,9 @@ credentials*.json
 output/
 renders/
 artifacts/
+# Keep audio assets in the curated song library; ignore other generated audio.
 *.mp3
+!songs/**/*.mp3
 *.wav
 *.mp4
 *.blend1
