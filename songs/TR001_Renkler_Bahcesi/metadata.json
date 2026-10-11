@@ -8,7 +8,7 @@
   "audio_file": "song.mp3",
   "lyrics_file": "lyrics.txt",
   "music_prompt_file": "music_prompt.txt",
-  "lyrics_must_match_final_audio": true,
+  "lyrics_must_match_final_audio": false,
   "duration_seconds": null,
   "audio_sha256": null,
   "video_status": "not_started",
@@ -16,5 +16,5 @@
   "used_in_video_id": null,
   "used_at": null,
   "made_for_kids": true,
-  "notes": "GitHub'da song.mp3 dosyasının varlığı doğrulandı. Gemini sözlere eklemeler yapmış olabilir; altyazı üretmeden önce lyrics.txt gerçek sesle eşleştirilmeli."
+  "notes": "GitHub deposunda song.mp3 dosyası mevcut. Gemini sözlere eklemeler yapmış olabilir; video görselleri konu ve öğrenme hedefi üzerinden hazırlanır, ekranda şarkı sözü veya altyazı kullanılmaz."
 }
