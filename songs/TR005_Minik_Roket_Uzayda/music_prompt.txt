@@ -1,0 +1,58 @@
+GEMINI — MÜZİK OLUŞTUR PROMPT'U
+Başlık: Minik Roket Uzayda
+
+Türkçe okul öncesi çocukları için özgün, tam bir vokalli şarkı oluştur. Aşağıdaki sözleri temel al; gerektiğinde akışı ve kafiyeyi doğal biçimde zenginleştirebilirsin ama şarkının ana fikrini değiştirme. Türkçe telaffuz doğal, net ve anlaşılır olsun; sözleri başka dile çevirme.
+
+Müzik tarzı: playful space-pop, sparkling synth bells, bright piano, tight claps, light electronic beat, warm bass, adventurous but gentle. Tempo yaklaşık 120 BPM. Melodi hemen akılda kalmalı; vokal sıcak, canlı ve yumuşak olsun. Çocukların ilk dinleyişte nakarata katılabileceği basit ritim kullan.
+
+Zorunlu düzenleme talimatları:
+- Vokal ve sözler ilk 0–3 saniyede başlasın.
+- Uzun enstrümantal giriş veya 2 saniyeden uzun ara olmasın.
+- Vokal net ve müziğin önünde duyulsun.
+- Enerjik ve hareketli olsun ama sert rock, aşırı gürültülü davul veya robotik vokal kullanma.
+- Mevcut bir şarkının melodisini, sözlerini veya belirli bir sanatçıyı taklit etme.
+- Yalnızca enstrümantal üretme; Türkçe vokalli, tamamlanmış bir şarkı oluştur.
+
+ŞARKI SÖZLERİ:
+
+[Verse 1]
+Kaskım hazır, sayalım,
+Roketimize atlayalım.
+Üç, iki, bir, hadi uç,
+Yıldızlara doğru uç!
+
+[Chorus]
+Vuu vuu, minik roket,
+Gökyüzünde macera demek.
+Ay'a selam, yıldıza el salla,
+Uzay bizi çağırıyor uzaklardan!
+
+[Verse 2]
+Ay yuvarlak, ışıl ışıl,
+Üstünde zıpla, hafifçe süzül.
+Robot dostum elimi tutar,
+Dünya uzaktan mavi parlar.
+
+[Chorus]
+Vuu vuu, minik roket,
+Gökyüzünde macera demek.
+Ay'a selam, yıldıza el salla,
+Uzay bizi çağırıyor uzaklardan!
+
+[Verse 3]
+Halkalı bir gezegen,
+Dönüyor sessizce neden?
+Bir yıldız say, iki yıldız,
+Uzay ne kadar güzelmiş!
+
+[Bridge]
+Roket yavaşça geri döner,
+Dünya bizi sevgiyle bekler.
+Yeni şeyler öğrendik bugün,
+Yarın yine keşfe çıkalım!
+
+[Final Chorus]
+Vuu vuu, minik roket,
+Her yolculuk bilgi demek.
+Ay'a el salla, Dünya'ya merhaba,
+Uzay macerası aklımızda!
