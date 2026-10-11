@@ -19,6 +19,11 @@ def normalize(value: str) -> str:
     return re.sub(r"\s+", " ", value).strip()
 
 
+
+def lyric_body(value: str) -> str:
+    lines = [line.strip() for line in value.splitlines() if line.strip() and not line.strip().startswith("#")]
+    return normalize(" ".join(lines))
+
 def validate_new_prompts(root: Path = ROOT) -> list[str]:
     errors: list[str] = []
     style_profiles: dict[str, str] = {}
