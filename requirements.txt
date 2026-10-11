@@ -1,0 +1,2 @@
+# Phase 1 uses only the Python standard library.
+# Provider SDKs and rendering dependencies will be added after the API/provider choices are verified.
