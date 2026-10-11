@@ -41,13 +41,13 @@ class VideoPreflightTests(unittest.TestCase):
             self.assertEqual(report["eligible_count"], 1)
             self.assertEqual(report["selected_song"]["id"], "TR001")
 
-    def test_unchecked_lyrics_block_package(self):
+    def test_unchecked_lyrics_still_allow_visual_preview(self):
         with tempfile.TemporaryDirectory() as tmp:
             root = Path(tmp)
             self.make_package(root, status="audio_uploaded_lyrics_check")
             report = inspect_library(root)
-            self.assertEqual(report["eligible_count"], 0)
-            self.assertTrue(any("status=ready" in b for b in report["packages"][0]["blockers"]))
+            self.assertEqual(report["eligible_count"], 1)
+            self.assertTrue(report["selected_song"]["preview_only"])
 
     def test_used_song_is_not_eligible(self):
         with tempfile.TemporaryDirectory() as tmp:
