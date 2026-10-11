@@ -7,6 +7,7 @@ from __future__ import annotations
 
 import argparse
 import json
+import re
 from pathlib import Path
 
 ROOT = Path(__file__).resolve().parents[1]
@@ -17,6 +18,12 @@ TOPIC_BACKLOG = ROOT / "config" / "topic_backlog.json"
 def load_json(path: Path):
     with path.open("r", encoding="utf-8") as handle:
         return json.load(handle)
+
+
+def normalize_text(value: str) -> str:
+    """Normalize titles for exact duplicate checks (not semantic similarity)."""
+    value = value.casefold().replace("ı", "i")
+    return re.sub(r"[^a-z0-9]+", " ", value).strip()
 
 
 def validate() -> list[str]:
@@ -42,10 +49,23 @@ def validate() -> list[str]:
         errors.append("Konu listesinde yinelenen kimlik var.")
     if not topics:
         errors.append("Konu listesi boş.")
+
+    normalized_themes = [normalize_text(str(item.get("theme", ""))) for item in topics]
+    if len(normalized_themes) != len(set(normalized_themes)):
+        errors.append("Konu listesinde aynı/tekrarlanan tema başlığı var.")
+
+    normalized_goals = [normalize_text(str(item.get("learning_goal", ""))) for item in topics]
+    if len(normalized_goals) != len(set(normalized_goals)):
+        errors.append("Konu listesinde aynı/tekrarlanan öğrenme hedefi var.")
+
     for item in topics:
         for required in ("id", "theme", "core_idea", "learning_goal", "status"):
             if not item.get(required):
                 errors.append(f"Konu kaydında '{required}' alanı eksik: {item!r}")
+        if item.get("id"):
+            package_dirs = list((ROOT / "songs").glob(f"{item['id']}_*"))
+            if not package_dirs:
+                errors.append(f"{item['id']} için songs/ altında şarkı klasörü bulunamadı.")
 
     return errors
 
