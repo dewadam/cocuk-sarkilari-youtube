@@ -1,0 +1,19 @@
+# Secrets and local environment
+.env
+.env.*
+*.pem
+*.key
+token.json
+client_secret*.json
+credentials*.json
+
+# Generated media and temporary renders
+output/
+renders/
+artifacts/
+*.mp3
+*.wav
+*.mp4
+*.blend1
+__pycache__/
+*.py[cod]
