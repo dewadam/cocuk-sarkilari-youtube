@@ -39,15 +39,15 @@ class AssetPreflightTests(unittest.TestCase):
         self.assertFalse(report["passed"])
         self.assertTrue(any("kesintisiz" in error for error in report["errors"]))
 
-    def test_bad_srt_timing_fails(self):
+    def test_caption_file_does_not_block_visual_only_video(self):
         with tempfile.TemporaryDirectory() as tmp:
             folder = self.make_package(Path(tmp))
             (folder / "captions.srt").write_text(
                 "1\n00:00:03,000 --> 00:00:02,000\nMerhaba\n", encoding="utf-8"
             )
             report = validate_assets(folder)
-        self.assertFalse(report["passed"])
-        self.assertTrue(any("bitiş zamanı" in error for error in report["errors"]))
+        self.assertTrue(report["passed"], report["errors"])
+        self.assertFalse(report["captions_present"])
 
     def test_valid_srt_passes(self):
         with tempfile.TemporaryDirectory() as tmp:
