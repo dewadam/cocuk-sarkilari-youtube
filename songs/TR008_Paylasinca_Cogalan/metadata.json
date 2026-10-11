@@ -1,0 +1,30 @@
+{
+  "id": "TR008",
+  "title": "Paylaşınca Çoğalan",
+  "language": "tr-TR",
+  "theme": "Paylaşınca güzel",
+  "core_idea": "Parkta piknik yapan iki arkadaş yiyeceklerini ve oyunlarını paylaşır; herkesin sırayla katılmasıyla oyun büyür.",
+  "learning_goal": "Paylaşma, sıra bekleme ve empati",
+  "target_age": "preschool",
+  "status": "awaiting_audio_upload",
+  "audio_file": "song.mp3",
+  "lyrics_file": "lyrics.txt",
+  "music_prompt_file": "music_prompt.txt",
+  "tempo_bpm": 106,
+  "music_style": "warm friendly acoustic pop, gentle piano, ukulele, soft hand percussion, mellow bass, melodic singalong",
+  "lyrics_must_match_final_audio": true,
+  "audio_sha256": null,
+  "duration_seconds": null,
+  "video_status": "not_started",
+  "usage_status": "available",
+  "used_in_video_id": null,
+  "used_at": null,
+  "made_for_kids": true,
+  "visual_motifs": [
+    "park pikniği",
+    "meyve sepeti",
+    "uçurtma",
+    "sırayla oynanan top"
+  ],
+  "notes": "MP3 Gemini'da üretildikten sonra song.mp3 adıyla yüklenmeli. Gemini sözleri değiştirirse lyrics.txt gerçek sesle eşleştirilmeli."
+}
