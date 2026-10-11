@@ -6,7 +6,9 @@ Türkçe okul öncesi çocukları için özgün, tam bir vokalli şarkı oluştu
 Müzik tarzı: bright bubblegum pop for preschoolers, muted guitar, claps, toy piano, gentle punchy drums, playful stop-start rhythm. Tempo yaklaşık 108 BPM. Melodi hemen akılda kalmalı; vokal sıcak, canlı ve yumuşak olsun. Çocukların ilk dinleyişte nakarata katılabileceği basit ritim kullan.
 
 Zorunlu düzenleme talimatları:
-- Vokal ve sözler ilk 0–3 saniyede başlasın.
+- İlk vokal/söylenen kelime 5. saniyeden önce başlamasın; hedef, ilk sözün 5–7. saniyede girmesi.
+- İlk 5–7 saniyede yalnızca kısa, neşeli bir enstrümantal açılış çal; bu açılış 8 saniyeyi geçmesin.
+- Şarkı ortasındaki enstrümantal aralar 2–4 saniyeyi aşmasın.
 - Uzun enstrümantal giriş olmasın; şarkı ortasındaki enstrümantal aralar 2–4 saniyeyi aşmasın.
 - Vokal net ve müziğin önünde duyulsun.
 - Enerjik ve hareketli olsun ama sert rock, aşırı gürültülü davul veya robotik vokal kullanma.
