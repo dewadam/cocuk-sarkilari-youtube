@@ -1,0 +1,55 @@
+name: End-to-end song production dry run
+
+on:
+  workflow_dispatch:
+    inputs:
+      song_id:
+        description: "Kontrol edilecek şarkı kimliği (ör. TR001)"
+        required: true
+        type: string
+
+permissions:
+  contents: read
+
+jobs:
+  dry-run:
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+
+      - name: Install FFmpeg tools
+        run: |
+          sudo apt-get update
+          sudo apt-get install --yes ffmpeg
+
+      - name: Run unit tests
+        run: python -m unittest discover -s tests -v
+
+      - name: Run production dry run
+        env:
+          SONG_ID: ${{ inputs.song_id }}
+        run: |
+          python app/run_pipeline_dry_run.py \
+            --song-id "$SONG_ID" \
+            --report "output/${SONG_ID}_pipeline-dry-run.json"
+
+      - name: Upload dry-run report and generated prompts
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: ${{ inputs.song_id }}-pipeline-dry-run
+          path: |
+            output/${{ inputs.song_id }}_pipeline-dry-run.json
+            output/${{ inputs.song_id }_pipeline-preflight.json
+            output/storyboards/${{ inputs.song_id }}_storyboard.json
+            output/visual-prompt-pack/${{ inputs.song_id }}/**
+            output/${{ inputs.song_id }}_asset-preflight-report.json
+          if-no-files-found: warn
+          retention-days: 14
