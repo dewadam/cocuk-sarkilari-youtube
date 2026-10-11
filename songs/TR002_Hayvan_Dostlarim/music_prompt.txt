@@ -7,7 +7,7 @@ Müzik tarzı: bouncy acoustic kids-pop, light country bounce, ukulele, plucky b
 
 Zorunlu düzenleme talimatları:
 - Vokal ve sözler ilk 0–3 saniyede başlasın.
-- Uzun enstrümantal giriş veya 2 saniyeden uzun ara olmasın.
+- Uzun enstrümantal giriş olmasın; şarkı ortasındaki enstrümantal aralar 2–4 saniyeyi aşmasın.
 - Vokal net ve müziğin önünde duyulsun.
 - Enerjik ve hareketli olsun ama sert rock, aşırı gürültülü davul veya robotik vokal kullanma.
 - Mevcut bir şarkının melodisini, sözlerini veya belirli bir sanatçıyı taklit etme.
