@@ -1,0 +1,58 @@
+GEMINI — MÜZİK OLUŞTUR PROMPT'U
+Başlık: Şekiller Dans Ediyor
+
+Türkçe okul öncesi çocukları için özgün, tam bir vokalli şarkı oluştur. Aşağıdaki sözleri temel al; gerektiğinde akışı ve kafiyeyi doğal biçimde zenginleştirebilirsin ama şarkının ana fikrini değiştirme. Türkçe telaffuz doğal, net ve anlaşılır olsun; sözleri başka dile çevirme.
+
+Müzik tarzı: funky but soft preschool dance-pop, muted guitar chops, marimba, hand claps, rounded bass, light drums, crisp playful rhythm. Tempo yaklaşık 118 BPM. Melodi hemen akılda kalmalı; vokal sıcak, canlı ve yumuşak olsun. Çocukların ilk dinleyişte nakarata katılabileceği basit ritim kullan.
+
+Zorunlu düzenleme talimatları:
+- Vokal ve sözler ilk 0–3 saniyede başlasın.
+- Uzun enstrümantal giriş veya 2 saniyeden uzun ara olmasın.
+- Vokal net ve müziğin önünde duyulsun.
+- Enerjik ve hareketli olsun ama sert rock, aşırı gürültülü davul veya robotik vokal kullanma.
+- Mevcut bir şarkının melodisini, sözlerini veya belirli bir sanatçıyı taklit etme.
+- Yalnızca enstrümantal üretme; Türkçe vokalli, tamamlanmış bir şarkı oluştur.
+
+ŞARKI SÖZLERİ:
+
+[Verse 1]
+Daire döner dön dön dön,
+Köşesi yok, yuvarlak yön.
+Top gibi yuvarlanır,
+Bize bakıp gülümser.
+
+[Chorus]
+Daire, kare, üçgen,
+Haydi dans et benimle sen!
+Bir şekil seç, göster bana,
+Şekiller geldi oyuna!
+
+[Verse 2]
+Kare kare dört köşe,
+Pencere olur evimize.
+Dört kenarı yan yana,
+Dengeli durur burada.
+
+[Chorus]
+Daire, kare, üçgen,
+Haydi dans et benimle sen!
+Bir şekil seç, göster bana,
+Şekiller geldi oyuna!
+
+[Verse 3]
+Üçgenin üç köşesi,
+Yukarı bakar tepesi.
+Çatı olur küçük eve,
+Bayrak olur rüzgârla.
+
+[Bridge — movement game]
+Daire gibi dönelim,
+Kare gibi duralım.
+Üçgen gibi kollar yukarı,
+Şekillerle dans zamanı!
+
+[Final Chorus]
+Daire, kare, üçgen,
+Hepsi başka, hepsi güzel.
+Etrafına bak bir daha,
+Şekiller her yerde aslında!
