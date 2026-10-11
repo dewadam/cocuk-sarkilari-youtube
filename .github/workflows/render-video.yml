@@ -32,6 +32,19 @@ jobs:
       - name: Run unit tests
         run: python -m unittest discover -s tests -v
 
+      - name: Validate scene assets and captions
+        env:
+          SONG_ID: ${{ inputs.song_id }}
+        run: |
+          SONG_FOLDER="$(find songs -maxdepth 1 -type d -name "${SONG_ID}_*" -print -quit)"
+          if [ -z "$SONG_FOLDER" ]; then
+            echo "Şarkı klasörü bulunamadı: $SONG_ID"
+            exit 1
+          fi
+          python app/validate_assets.py \
+            --song-folder "$SONG_FOLDER" \
+            --report "output/${SONG_ID}_asset-preflight-report.json"
+
       - name: Render preview MP4
         env:
           SONG_ID: ${{ inputs.song_id }}
@@ -52,5 +65,6 @@ jobs:
           path: |
             output/${{ inputs.song_id }}_preview.mp4
             output/${{ inputs.song_id }}_qc-report.json
+            output/${{ inputs.song_id }}_asset-preflight-report.json
           if-no-files-found: error
           retention-days: 14
