@@ -1,0 +1,50 @@
+name: Blender CPU render smoke test
+
+on:
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  smoke-render:
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Install Blender
+        run: |
+          sudo apt-get update
+          sudo apt-get install --yes blender
+
+      - name: Render a tiny procedural 3D test scene
+        run: |
+          mkdir -p output
+          blender --background --python app/blender_smoke_scene.py -- --output output/blender-smoke.png
+
+      - name: Verify rendered image
+        run: |
+          test -s output/blender-smoke.png
+          file output/blender-smoke.png
+          python - <<'PY'
+          import struct
+          from pathlib import Path
+          p = Path("output/blender-smoke.png")
+          data = p.read_bytes()
+          if data[:8] != b"\x89PNG\r\n\x1a\n":
+              raise SystemExit("Output is not a PNG.")
+          width, height = struct.unpack(">II", data[16:24])
+          if width != 512 or height != 910:
+              raise SystemExit(f"Unexpected image dimensions: {width}x{height}")
+          print(f"Verified PNG: {width}x{height}, {len(data)} bytes")
+          PY
+
+      - name: Upload Blender smoke-test image
+        uses: actions/upload-artifact@v4
+        with:
+          name: blender-cpu-smoke-test
+          path: output/blender-smoke.png
+          if-no-files-found: error
+          retention-days: 7
