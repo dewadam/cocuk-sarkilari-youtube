@@ -1,0 +1,27 @@
+{
+  "project_name": "Turkce Cocuk Sarkilari",
+  "language": "tr-TR",
+  "timezone": "Europe/Istanbul",
+  "publishing_interval_days": 4,
+  "target_videos_per_month": 8,
+  "target_duration_seconds": {
+    "min": 90,
+    "max": 150
+  },
+  "visual_style": "stylized_high_quality_3d",
+  "render_strategy": "hybrid_3d_ffmpeg",
+  "target_audience": "made_for_kids",
+  "auto_publish_enabled": false,
+  "providers": {
+    "lyrics": null,
+    "music": null,
+    "visuals": null,
+    "youtube": "youtube_data_api_v3"
+  },
+  "safety": {
+    "require_original_lyrics": true,
+    "require_asset_license_check": true,
+    "prevent_duplicate_uploads": true,
+    "publish_only_after_manual_test": true
+  }
+}
