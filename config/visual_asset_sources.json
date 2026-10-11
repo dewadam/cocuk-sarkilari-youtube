@@ -1,0 +1,41 @@
+{
+  "policy": {
+    "paid_api_required": false,
+    "user_computer_required": false,
+    "youtube_upload_enabled": false,
+    "license_must_be_verified_per_asset": true
+  },
+  "tools": [
+    {
+      "name": "Blender",
+      "role": "3D scene setup and CPU rendering",
+      "url": "https://www.blender.org/",
+      "license_url": "https://www.blender.org/about/license/",
+      "software_license": "GNU GPL",
+      "artwork_commercial_use": true,
+      "gpu_required": false,
+      "notes": "GitHub Actions CPU render performance must be measured before scaling."
+    },
+    {
+      "name": "FFmpeg",
+      "role": "Audio/video assembly and output normalization",
+      "url": "https://ffmpeg.org/",
+      "license_url": "https://ffmpeg.org/legal.html",
+      "software_license": "LGPL/GPL depending on build configuration",
+      "artwork_commercial_use": true,
+      "gpu_required": false,
+      "notes": "Check the exact binary build and codec licensing for redistribution scenarios."
+    }
+  ],
+  "asset_candidates": [
+    {
+      "name": "Kenney Mini Characters",
+      "url": "https://kenney.nl/assets/mini-characters",
+      "license": "CC0",
+      "license_url": "https://kenney.nl/support",
+      "format_or_features": ["3D", "animation"],
+      "status": "candidate_not_yet_integrated",
+      "intended_use": "First technical prototype only; visual quality must be reviewed before adoption."
+    }
+  ]
+}
