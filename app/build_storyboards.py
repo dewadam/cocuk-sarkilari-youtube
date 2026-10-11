@@ -1,7 +1,7 @@
 """Generate deterministic, editable vertical storyboard drafts from topic metadata.
 
 This does not generate images, render video, or publish anything. Timings are
-provisional scene windows; lyric-level sync is a later stage.
+provisional scene windows; scenes follow topic motifs and music pacing, not lyric-level sync.
 """
 from __future__ import annotations
 
@@ -47,7 +47,7 @@ def build_storyboard(topic: dict, package_dir: Path, project: dict) -> dict:
 
     motifs = topic.get("visual_motifs") or [topic.get("theme", "Neşeli çocuk dünyası")]
     # Visual scenes are driven by the topic and learning goal, not exact lyric lines.
-    # Aim for 6–8 scenes; use a stable sequence, but tie each scene to a lyric cue.
+    # Aim for 6–8 scenes; use a stable visual sequence tied to the topic and learning goal.
     scene_count = min(8, max(6, len(motifs)))
     scenes = []
     palettes = {
@@ -103,7 +103,7 @@ def build_storyboard(topic: dict, package_dir: Path, project: dict) -> dict:
                 "cinematic soft lighting, clear focal point, uncluttered background, premium 3D animation render. "
                 "Keep the same character design across all scenes. No text, no logos, no watermark, no copied copyrighted characters."
             ),
-            "sync_note": "Geçici zaman aralığı; son aşamada gerçek vokal ve müzik vuruşlarına göre eşlenecek."
+            "sync_note": "Geçici zaman aralığı; sahne geçişleri müziğin genel temposuna göre gözden geçirilecek, söz senkronu kullanılmayacak."
         })
 
     return {
