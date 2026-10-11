@@ -46,27 +46,74 @@ def build_storyboard(topic: dict, package_dir: Path, project: dict) -> dict:
         duration = float(project.get("target_duration_seconds", {}).get("min", 90) + project.get("target_duration_seconds", {}).get("max", 150)) / 2
 
     motifs = topic.get("visual_motifs") or [topic.get("theme", "Neşeli çocuk dünyası")]
-    # Aim for 6–8 scenes; use a stable, repeatable shot sequence.
+    lyrics_path = package_dir / str(metadata.get("lyrics_file", "lyrics.txt"))
+    lyrics_text = lyrics_path.read_text(encoding="utf-8") if lyrics_path.is_file() else ""
+    lyric_sections = []
+    current_section = []
+    for raw_line in lyrics_text.splitlines():
+        line = raw_line.strip()
+        if not line or line.startswith("#") or (line.startswith("[") and line.endswith("]")):
+            if current_section:
+                lyric_sections.append(" ".join(current_section))
+                current_section = []
+            continue
+        current_section.append(line)
+    if current_section:
+        lyric_sections.append(" ".join(current_section))
+    # Aim for 6–8 scenes; use a stable sequence, but tie each scene to a lyric cue.
     scene_count = min(8, max(6, len(motifs)))
     scenes = []
+    palettes = {
+        "color": "temiz ve canlı bir renk paleti; her ana renk görsel olarak kolay ayırt edilsin",
+        "hayvan": "sıcak çiftlik tonları, doğal yeşiller ve yumuşak saman sarıları",
+        "diş": "temiz pastel mavi-beyaz tonlar, parlak ama yumuşak banyo ışığı",
+        "oyuncak": "düzenli renk blokları, sıcak oda ışığı ve okunaklı oyuncak siluetleri",
+        "uzay": "derin lacivert uzay, mor-mavi atmosfer ve kontrollü yıldız parıltıları",
+        "şekil": "yüksek kontrastlı ama dengeli temel renkler ve net geometrik siluetler",
+        "bahçıvan": "doğal yeşiller, toprak kahveleri, sabah güneşi ve yumuşak altın ışık",
+        "paylaş": "sıcak park yeşilleri, güneşli sarılar ve davetkâr pastel tonlar",
+    }
+    theme_text = (str(topic.get("theme", "")) + " " + str(topic.get("learning_goal", ""))).casefold()
+    palette_key = next((key for key in palettes if key in theme_text or
+        (key == "hayvan" and "hayvan" in theme_text) or
+        (key == "diş" and "diş" in theme_text) or
+        (key == "oyuncak" and "oyuncak" in theme_text) or
+        (key == "uzay" and "uzay" in theme_text) or
+        (key == "şekil" and "şekil" in theme_text) or
+        (key == "bahçıvan" and ("bitki" in theme_text or "tohum" in theme_text)) or
+        (key == "paylaş" and ("paylaş" in theme_text or "empati" in theme_text))), None)
+    palette = palettes.get(palette_key, "hikâyeye özgü, dengeli ve birbirinden ayırt edilebilir renk paleti")
     for index in range(scene_count):
         motif = motifs[index % len(motifs)]
+        lyric_cue = lyric_sections[min(index, len(lyric_sections) - 1)] if lyric_sections else ""
         start = round(duration * index / scene_count, 2)
         end = round(duration * (index + 1) / scene_count, 2)
+        action = [
+            "Karakter kadraja neşeyle girer ve ana nesneyi keşfeder.",
+            "Ana nesneyle basit, anlaşılır bir etkileşim gösterilir.",
+            "Kamera yumuşak bir hareketle yakınlaşır; karakter tepki verir."
+        ][index % 3]
         scenes.append({
             "scene": index + 1,
             "start_seconds": start,
             "end_seconds": end,
             "visual_focus": motif,
-            "action": [
-                "Karakter kadraja neşeyle girer ve ana nesneyi keşfeder.",
-                "Ana nesneyle basit, anlaşılır bir etkileşim gösterilir.",
-                "Kamera yumuşak bir hareketle yakınlaşır; karakter tepki verir."
-            ][index % 3],
+            "action": action,
+            "lyric_cue_draft": lyric_cue,
             "visual_direction": (
-                "Dikey 9:16 kadraj; yüksek kaliteli, yumuşak ışıklı stilize 3D; "
-                "okul öncesi çocuklara uygun yuvarlak formlar, canlı ama dengeli renkler, "
-                "temiz kompozisyon, okunaklı siluetler. Karakter tasarımını sahneler boyunca koru."
+                "Dikey 9:16 kadraj; yüksek kaliteli stilize 3D animasyon filmi estetiği; "
+                "okul öncesi çocuklara uygun yuvarlak formlar, " + palette + "; "
+                "temiz kompozisyon, okunaklı siluetler, yumuşak sinematik ışık. "
+                "Aynı ana karakterin yüzünü, kıyafetini, oranlarını ve malzemelerini bütün sahnelerde koru."
+            ),
+            "image_generation_prompt": (
+                "Create one polished vertical 9:16 frame for a Turkish preschool 3D animated music video. "
+                "Song: " + str(metadata.get("title") or topic.get("theme", "")) + ". "
+                "Scene focus: " + str(motif) + ". Action: " + action + " "
+                "Learning goal: " + str(topic.get("learning_goal", "")) + ". "
+                "Visual direction: " + palette + "; rounded appealing shapes, expressive friendly characters, "
+                "cinematic soft lighting, clear focal point, uncluttered background, premium 3D animation render. "
+                "Keep the same character design across all scenes. No text, no logos, no watermark, no copied copyrighted characters."
             ),
             "sync_note": "Geçici zaman aralığı; son aşamada gerçek vokal ve müzik vuruşlarına göre eşlenecek."
         })
@@ -82,7 +129,8 @@ def build_storyboard(topic: dict, package_dir: Path, project: dict) -> dict:
         "duration_seconds": round(duration, 2),
         "duration_is_provisional": provisional,
         "audio_file_present": audio_path.is_file(),
-        "lyrics_file_present": (package_dir / str(metadata.get("lyrics_file", "lyrics.txt"))).is_file(),
+        "lyrics_file_present": lyrics_path.is_file(),
+        "lyric_cues_are_draft_only": True,
         "scenes": scenes,
         "production_notes": [
             "Bu dosya taslak storyboard'dur; gerçek sahne render'ı değildir.",
