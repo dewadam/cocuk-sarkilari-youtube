@@ -18,12 +18,16 @@ GitHub Actions üzerinde çalışacak, Türkçe çocuk şarkıları için özgü
 - Otomatik yayın öncesinde özgünlük, lisans, video kalitesi ve tekrar kontrolü yapılır.
 
 ## Aşamalar
-1. Yapılandırma ve GitHub Actions doğrulama akışı
-2. Ücretsiz/erişilebilir müzik üretim API'sinin doğrulanması
-3. Görsel varlıklar ve 3D/hibrit animasyon prototipi
-4. Tek videonun uçtan uca üretimi (önce dry-run)
-5. YouTube API bağlantısı ve test yüklemesi
-6. Her dört günde bir yayın takvimi ve tekrar önleme
+1. Yapılandırma ve GitHub Actions doğrulama akışı — tamamlandı
+2. Manuel Gemini müzik üretimi ve GitHub şarkı kütüphanesi — devam ediyor
+3. Şarkı ön kontrolü: MP3 varlığı, söz kontrol durumu, SHA-256 ve tekrar kullanım engeli — ilk sürüm eklendi
+4. Şarkıya bağlı storyboard ve stilize 3D sahne üretimi — sıradaki geliştirme
+5. Tek videonun uçtan uca üretimi ve kalite kontrolü (önce dry-run)
+6. YouTube API bağlantısı ve manuel onaylı test yüklemesi
+7. Her dört günde bir yayın takvimi; otomatik yayın ancak testler tamamlandıktan sonra
 
-## İlk test
-GitHub deposunda **Actions → Project validation → Run workflow** ile doğrulama çalıştırılabilir. Bu test video üretmez ve YouTube'a yükleme yapmaz.
+## Testler
+- **Actions → Project validation → Run workflow:** proje ayarları ve birim testleri; video üretmez, YouTube'a yüklemez.
+- **Actions → Song library preflight → Run workflow:** şarkı kütüphanesini kontrol eder ve `song-preflight-report` adlı rapor artifact'i üretir. Yalnızca `metadata.json` içinde `status: ready` olan, MP3 ve söz dosyası bulunan, daha önce kullanılmamış şarkılar video üretimine uygun sayılır.
+
+Ön kontrol aşaması şarkıyı rezerve etmez veya `used` durumuna getirmez. Otomatik yayın kapalıdır; henüz video render'ı ya da YouTube yüklemesi yapılmaz.
