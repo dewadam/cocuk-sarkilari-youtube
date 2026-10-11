@@ -37,10 +37,20 @@ jobs:
           SONG_ID: ${{ inputs.song_id }}
         run: python app/render_video.py --song-id "$SONG_ID"
 
-      - name: Upload preview artifact
+      - name: Validate rendered MP4
+        env:
+          SONG_ID: ${{ inputs.song_id }}
+        run: |
+          python app/validate_render.py \
+            --input "output/${SONG_ID}_preview.mp4" \
+            --report "output/${SONG_ID}_qc-report.json"
+
+      - name: Upload preview and QC report
         uses: actions/upload-artifact@v4
         with:
           name: ${{ inputs.song_id }}-video-preview
-          path: output/${{ inputs.song_id }}_preview.mp4
+          path: |
+            output/${{ inputs.song_id }}_preview.mp4
+            output/${{ inputs.song_id }}_qc-report.json
           if-no-files-found: error
           retention-days: 14
