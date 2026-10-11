@@ -1,0 +1,38 @@
+name: Prepare Blender project for SheepIt
+
+on:
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  prepare-project:
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Install Blender
+        run: |
+          sudo apt-get update
+          sudo apt-get install --yes blender libegl1 libgl1 libxrender1 libxi6 libxkbcommon0 libsm6
+
+      - name: Build and save a small animated Blender project
+        env:
+          LIBGL_ALWAYS_SOFTWARE: "1"
+          QT_QPA_PLATFORM: "offscreen"
+        run: |
+          mkdir -p output
+          blender --background --python app/blender_animation_smoke.py -- --save-blend output/sheepit-animation-test.blend --skip-render
+          test -s output/sheepit-animation-test.blend
+          ls -lh output/sheepit-animation-test.blend
+
+      - name: Upload native Blender project
+        uses: actions/upload-artifact@v4
+        with:
+          name: sheepit-blender-project-test
+          path: output/sheepit-animation-test.blend
+          if-no-files-found: error
+          retention-days: 7
