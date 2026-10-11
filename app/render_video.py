@@ -1,7 +1,7 @@
 """Render a vertical MP4 from approved song audio and scene stills using FFmpeg.
 
 Expected images: songs/<ID>_*/visuals/scene_01.png, scene_02.png, ...
-Optional captions: songs/<ID>_*/captions.srt.
+No on-screen lyrics/subtitles.
 No image generation or YouTube upload happens here.
 """
 from __future__ import annotations
@@ -65,8 +65,8 @@ def render_video(root: Path, song_id: str, output_path: Path) -> dict:
     if not metadata_path.is_file():
         raise ValueError("metadata.json eksik.")
     metadata = json.loads(metadata_path.read_text(encoding="utf-8"))
-    if metadata.get("status") != "ready":
-        raise ValueError("Şarkı hazır değil: MP3'ü dinleyip lyrics.txt dosyasını doğrulayın ve metadata status=ready yapın.")
+    if metadata.get("status") not in {"ready", "audio_uploaded_lyrics_check"}:
+        raise ValueError("Görsel ön izleme için şarkı status değeri ready veya audio_uploaded_lyrics_check olmalı.")
     if metadata.get("usage_status", "available") != "available" or metadata.get("used_in_video_id"):
         raise ValueError("Bu şarkı kullanılabilir durumda değil veya daha önce bir videoya bağlanmış.")
 
@@ -78,7 +78,6 @@ def render_video(root: Path, song_id: str, output_path: Path) -> dict:
         raise ValueError(f"Görsel bulunamadı. PNG/JPG/WEBP sahnelerini {folder.name}/visuals/scene_01.png konumuna ekleyin.")
     duration = get_duration(audio)
     output_path.parent.mkdir(parents=True, exist_ok=True)
-    captions = folder / "captions.srt"
     fps = 30
     segment_duration = duration / len(images)
 
@@ -118,11 +117,8 @@ def render_video(root: Path, song_id: str, output_path: Path) -> dict:
             "-pix_fmt", "yuv420p", "-r", str(fps), str(joined),
         ])
 
+        # Preschool videos are visual-first; never burn lyrics/subtitles into the picture.
         command = ["ffmpeg", "-y", "-hide_banner", "-loglevel", "error", "-i", str(joined), "-i", str(audio)]
-        if captions.is_file():
-            # Use a relative path escaped for FFmpeg's subtitles filter.
-            subtitle_path = str(captions.resolve()).replace("\\", "/").replace(":", "\\:")
-            command += ["-vf", f"subtitles='{subtitle_path}'"]
         command += [
             "-map", "0:v:0", "-map", "1:a:0", "-c:v", "libx264",
             "-preset", "veryfast", "-crf", "20", "-pix_fmt", "yuv420p",
@@ -137,7 +133,8 @@ def render_video(root: Path, song_id: str, output_path: Path) -> dict:
         "output": str(output_path),
         "audio_duration_seconds": round(duration, 3),
         "scene_image_count": len(images),
-        "captions_embedded": captions.is_file(),
+        "captions_embedded": False,
+        "on_screen_lyrics": False,
         "resolution": "1080x1920",
         "fps": fps,
         "youtube_uploaded": False,
