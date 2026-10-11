@@ -1,4 +1,4 @@
-# Türkçe Çocuk Şarkıları Otomasyonu
+# Çocuk Şarkıları YouTube Otomasyonu
 
 GitHub Actions üzerinde çalışacak, Türkçe çocuk şarkıları için özgün beste/söz, görsel-animasyon, video montajı ve YouTube yayınlama hattı.
 
@@ -34,7 +34,7 @@ TR009 ve sonraki şarkılarda Gemini prompt'una `lyrics.txt` dosyasındaki sözl
 ## Testler
 - **Actions → Project validation → Run workflow:** proje ayarları ve birim testleri; video üretmez, YouTube'a yüklemez.
 - **Actions → Song library preflight → Run workflow:** şarkı kütüphanesini kontrol eder ve `song-preflight-report` adlı rapor artifact'i üretir. Yalnızca `metadata.json` içinde `status: ready` olan, MP3 ve söz dosyası bulunan, daha önce kullanılmamış şarkılar video üretimine uygun sayılır.
-- **Actions → Build storyboard drafts → Run workflow:** tüm şarkılar veya seçilen bir `TRxxx` kimliği için `storyboard-drafts` artifact'i üretir. Taslaklar 9:16 kadraj, sahne zaman aralıkları, sahneye özel görsel üretim prompt'ları ve taslak söz ipuçları içerir.
+- **Actions → Build storyboard drafts → Run workflow:** tüm şarkılar veya seçilen bir `TRxxx` kimliği için storyboard ve görsel istem paketlerini `storyboard-and-visual-prompt-packs` artifact'inde sunar. Paket; her sahne için ayrı istem dosyaları, sahne dizini ve üretimden önce doldurulacak karakter tutarlılık rehberi içerir. Görsel üretimini otomatik yapmaz.
 - Render öncesinde `app/validate_assets.py`, en az 6 sahne görseli, kesintisiz ve benzersiz sahne numaraları, varsa `storyboard.json` sahne sayısı ve `captions.srt` zaman biçimini kontrol eder. Hatalı altyazı veya eksik sahneler varsa render başlamaz. Altyazı dosyası isteğe bağlıdır.
 - **Actions → Render vertical song video → Run workflow:** `TRxxx` kimliği ister. İlgili klasörde MP3, `metadata.json` içinde `status: ready` ve `usage_status: available` olmalı. Görselleri `songs/TRxxx_.../visuals/scene_01.png`, `scene_02.png` vb. olarak ekleyin. İsteğe bağlı `captions.srt` dosyası videoya gömülür. İş akışı 1080×1920, 30 FPS MP4 ön izlemesi üretir; çıktıyı `TRxxx-video-preview` artifact'inden indirin. Bu aşama görsel üretmez ve YouTube'a yükleme yapmaz.
 - Render sonrası `app/validate_render.py` MP4'ün okunabilirliğini, video/ses akışlarını, 1080×1920 çözünürlüğü ve ses-video süre farkını kontrol eder. Aynı artifact içinde `TRxxx_qc-report.json` raporu bulunur. Bu teknik kontrol görsel içeriğin doğruluğunu, söz senkronunu veya çocuklara uygunluğunu otomatik olarak onaylamaz.
