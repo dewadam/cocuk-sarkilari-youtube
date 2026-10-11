@@ -1,0 +1,30 @@
+{
+  "id": "TR007",
+  "title": "Minik Bahçıvanlar",
+  "language": "tr-TR",
+  "theme": "Tohumdan çiçeğe",
+  "core_idea": "Bir çocuk tohum eker, sular ve filizin yapraklara dönüşmesini gün gün gözlemler.",
+  "learning_goal": "Bitkilerin büyümesi için toprak, su, ışık ve zaman gerektiğini tanıma",
+  "target_age": "preschool",
+  "status": "awaiting_audio_upload",
+  "audio_file": "song.mp3",
+  "lyrics_file": "lyrics.txt",
+  "music_prompt_file": "music_prompt.txt",
+  "tempo_bpm": 104,
+  "music_style": "warm sunny acoustic pop, fingerpicked guitar, soft piano, glockenspiel, brushed percussion, gentle bouncing rhythm",
+  "lyrics_must_match_final_audio": true,
+  "audio_sha256": null,
+  "duration_seconds": null,
+  "video_status": "not_started",
+  "usage_status": "available",
+  "used_in_video_id": null,
+  "used_at": null,
+  "made_for_kids": true,
+  "visual_motifs": [
+    "küçük saksı",
+    "tohum ve filiz",
+    "sulama kabı",
+    "açan çiçek"
+  ],
+  "notes": "MP3 Gemini'da üretildikten sonra song.mp3 adıyla yüklenmeli. Gemini sözleri değiştirirse lyrics.txt gerçek sesle eşleştirilmeli."
+}
