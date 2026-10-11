@@ -1,0 +1,26 @@
+GEMINI — MÜZİK OLUŞTUR PROMPT'U
+Başlık: [ŞARKI BAŞLIĞI]
+
+Önce aşağıdaki sözlerin hikâyesine ve duygusuna uygun, özgün bir beste düşün. Bu şarkı için seçilen müzikal kimlik: [BU ŞARKIYA ÖZEL ANA TÜR + GROOVE]. Önceki şarkıların düzenlemesini kopyalama.
+
+Müzik karakteri:
+- Ana tür/karışım: [ŞARKIYA ÖZEL; son dört şarkıyla aynı olmasın]
+- Tempo: [UYGUN BPM veya aralık]
+- Ritim/groove: [ŞARKININ HİKÂYESİNE UYGUN]
+- Enstrümanlar: [EN AZ 3 AYIRT EDİCİ SES KAYNAĞI]
+- Vokal: doğal ve anlaşılır Türkçe; [BU ŞARKIYA ÖZEL VOKAL KARAKTERİ]
+- Nakarat: çocukların kolayca eşlik edebileceği, bu besteye özgü akılda kalıcı bir motif.
+
+Düzenleme:
+- İlk vokal/söylenen kelime 5. saniyeden önce başlamasın; hedef ilk sözün 5–7. saniyede girmesi.
+- İlk 5–7 saniyede kısa, şarkının melodisini tanıtan enstrümantal açılış olsun; 8 saniyeyi geçmesin.
+- Şarkı ortasındaki enstrümantal aralar 2–4 saniyeyi aşmasın.
+- Sözleri doğal Türkçe telaffuzla söyle; Türkçe sözleri başka dile çevirme.
+- Çocuklara uygun, kaliteli ve dengeli miks oluştur; vokal anlaşılır kalsın.
+- Mevcut şarkı, melodi veya sanatçı taklidi yapma.
+- Sadece enstrümantal üretme; baştan sona vokalli, tamamlanmış şarkı üret.
+
+ÖNEMLİ: Aşağıdaki sözlerin TAMAMINI kullan. Sözleri başka yere yönlendirme; bu prompt'un parçasıdır. Beste akışı için tekrarlar veya çok küçük akış düzeltmeleri gerekirse son ses dosyasındaki değişiklikler lyrics.txt dosyasına işlenecek.
+
+[ŞARKI SÖZLERİ — TAM METİN]
+[Buraya lyrics.txt içeriğinin tamamını, tüm kıta/nakarat/köprü etiketleriyle yapıştır.]
