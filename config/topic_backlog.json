@@ -1,66 +1,108 @@
 [
   {
     "id": "TR001",
-    "theme": "Renkleri öğreniyorum",
-    "core_idea": "Renkli balonlarla temel renkleri keşfeden bir çocuk ve sevimli hayvan arkadaşları",
-    "learning_goal": "Temel renkleri tanıma",
-    "visual_motifs": ["renkli balonlar", "oyun parkı", "sevimli hayvan arkadaşları"],
-    "status": "backlog"
+    "theme": "Renkler Bahçesi",
+    "core_idea": "Bahçede balonlar ve nesneler üzerinden temel renkleri keşfetme.",
+    "learning_goal": "Kırmızı, sarı, mavi ve yeşili tanıma",
+    "visual_motifs": [
+      "renkli balonlar",
+      "bahçe",
+      "elma",
+      "uçurtma"
+    ],
+    "status": "audio_uploaded_lyrics_check"
   },
   {
     "id": "TR002",
-    "theme": "Hayvanların sesleri",
-    "core_idea": "Çiftlikteki hayvanları ziyaret edip seslerini eğlenceli ritimlerle öğrenme",
-    "learning_goal": "Hayvanları ve seslerini eşleştirme",
-    "visual_motifs": ["çiftlik", "ördekler", "kuzu", "inek", "horoz"],
-    "status": "backlog"
+    "theme": "Hayvan Dostlarım",
+    "core_idea": "Çiftlikte hayvanları ve çıkardıkları sesleri ritimli çağrı-cevap oyunu ile öğrenme.",
+    "learning_goal": "Hayvanları sesleriyle eşleştirme",
+    "visual_motifs": [
+      "çiftlik",
+      "inek",
+      "kuzu",
+      "ördek",
+      "horoz"
+    ],
+    "status": "package_ready"
   },
   {
     "id": "TR003",
-    "theme": "Diş fırçalama zamanı",
-    "core_idea": "Uyumadan önce diş fırçalamayı eğlenceli bir rutin hâline getirme",
-    "learning_goal": "Günlük öz bakım alışkanlığı",
-    "visual_motifs": ["banyo", "renkli diş fırçaları", "köpük baloncukları"],
-    "status": "backlog"
+    "theme": "Fırça Fırça, Pırıl Pırıl",
+    "core_idea": "Uyku öncesi diş fırçalama rutini şarkılı bir banyoda anlatılır.",
+    "learning_goal": "Düzenli diş fırçalama alışkanlığı",
+    "visual_motifs": [
+      "banyo aynası",
+      "diş fırçası",
+      "köpük",
+      "gülümseyen diş"
+    ],
+    "status": "package_ready"
   },
   {
     "id": "TR004",
-    "theme": "Birlikte oyuncakları topluyoruz",
-    "core_idea": "Arkadaşların oyun sonrası oyuncakları birlikte toplaması",
-    "learning_goal": "Düzen ve iş birliği",
-    "visual_motifs": ["oyun odası", "oyuncak kutuları", "oyuncak tren"],
-    "status": "backlog"
+    "theme": "Oyuncaklar Evlerine",
+    "core_idea": "Oyun sonrası oyuncaklar sınıflandırılarak kutularına ve raflarına yerleştirilir.",
+    "learning_goal": "Düzen, sınıflandırma ve iş birliği",
+    "visual_motifs": [
+      "oyuncak kutuları",
+      "tren",
+      "peluş ayı",
+      "kitap rafı"
+    ],
+    "status": "package_ready"
   },
   {
     "id": "TR005",
-    "theme": "Minik uzay yolculuğu",
-    "core_idea": "Sevimli karakterlerin gezegenleri ve yıldızları keşfettiği hayalî bir yolculuk",
-    "learning_goal": "Temel uzay kavramları",
-    "visual_motifs": ["renkli roket", "gezegenler", "yıldızlar"],
-    "status": "backlog"
+    "theme": "Minik Roket Uzayda",
+    "core_idea": "Çocuk ve robot arkadaşı Ay'ı, yıldızları ve halkalı bir gezegeni keşfeder.",
+    "learning_goal": "Temel uzay kavramlarını tanıma",
+    "visual_motifs": [
+      "roket",
+      "robot",
+      "Ay yüzeyi",
+      "halkalı gezegen"
+    ],
+    "status": "package_ready"
   },
   {
     "id": "TR006",
-    "theme": "Şekiller dans ediyor",
-    "core_idea": "Daire, kare ve üçgen karakterlerinin hareketlerle şekilleri tanıtması",
-    "learning_goal": "Temel geometrik şekilleri tanıma",
-    "visual_motifs": ["canlı şekil karakterleri", "dans sahnesi", "renkli zemin"],
-    "status": "backlog"
+    "theme": "Şekiller Dans Ediyor",
+    "core_idea": "Daire, kare ve üçgen hareketlerle tanıtılır; çocuklar şekil hareketlerini taklit eder.",
+    "learning_goal": "Daire, kare ve üçgeni ayırt etme",
+    "visual_motifs": [
+      "daire karakteri",
+      "kare bloklar",
+      "üçgen çatı",
+      "dans pisti"
+    ],
+    "status": "package_ready"
   },
   {
     "id": "TR007",
-    "theme": "Yağmurdan sonra gökkuşağı",
-    "core_idea": "Yağmur, su birikintileri ve gökkuşağı üzerinden doğayı keşfetme",
-    "learning_goal": "Hava olaylarına dair temel farkındalık",
-    "visual_motifs": ["bahçe", "yağmur damlaları", "gökkuşağı"],
-    "status": "backlog"
+    "theme": "Minik Bahçıvanlar",
+    "core_idea": "Bir çocuk tohum eker, sular ve filizin yapraklara dönüşmesini gün gün gözlemler.",
+    "learning_goal": "Bitkilerin büyümesi için toprak, su, ışık ve zaman gerektiğini tanıma",
+    "visual_motifs": [
+      "saksı",
+      "tohum",
+      "filiz",
+      "sulama kabı",
+      "çiçek"
+    ],
+    "status": "package_ready"
   },
   {
     "id": "TR008",
-    "theme": "Paylaşınca güzel",
-    "core_idea": "Arkadaşların meyvelerini ve oyuncaklarını paylaşarak birlikte eğlenmesi",
-    "learning_goal": "Paylaşma ve arkadaşlık",
-    "visual_motifs": ["piknik örtüsü", "meyve sepeti", "oyun alanı"],
-    "status": "backlog"
+    "theme": "Paylaşınca Çoğalan",
+    "core_idea": "Parkta iki arkadaş yiyeceklerini paylaşır ve sırayla oyun oynar.",
+    "learning_goal": "Paylaşma, sıra bekleme ve empati",
+    "visual_motifs": [
+      "piknik",
+      "meyve sepeti",
+      "uçurtma",
+      "top"
+    ],
+    "status": "package_ready"
   }
 ]
