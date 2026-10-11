@@ -97,11 +97,38 @@ def main() -> int:
 
     print("Free.ai üzerinden tek bir 30 saniyelik Türkçe vokal testi isteniyor.")
     print("Bu işlem token harcayabilir; YouTube'a yükleme yapmaz.")
-    try:
-        status, result, content_type = api_request("/v1/music/generate/", api_key, payload)
-    except Exception as exc:
-        print(f"MÜZİK İSTEĞİ BAŞARISIZ: {exc}")
+    # Retry only explicit GPU-busy responses. Other errors are not retried,
+    # so malformed requests or authentication failures do not loop.
+    result_tuple = None
+    for attempt in range(4):  # initial request + at most 3 retries
+        try:
+            result_tuple = api_request("/v1/music/generate/", api_key, payload)
+            break
+        except Exception as exc:
+            error_text = str(exc)
+            is_gpu_busy = "HTTP 503" in error_text and "gpu_busy" in error_text
+            if not is_gpu_busy or attempt == 3:
+                print(f"MÜZİK İSTEĞİ BAŞARISIZ: {exc}")
+                (OUTPUT_DIR / "music_test_error.txt").write_text(
+                    "Music generation failed.\n"
+                    f"Attempts: {attempt + 1}\n"
+                    f"Error: {error_text}\n"
+                    "No YouTube upload was attempted.\n",
+                    encoding="utf-8",
+                )
+                return 1
+            wait_seconds = 30 * (attempt + 1)
+            print(
+                f"Free.ai GPU meşgul (503 gpu_busy). "
+                f"{wait_seconds} saniye bekleyip tekrar denenecek "
+                f"({attempt + 1}/3)."
+            )
+            time.sleep(wait_seconds)
+
+    if result_tuple is None:
+        print("Müzik isteği sonuç vermedi.")
         return 1
+    status, result, content_type = result_tuple
 
     if not isinstance(result, (dict, list)):
         suffix = ".wav" if "wav" in content_type else ".mp3"
