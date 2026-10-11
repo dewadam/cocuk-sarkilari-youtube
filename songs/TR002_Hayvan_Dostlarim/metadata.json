@@ -1,0 +1,30 @@
+{
+  "id": "TR002",
+  "title": "Hayvan Dostlarım",
+  "language": "tr-TR",
+  "theme": "Hayvanların sesleri",
+  "core_idea": "Bir çiftlik sabahında çocuk, her hayvanın sesini ve hareketini keşfeder; hayvanlar sırayla ritme katılır.",
+  "learning_goal": "Hayvanları ve seslerini eşleştirme",
+  "target_age": "preschool",
+  "status": "awaiting_audio_upload",
+  "audio_file": "song.mp3",
+  "lyrics_file": "lyrics.txt",
+  "music_prompt_file": "music_prompt.txt",
+  "tempo_bpm": 116,
+  "music_style": "bouncy acoustic kids-pop, light country bounce, ukulele, plucky banjo accents, hand claps, soft kick and shaker",
+  "lyrics_must_match_final_audio": true,
+  "audio_sha256": null,
+  "duration_seconds": null,
+  "video_status": "not_started",
+  "usage_status": "available",
+  "used_in_video_id": null,
+  "used_at": null,
+  "made_for_kids": true,
+  "visual_motifs": [
+    "çiftlikte sabah",
+    "inek ve buzağı",
+    "ördek göleti",
+    "kuzu ve horoz"
+  ],
+  "notes": "MP3 Gemini sohbet ekranında üretildikten sonra song.mp3 adıyla bu klasöre yüklenmeli. Gemini sözleri değiştirdiyse lyrics.txt gerçek sesle eşleştirilmeli."
+}
