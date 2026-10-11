@@ -31,6 +31,7 @@ GitHub Actions üzerinde çalışacak, Türkçe çocuk şarkıları için özgü
 ## Görsel üretim kararı
 - Ücretli görsel/video API'si zorunlu olmayacak. Seçilen başlangıç yaklaşımı Blender + lisansı doğrulanmış ücretsiz 3D varlıklar + FFmpeg; kullanıcı bilgisayarı üretimde kullanılmayacak.
 - Kaynak/lisans araştırması: `docs/visual-production-strategy.md`; makinece okunabilir kayıt: `config/visual_asset_sources.json`.
+- **Actions → Blender CPU render smoke test → Run workflow:** GitHub Actions üzerinde küçük bir prosedürel 3D test sahnesi üretir ve `blender-cpu-smoke-test` artifact'i verir. Bu, yalnızca Blender/CPU render hattını sınar; nihai çocuk animasyonu değildir.
 - Kenney Mini Characters, resmî sayfasında CC0 ve animasyon özelliği gösterdiği için yalnızca ilk teknik prototip adayıdır. Nihai çocuk videosu kalitesi henüz kanıtlanmış değildir.
 - Bir sonraki teknik doğrulama, GitHub Actions CPU üzerinde kısa Blender sahnesi render edip çalışma süresi ve görsel sonucu değerlendirmektir. Bu prototip başarılı olmadan tüm şarkılara yayılmayacak.
 
