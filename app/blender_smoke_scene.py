@@ -120,7 +120,7 @@ def create_scene(output: Path) -> None:
     camera.data.lens = 52
     scene = bpy.context.scene
     scene.camera = camera
-    scene.render.engine = "BLENDER_EEVEE_NEXT"
+    scene.render.engine = "BLENDER_EEVEE_NEXT" if bpy.app.version >= (4, 2, 0) else "BLENDER_EEVEE"
     scene.render.resolution_x = 512
     scene.render.resolution_y = 910
     scene.render.resolution_percentage = 100
@@ -129,7 +129,6 @@ def create_scene(output: Path) -> None:
     scene.render.filepath = str(output.resolve())
     scene.render.resolution_percentage = 100
     scene.render.image_settings.color_mode = "RGBA"
-    scene.render.engine = "BLENDER_EEVEE_NEXT"
     scene.render.resolution_percentage = 100
     scene.view_settings.view_transform = "AgX"
     scene.render.image_settings.color_depth = "8"
