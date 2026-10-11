@@ -39,10 +39,22 @@ jobs:
             python app/build_storyboards.py
           fi
 
-      - name: Upload storyboard drafts
+      - name: Export visual prompt packs
+        env:
+          SONG_ID: ${{ inputs.song_id }}
+        run: |
+          if [ -n "$SONG_ID" ]; then
+            python app/export_visual_prompt_pack.py --song-id "$SONG_ID"
+          else
+            python app/export_visual_prompt_pack.py
+          fi
+
+      - name: Upload storyboard drafts and visual prompt packs
         uses: actions/upload-artifact@v4
         with:
-          name: storyboard-drafts
-          path: output/storyboards/*.json
+          name: storyboard-and-visual-prompt-packs
+          path: |
+            output/storyboards/*.json
+            output/visual-prompt-pack/**
           if-no-files-found: error
           retention-days: 14
