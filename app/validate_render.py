@@ -57,7 +57,7 @@ def validate_render(path: Path, expected_width: int = 1080, expected_height: int
     if audio_duration and audio_duration > 0 and duration > 0:
         delta = round(duration - audio_duration, 3)
         if abs(delta) > duration_tolerance:
-            errors.append(f"Video ve ses süresi farkı {delta:.3f} sn; sınır ±{duration_tolerance:.1f} sn.")
+            errors.append(f"Video ve ses süreleri arasındaki fark {delta:.3f} sn; sınır ±{duration_tolerance:.1f} sn.")
 
     return {
         "passed": not errors, "file": str(path), "size_bytes": size,
