@@ -46,20 +46,7 @@ def build_storyboard(topic: dict, package_dir: Path, project: dict) -> dict:
         duration = float(project.get("target_duration_seconds", {}).get("min", 90) + project.get("target_duration_seconds", {}).get("max", 150)) / 2
 
     motifs = topic.get("visual_motifs") or [topic.get("theme", "Neşeli çocuk dünyası")]
-    lyrics_path = package_dir / str(metadata.get("lyrics_file", "lyrics.txt"))
-    lyrics_text = lyrics_path.read_text(encoding="utf-8") if lyrics_path.is_file() else ""
-    lyric_sections = []
-    current_section = []
-    for raw_line in lyrics_text.splitlines():
-        line = raw_line.strip()
-        if not line or line.startswith("#") or (line.startswith("[") and line.endswith("]")):
-            if current_section:
-                lyric_sections.append(" ".join(current_section))
-                current_section = []
-            continue
-        current_section.append(line)
-    if current_section:
-        lyric_sections.append(" ".join(current_section))
+    # Visual scenes are driven by the topic and learning goal, not exact lyric lines.
     # Aim for 6–8 scenes; use a stable sequence, but tie each scene to a lyric cue.
     scene_count = min(8, max(6, len(motifs)))
     scenes = []
@@ -88,7 +75,6 @@ def build_storyboard(topic: dict, package_dir: Path, project: dict) -> dict:
     palette = palettes.get(palette_key, "hikâyeye özgü, dengeli ve birbirinden ayırt edilebilir renk paleti")
     for index in range(scene_count):
         motif = motifs[index % len(motifs)]
-        lyric_cue = lyric_sections[min(index, len(lyric_sections) - 1)] if lyric_sections else ""
         start = round(duration * index / scene_count, 2)
         end = round(duration * (index + 1) / scene_count, 2)
         action = [
@@ -102,7 +88,6 @@ def build_storyboard(topic: dict, package_dir: Path, project: dict) -> dict:
             "end_seconds": end,
             "visual_focus": motif,
             "action": action,
-            "lyric_cue_draft": lyric_cue,
             "visual_direction": (
                 "Dikey 9:16 kadraj; yüksek kaliteli stilize 3D animasyon filmi estetiği; "
                 "okul öncesi çocuklara uygun yuvarlak formlar, " + palette + "; "
@@ -132,12 +117,10 @@ def build_storyboard(topic: dict, package_dir: Path, project: dict) -> dict:
         "duration_seconds": round(duration, 2),
         "duration_is_provisional": provisional,
         "audio_file_present": audio_path.is_file(),
-        "lyrics_file_present": lyrics_path.is_file(),
-        "lyric_cues_are_draft_only": True,
         "scenes": scenes,
         "production_notes": [
             "Bu dosya taslak storyboard'dur; gerçek sahne render'ı değildir.",
-            "Şarkının son sözleri doğrulanmadan altyazı zamanlaması kesinleştirilmemeli.",
+            "Ekranda şarkı sözü/altyazı kullanılmaz; sahneler konu ve öğrenme hedefini görselleştirir.",
             "Sahneler arasında karakter, ışık ve malzeme tutarlılığını koru.",
             "Başka bir şarkıdan, çizgi filmden veya korunan karakterden görsel kopyalama."
         ]
