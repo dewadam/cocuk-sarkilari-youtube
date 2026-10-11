@@ -1,0 +1,39 @@
+name: Song library preflight
+
+on:
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  preflight:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+
+      - name: Install ffprobe
+        run: |
+          sudo apt-get update
+          sudo apt-get install --yes ffmpeg
+
+      - name: Run tests
+        run: python -m unittest discover -s tests -v
+
+      - name: Inspect song library
+        run: python app/prepare_video.py --output output/preflight-report.json
+
+      - name: Upload preflight report
+        uses: actions/upload-artifact@v4
+        with:
+          name: song-preflight-report
+          path: output/preflight-report.json
+          if-no-files-found: error
+          retention-days: 14
