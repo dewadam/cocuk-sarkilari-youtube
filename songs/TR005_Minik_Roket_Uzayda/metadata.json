@@ -1,0 +1,30 @@
+{
+  "id": "TR005",
+  "title": "Minik Roket Uzayda",
+  "language": "tr-TR",
+  "theme": "Minik uzay yolculuğu",
+  "core_idea": "Meraklı bir çocuk ve robot arkadaşı roketle Ay'ı, halkalı bir gezegeni ve yıldızları keşfeder.",
+  "learning_goal": "Ay, yıldız, gezegen ve roket kavramlarını tanıtma",
+  "target_age": "preschool",
+  "status": "awaiting_audio_upload",
+  "audio_file": "song.mp3",
+  "lyrics_file": "lyrics.txt",
+  "music_prompt_file": "music_prompt.txt",
+  "tempo_bpm": 120,
+  "music_style": "playful space-pop, sparkling synth bells, bright piano, tight claps, light electronic beat, warm bass, adventurous but gentle",
+  "lyrics_must_match_final_audio": true,
+  "audio_sha256": null,
+  "duration_seconds": null,
+  "video_status": "not_started",
+  "usage_status": "available",
+  "used_in_video_id": null,
+  "used_at": null,
+  "made_for_kids": true,
+  "visual_motifs": [
+    "yuvarlak küçük roket",
+    "dost robot",
+    "Ay yüzeyi",
+    "halkalı gezegen ve yıldızlar"
+  ],
+  "notes": "MP3 Gemini sohbet ekranında üretildikten sonra song.mp3 adıyla bu klasöre yüklenmeli. Gemini sözleri değiştirdiyse lyrics.txt gerçek sesle eşleştirilmeli."
+}
