@@ -1,0 +1,52 @@
+GEMINI — MÜZİK OLUŞTUR PROMPT'U
+Başlık: Fırça Fırça, Pırıl Pırıl
+
+Türkçe okul öncesi çocukları için özgün, tam bir vokalli şarkı oluştur. Aşağıdaki sözleri temel al; gerektiğinde akışı ve kafiyeyi doğal biçimde zenginleştirebilirsin ama şarkının ana fikrini değiştirme. Türkçe telaffuz doğal, net ve anlaşılır olsun; sözleri başka dile çevirme.
+
+Müzik tarzı: bright bubblegum pop for preschoolers, muted guitar, claps, toy piano, gentle punchy drums, playful stop-start rhythm. Tempo yaklaşık 108 BPM. Melodi hemen akılda kalmalı; vokal sıcak, canlı ve yumuşak olsun. Çocukların ilk dinleyişte nakarata katılabileceği basit ritim kullan.
+
+Zorunlu düzenleme talimatları:
+- Vokal ve sözler ilk 0–3 saniyede başlasın.
+- Uzun enstrümantal giriş veya 2 saniyeden uzun ara olmasın.
+- Vokal net ve müziğin önünde duyulsun.
+- Enerjik ve hareketli olsun ama sert rock, aşırı gürültülü davul veya robotik vokal kullanma.
+- Mevcut bir şarkının melodisini, sözlerini veya belirli bir sanatçıyı taklit etme.
+- Yalnızca enstrümantal üretme; Türkçe vokalli, tamamlanmış bir şarkı oluştur.
+
+ŞARKI SÖZLERİ:
+
+[Verse 1]
+Akşam oldu, gün bitti,
+Diş fırçam beni bekledi.
+Macun minicik, su hazır,
+Ayna bana gülümsedi.
+
+[Chorus]
+Fırça fırça, sağa sola,
+Minik daireler yana yana.
+Önler, arkalar, üstler de,
+Dişler parlar gülünce!
+
+[Verse 2]
+Üst dişlerim, alt dişlerim,
+Unutmam ben hiçbirini.
+Yavaş yavaş, özenerek,
+Temizlerim her birini.
+
+[Chorus]
+Fırça fırça, sağa sola,
+Minik daireler yana yana.
+Önler, arkalar, üstler de,
+Dişler parlar gülünce!
+
+[Bridge]
+Üstte, altta, içte, dışta,
+Fırçam gezer yumuşacık.
+Büyüklerimle fırçalarım,
+Gülüşüm olur ışıl ışıl!
+
+[Final Chorus]
+Fırça fırça, sağa sola,
+Minik daireler yana yana.
+Sabah yine görüşürüz,
+Temiz dişlerle gülümseriz!
