@@ -115,10 +115,9 @@ def inspect_library(root: Path = ROOT) -> dict:
         "packages": packages,
         "errors": errors,
         "next_step": (
-            "Seçilen şarkı için storyboard ve video üretimine geçilebilir."
+            "Seçilen şarkı için altyazısız görsel storyboard/ön izleme üretilebilir."
             if eligible else
-            "Video üretimine hazır şarkı yok. MP3 yükleyin, lyrics.txt dosyasını "
-            "gerçek vokalle eşleştirin ve yalnızca kontrol bitince metadata status=ready yapın."
+            "Görsel ön izleme için MP3 yükleyin, status değerini ready veya audio_uploaded_lyrics_check yapın ve usage_status=available olduğundan emin olun."
         ),
     }
 
