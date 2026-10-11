@@ -1,0 +1,46 @@
+name: Render vertical song video
+
+on:
+  workflow_dispatch:
+    inputs:
+      song_id:
+        description: "Render edilecek hazır şarkı kimliği (ör. TR001)"
+        required: true
+        type: string
+
+permissions:
+  contents: read
+
+jobs:
+  render:
+    runs-on: ubuntu-latest
+    timeout-minutes: 45
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+
+      - name: Install FFmpeg
+        run: |
+          sudo apt-get update
+          sudo apt-get install --yes ffmpeg fonts-dejavu-core
+
+      - name: Run unit tests
+        run: python -m unittest discover -s tests -v
+
+      - name: Render preview MP4
+        env:
+          SONG_ID: ${{ inputs.song_id }}
+        run: python app/render_video.py --song-id "$SONG_ID"
+
+      - name: Upload preview artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: ${{ inputs.song_id }}-video-preview
+          path: output/${{ inputs.song_id }}_preview.mp4
+          if-no-files-found: error
+          retention-days: 14
