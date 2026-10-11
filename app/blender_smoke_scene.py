@@ -68,7 +68,6 @@ def create_scene(output: Path) -> None:
             mod = obj.modifiers.new("Soft rounded edges", "BEVEL")
             mod.width = bevel
             mod.segments = 4
-            obj.modifiers.new("Weighted corner normals", "WEIGHTED_NORMAL")
         return obj
 
     # Simple stylized garden backdrop and floor.
