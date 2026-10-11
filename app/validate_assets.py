@@ -110,11 +110,8 @@ def validate_assets(folder: Path, minimum_scenes: int = 6) -> dict:
     else:
         warnings.append("Şarkı klasöründe storyboard.json yok; sahne sayısı storyboard ile karşılaştırılmadı.")
 
-    captions = folder / "captions.srt"
-    if captions.exists():
-        errors.extend(validate_srt(captions))
-    else:
-        warnings.append("captions.srt yok; video altyazısız render edilecek.")
+    # Captions are intentionally excluded from the preschool video pipeline.
+    warnings.append("Ekran altyazısı kapalı; video müzik ve görsel hikâyeyle ilerleyecek.")
 
     return {
         "passed": not errors,
@@ -122,14 +119,14 @@ def validate_assets(folder: Path, minimum_scenes: int = 6) -> dict:
         "audio_file": audio_name,
         "scene_count": len(images),
         "scene_files": [image.name for image in images],
-        "captions_present": captions.is_file(),
+        "captions_present": False,
         "errors": errors,
         "warnings": warnings,
     }
 
 
 def main() -> int:
-    parser = argparse.ArgumentParser(description="Render öncesi sahne ve altyazı dosyalarını doğrula")
+    parser = argparse.ArgumentParser(description="Render öncesi sahne görsellerini doğrula")
     parser.add_argument("--song-folder", required=True)
     parser.add_argument("--report", default="output/asset-preflight-report.json")
     args = parser.parse_args()
