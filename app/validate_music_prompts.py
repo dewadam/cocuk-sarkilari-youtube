@@ -46,7 +46,7 @@ def validate_new_prompts(root: Path = ROOT) -> list[str]:
         prompt = prompt_path.read_text(encoding="utf-8")
         lyrics = lyrics_path.read_text(encoding="utf-8")
         normalized_prompt = normalize(prompt)
-        normalized_lyrics = normalize(lyrics)
+        normalized_lyrics = lyric_body(lyrics)
         if not normalized_lyrics or normalized_lyrics not in normalized_prompt:
             errors.append(
                 f"{song_id}: lyrics.txt içeriğinin tamamı music_prompt.txt içinde bulunmalı."
