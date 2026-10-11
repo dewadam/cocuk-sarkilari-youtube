@@ -1,0 +1,18 @@
+GEMINI — MÜZİK OLUŞTUR PROMPT'U
+Başlık: Renkler Bahçesi
+
+Neşeli, akılda kalıcı ve kaliteli bir Türkçe okul öncesi çocuk şarkısı oluştur. Sözleri doğal Türkçe telaffuzla söyle; Türkçe kelimeleri başka dile çevirme. Gerekirse sözleri şarkının ritmine uygun şekilde zenginleştir, ancak temel tema olan renkleri öğrenmeyi koru ve kolay anlaşılır, yaşa uygun sözler kullan.
+
+Müzik karakteri: canlı ve neşeli çocuk popu, yaklaşık 110–115 BPM, sıcak ve yumuşak ama enerjik vokal, akustik ukulele veya gitar, marimba/ksilofon, el çırpmaları, hafif ama ritmik davullar ve yumuşak bas. Melodi kolay hatırlanmalı ve çocukların eşlik edebileceği kadar net olmalı.
+
+Düzenleme talimatları:
+- Şarkı sözleri ilk 0–3 saniye içinde başlamalı.
+- Uzun enstrümantal giriş olmasın.
+- Şarkının ortasında uzun müzik araları olmasın.
+- Vokal net ve ön planda duyulsun.
+- Sözler ve nakarat kolay anlaşılır olsun.
+- Robotik söyleyişten, aşırı vokal süslemelerinden ve sert rock sesinden kaçın.
+- Mevcut bir şarkıyı, melodiyi veya sanatçıyı taklit etme.
+- Sadece enstrümantal parça üretme; vokalli, tamamlanmış bir şarkı oluştur.
+
+Kullanılacak sözler songs/TR001_Renkler_Bahcesi/lyrics.txt dosyasındadır. Gemini sözleri değiştirir veya eklerse, son kullanılan sözleri lyrics.txt dosyasına elle aktar.
