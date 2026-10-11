@@ -17,9 +17,12 @@ jobs:
       - name: Install Blender
         run: |
           sudo apt-get update
-          sudo apt-get install --yes blender
+          sudo apt-get install --yes blender libegl1 libgl1 libxrender1 libxi6 libxkbcommon0 libsm6
 
       - name: Render a tiny procedural 3D test scene
+        env:
+          LIBGL_ALWAYS_SOFTWARE: "1"
+          QT_QPA_PLATFORM: "offscreen"
         run: |
           mkdir -p output
           blender --background --python app/blender_smoke_scene.py -- --output output/blender-smoke.png
