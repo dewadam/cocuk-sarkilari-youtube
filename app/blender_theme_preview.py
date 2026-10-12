@@ -89,14 +89,42 @@ def main():
     wall=cube("Colorful studio backdrop",(0,3.6,3.1),(12,.2,8),mats["navy" if song_id=="TR005" else "blue"],.05)
     root=bpy.data.objects.new("Theme hero animated root",None); bpy.context.collection.objects.link(root)
     # Theme-specific silhouette, body, face, accessories.
-    if song_id == "TR002": # lamb/calf-like farm friend
-        uv("Lamb body",(0,0,1.35),(.68,.52,.70),mats["white"],root)
-        uv("Lamb head",(0,-.04,2.05),(.59,.49,.58),mats["cream"],root)
-        uv("Lamb wool tuft",(0,-.02,2.53),(.25,.24,.20),mats["white"],root)
-        for x in (-.38,.38): uv("Floppy ear",(x,-.02,2.18),(.18,.15,.10),mats["pink"],root)
-        eyes(root,2.1,-.49,.22,.065)
-        for x in (-.3,.3): cylinder("Tiny hoof",(x,0,.55),.14,.28,mats["brown"])
-        for x in (-1.5,1.5): uv("Farm flower",(x,-.1,.48),(.22,.18,.22),mats["yellow"])
+    if song_id == "TR002": # proper fluffy lamb with hanging ears and four attached legs
+        # Pear-shaped fleece body and a rounded, clearly separate lamb face.
+        uv("Lamb fleece body",(0,0,1.35),(.70,.52,.76),mats["white"],root)
+        uv("Lamb face",(0,-.39,2.03),(.48,.32,.52),mats["cream"],root)
+        # Distinct wool curls around the silhouette; all are part of the animated character.
+        for x,z,s in [
+            (-.48,1.72,.20),(-.58,1.42,.19),(-.46,1.12,.18),
+            (-.24,.92,.18),(0,.88,.19),(.24,.92,.18),(.47,1.12,.18),
+            (.58,1.42,.19),(.48,1.72,.20),(-.28,1.86,.18),
+            (0,1.91,.19),(.28,1.86,.18),(-.34,2.20,.16),
+            (-.16,2.36,.17),(0,2.40,.18),(.17,2.35,.17),(.34,2.19,.16)
+        ]:
+            uv("Individual fluffy wool curl",(x,-.05,z),(s,.19,s*.92),mats["white"],root)
+        # Long, soft, visibly drooping ears, with pink inner-ear insets.
+        for side in (-1,1):
+            ear=uv("Long floppy lamb ear",(side*.51,-.34,2.10),(.17,.13,.32),mats["cream"],root)
+            ear.rotation_euler[1]=side*-.30
+            inner=uv("Pink inner ear",(side*.535,-.455,2.10),(.095,.035,.235),mats["pink"],root)
+            inner.rotation_euler[1]=side*-.30
+        # Eyes and muzzle are positioned on the forward-facing surface of the face.
+        for x in (-.19,.19):
+            uv("Lamb eye",(x,-.685,2.10),(.060,.035,.078),mats["black"],root)
+            uv("Lamb eye sparkle",(x-.015,-.718,2.125),(.018,.012,.022),mats["white"],root)
+        uv("Soft lamb muzzle",(0,-.705,1.91),(.15,.055,.105),mats["white"],root)
+        for x in (-.045,.045):
+            uv("Tiny nostril",(x,-.755,1.94),(.018,.012,.015),mats["brown"],root)
+        # Four separate short legs, attached to the root so they stay with the body.
+        for side_x in (-.38,.38):
+            for depth_y in (-.24,.24):
+                leg=uv("Lamb short leg",(side_x,depth_y,.66),(.115,.13,.34),mats["cream"],root)
+                uv("Lamb dark hoof",(side_x,depth_y-.015,.43),(.13,.14,.105),mats["brown"],root)
+        # Small tail and a gentle farm meadow dressing.
+        uv("Lamb tail",(.68,.18,1.25),(.16,.16,.18),mats["white"],root)
+        for x in (-1.5,1.5):
+            uv("Farm flower",(x,-.1,.48),(.18,.16,.18),mats["yellow"])
+            cylinder("Farm flower stem",(x,-.1,.29),.025,.38,mats["green"])
     elif song_id == "TR003": # smiling tooth
         cube("Tooth crown",(0,0,1.65),(1.05,.68,1.25),mats["tooth"],.26).parent=root
         for x in (-.31,.31): cylinder("Tooth root",(x,0,.95),.19,.70,mats["tooth"]).parent=root
