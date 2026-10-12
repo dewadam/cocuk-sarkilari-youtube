@@ -73,21 +73,84 @@ def build_storyboard(topic: dict, package_dir: Path, project: dict) -> dict:
     ]
     palette_key = next((key for key, words in palette_rules if any(word in theme_text for word in words)), None)
     palette = palettes.get(palette_key, "hikâyeye özgü, dengeli ve birbirinden ayırt edilebilir renk paleti")
+    # Each song gets a small visual arc instead of repeating the same generic action.
+    action_arcs = {
+        "renk": [
+            "Pofuduk bahçe yoluna girer; kırmızı ve sarı balonları fark edip merakla el sallar.",
+            "Pofuduk kırmızı elmayı işaret eder; elma ve balon aynı renkte yan yana belirir.",
+            "Pofuduk uçurtmayı kaldırır; uçurtma rüzgârla yükselirken renkli balonlar hafifçe salınır.",
+            "Bütün renkli nesneler bahçede düzenli bir gökkuşağı düzeninde buluşur; Pofuduk sevinçle dans eder."
+        ],
+        "hayvan": [
+            "Ponçik güneşli çiftlik avlusuna gelir ve dost canlısı hayvanlara merhaba der.",
+            "İnek başını çevirip sevecen bir tepki verir; Ponçik ineği dikkatle inceler.",
+            "Ördekler küçük bir su birikintisinin yanında paytak paytak yürür; Ponçik onları takip eder.",
+            "Horoz kanatlarını açıp öter; çiftlik dostları birlikte neşeli bir final pozu verir."
+        ],
+        "diş": [
+            "Pırıl banyodaki aynada gülümsemesini görür ve diş fırçasını eline alır.",
+            "Diş fırçası dişlerin ön yüzünde yumuşak köpükler oluşturur; hareket nazik ve anlaşılırdır.",
+            "Küçük köpük baloncukları yükselirken Pırıl dişlerinin farklı bölgelerini sırayla fırçalar.",
+            "Pırıl temiz ve parlak gülümsemesini aynada gösterir; banyo aydınlık ve ferah görünür."
+        ],
+        "oyuncak": [
+            "Çufçuf oyun odasında dağınık oyuncakları fark eder ve toplama oyununu başlatır.",
+            "Renkli bloklar renklerine göre doğru kutulara yerleşir; tren onları dikkatle taşır.",
+            "Peluş ayı ve kitaplar kendi raflarına yerleştirilir; oda giderek düzenlenir.",
+            "Çufçuf düzenli odada durur; bütün oyuncaklar yerindeyken karakterler sevinçle kutlar."
+        ],
+        "uzay": [
+            "Mino küçük roketin yanında belirir ve yıldızlarla dolu uzaya doğru keşfe hazırlanır.",
+            "Roket Ay yüzeyine güvenli biçimde yaklaşır; Mino yuvarlak kraterleri merakla inceler.",
+            "Mino halkalı gezegenin yanından süzülür; gezegen halkaları ve yıldızlar net biçimde görünür.",
+            "Mino ve roket renkli gezegenleri arka planda bırakıp neşeli bir keşif pozu verir."
+        ],
+        "şekil": [
+            "Daire, kare ve üçgen dans pistine sırayla girip kendi şekillerini belirgin biçimde gösterir.",
+            "Daire yuvarlanır, kare küçük bir sıçrama yapar, üçgen ritmik biçimde sallanır.",
+            "Üç şekil farklı boyutlardaki eş şekillerin yanına gider; her siluet kolayca ayırt edilir.",
+            "Daire, kare ve üçgen birlikte dans eder ve pistte yan yana durarak final yapar."
+        ],
+        "bahçıvan": [
+            "Ada saksıya küçük bir tohum bırakır ve üstünü yumuşak toprakla örter.",
+            "Ada sulama kabıyla toprağı nazikçe sular; su damlaları görünür biçimde toprağa ulaşır.",
+            "Topraktan minik bir filiz çıkar; Ada yeni yaprakları merakla gözlemler.",
+            "Filiz büyüyüp çiçek açar; Ada bitkiye gülümseyerek bakar, güneş ışığı bahçeyi ısıtır."
+        ],
+        "paylaş": [
+            "Ece ve Can piknik örtüsünü serer; ortadaki meyve sepetini birlikte fark ederler.",
+            "Ece bir meyveyi Can'a uzatır; Can teşekkür eder ve sepetten bir meyveyi geri paylaşır.",
+            "İki arkadaş topu sırayla birbirine atar; ikisinin de oyun sırası net biçimde anlaşılır.",
+            "Ece ve Can uçurtmayı birlikte uçurur; paylaşılmış piknik neşeli bir dostluk finaliyle biter."
+        ]
+    }
+    arc_key = palette_key if palette_key in action_arcs else None
+    default_arc = [
+        "Ana karakter ortama girer ve hikâyenin temel nesnesini merakla keşfeder.",
+        "Karakter ana nesneyle amaca uygun, kolay anlaşılır bir etkileşim kurar.",
+        "Yakın plan, karakterin duygusunu ve nesnenin önemli ayrıntısını gösterir.",
+        "Karakter ve yardımcı nesneler hikâyenin ana fikrini anlatan neşeli bir final pozu verir."
+    ]
+    arc = action_arcs.get(arc_key, default_arc)
+    camera_beats = [
+        "geniş kurucu plan; ortam ve karakter birlikte görünür",
+        "orta plan; karakterin yaptığı eylem açıkça görünür",
+        "yakın plan; yüz ifadesi ve önemli nesne belirgin görünür",
+        "hafif alçak açıdan sinematik final planı; ana karakter kadrajda kalır"
+    ]
     for index in range(scene_count):
         motif = motifs[index % len(motifs)]
         start = round(duration * index / scene_count, 2)
         end = round(duration * (index + 1) / scene_count, 2)
-        action = [
-            "Karakter kadraja neşeyle girer ve ana nesneyi keşfeder.",
-            "Ana nesneyle basit, anlaşılır bir etkileşim gösterilir.",
-            "Kamera yumuşak bir hareketle yakınlaşır; karakter tepki verir."
-        ][index % 3]
+        action = arc[index % len(arc)]
+        camera_beat = camera_beats[index % len(camera_beats)]
         scenes.append({
             "scene": index + 1,
             "start_seconds": start,
             "end_seconds": end,
             "visual_focus": motif,
             "action": action,
+            "camera_direction": camera_beat,
             "visual_direction": (
                 "Dikey 9:16 kadraj; yüksek kaliteli stilize 3D animasyon filmi estetiği; "
                 "okul öncesi çocuklara uygun yuvarlak formlar, " + palette + "; "
@@ -98,6 +161,7 @@ def build_storyboard(topic: dict, package_dir: Path, project: dict) -> dict:
                 "Create one polished vertical 9:16 frame for a Turkish preschool 3D animated music video. "
                 "Song: " + str(metadata.get("title") or topic.get("theme", "")) + ". "
                 "Scene focus: " + str(motif) + ". Action: " + action + " "
+                "Camera: " + camera_beat + ". "
                 "Learning goal: " + str(topic.get("learning_goal", "")) + ". "
                 "Visual direction: " + palette + "; rounded appealing shapes, expressive friendly characters, "
                 "cinematic soft lighting, clear focal point, uncluttered background, premium 3D animation render. "
