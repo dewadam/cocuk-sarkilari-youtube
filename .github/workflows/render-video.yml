@@ -92,10 +92,13 @@ jobs:
         env:
           YOUTUBE_OAUTH_TOKEN_JSON: ${{ secrets.YOUTUBE_OAUTH_TOKEN_JSON }}
           YOUTUBE_VIDEO_PATH: output/${{ inputs.song_id }}_preview.mp4
-          YOUTUBE_METADATA_PATH: ${{ env.SONG_FOLDER }}/metadata.json
+          SONG_ID: ${{ inputs.song_id }}
           YOUTUBE_PRIVACY_STATUS: public
           YOUTUBE_TAGS: çocuk şarkıları, Türkçe çocuk şarkıları, okul öncesi, çocuk müziği
-        run: python app/upload_youtube.py
+        run: |
+          SONG_FOLDER="$(find songs -maxdepth 1 -type d -name "${SONG_ID}_*" -print -quit)"
+          export YOUTUBE_METADATA_PATH="$SONG_FOLDER/metadata.json"
+          python app/upload_youtube.py
 
       - name: Upload YouTube result record
         if: ${{ always() && inputs.publish_to_youtube && hashFiles('output/youtube-upload-result.json') != '' }}
