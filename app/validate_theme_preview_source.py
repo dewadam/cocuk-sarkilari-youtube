@@ -64,10 +64,10 @@ def validate(source: str) -> list[str]:
     else:
         tr002_block = tr002[1].split('elif song_id == "TR003":', 1)[0]
         for count_check, label in [
-            (r'for side_x in \(-\\.38,\\.38\\):', "leg row loop"),
-            (r'for depth_y in \(-\\.24,\\.24\\):', "front/back leg loop"),
+            ("for side_x in (-.38,.38):", "left/right leg loop"),
+            ("for depth_y in (-.24,.24):", "front/back leg loop"),
         ]:
-            if not re.search(count_check, tr002_block):
+            if count_check not in tr002_block:
                 errors.append(f"TR002 four-leg construction missing: {label}.")
     return errors
 
