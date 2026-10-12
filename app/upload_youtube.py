@@ -5,8 +5,7 @@ Required environment:
   YOUTUBE_OAUTH_TOKEN_JSON: JSON containing client_id, client_secret, refresh_token,
                            token_uri (usually https://oauth2.googleapis.com/token)
   YOUTUBE_VIDEO_PATH: path to MP4
-  YOUTUBE_TITLE: title
-  YOUTUBE_DESCRIPTION: description
+  YOUTUBE_METADATA_PATH: path to the song metadata.json
 Optional:
   YOUTUBE_TAGS: comma-separated tags
   YOUTUBE_PRIVACY_STATUS: public|unlisted|private (default public)
@@ -36,10 +35,22 @@ def main() -> int:
     video_path = Path(os.environ.get("YOUTUBE_VIDEO_PATH", "output/TR001_preview.mp4"))
     if not video_path.is_file() or video_path.stat().st_size < 100_000:
         raise RuntimeError(f"Rendered MP4 missing or unexpectedly small: {video_path}")
-    title = os.environ.get("YOUTUBE_TITLE", "").strip()
-    description = os.environ.get("YOUTUBE_DESCRIPTION", "").strip()
-    if not title or not description:
-        raise RuntimeError("YOUTUBE_TITLE and YOUTUBE_DESCRIPTION must be set from approved song metadata.")
+    metadata_path = Path(os.environ.get("YOUTUBE_METADATA_PATH", ""))
+    if not metadata_path.is_file():
+        raise RuntimeError(f"Song metadata file missing: {metadata_path}")
+    metadata = json.loads(metadata_path.read_text(encoding="utf-8"))
+    if metadata.get("status") != "ready":
+        raise RuntimeError("Public upload is blocked unless metadata.json has status=ready after content review.")
+    title = str(metadata.get("youtube_title") or metadata.get("title") or "").strip()
+    description = str(metadata.get("youtube_description") or metadata.get("description") or "").strip()
+    if not title:
+        raise RuntimeError("Approved song metadata must include a title.")
+    if not description:
+        description = (
+            "Türkçe çocuk şarkısı. Özgün müzik ve görsel anlatım. "
+            "Çocuklara yönelik içerik olarak işaretlenmiştir. "
+            "Ebeveyn gözetiminde dinlenmesi önerilir."
+        )
     privacy = os.environ.get("YOUTUBE_PRIVACY_STATUS", "public").strip().lower()
     if privacy not in {"public", "unlisted", "private"}:
         raise RuntimeError("YOUTUBE_PRIVACY_STATUS must be public, unlisted, or private.")
