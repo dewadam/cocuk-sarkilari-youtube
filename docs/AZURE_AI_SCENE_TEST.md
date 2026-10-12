@@ -1,37 +1,35 @@
 # Azure AI görsel üretimi — başlangıç kurulumu
 
-Bu iş akışı, Azure AI Foundry'de dağıtılmış bir FLUX görsel modelini çağırır ve 1, 3, 6 veya 8 sahne görseli üretir. Otomatik tetiklenmez; yalnızca Actions ekranından manuel başlatılır. Her çalıştırmada en fazla 8 görsel üretilebilir. Bu, harcamayı sınırlar; Azure kredisi veya kaynak oluşturma işlemi bu dosyalar tarafından otomatik olarak yapılamaz.
+Bu manuel GitHub Actions iş akışı Azure AI Foundry'deki FLUX.2-pro modelini çağırıp 1, 3, 6 veya 8 sahne görseli üretir. **İlk testte 1 görsel seçin.** Azure tarafında bütçe/harcama sınırı bu iş akışı tarafından otomatik oluşturulmaz.
 
 ## 1. Azure kurulumu
 
-1. Azure portalında başlangıç kredisi olan aboneliğine gir.
-2. Microsoft Foundry'de bir Foundry kaynağı oluştur ve bölgen için kullanılabilir bir FLUX görsel modelini dağıt. Model/dağıtım erişimi ve ücretler bölgeye göre değişebilir.
-3. Dağıtım ekranındaki endpoint ve API anahtarını al. FLUX Image API için endpoint şu biçimdedir: `https://<resource-name>.services.ai.azure.com`.
-4. Önce Azure portalındaki fiyatlandırma ve kota bilgilerini kontrol et. İlk test 6 görselle sınırlıdır; bu workflow otomatik olarak bakiye sınırı veya Azure bütçesi oluşturmaz.
+1. Microsoft Foundry'de FLUX.2-pro modelini **Genel Standart (Global Standard)** ile kullanın.
+2. Azure portalında AI Services kaynağının **Anahtarlar ve Uç Nokta** bölümünü açın.
+3. FLUX BFL API'si için endpoint şu biçimdedir: `https://<resource-name>.api.cognitive.microsoft.com`. Portalda görülen `https://<resource-name>.services.ai.azure.com` Image API endpoint'i FLUX.2-pro için doğru API rotası değildir.
+4. Kaynak API anahtarını alın. Anahtarı sohbet mesajına veya kaynak koda yazmayın.
+
+Microsoft'un FLUX.2-pro belgesi: https://learn.microsoft.com/en-us/azure/foundry/foundry-models/how-to/use-foundry-models-flux
 
 ## 2. GitHub Secrets ve Variables
 
 GitHub deposu → **Settings → Secrets and variables → Actions**:
 
 **Repository secrets**
-- `AZURE_ENDPOINT`: Kaynağın endpoint'i; `https://` ile başlayacak, sonuna `/openai` ekleme.
-- `AZURE_API_KEY`: Azure AI Foundry API anahtarı.
+- `AZURE_ENDPOINT`: `https://<resource-name>.api.cognitive.microsoft.com` biçimindeki BFL API endpoint'i.
+- `AZURE_API_KEY`: Azure AI Services kaynak anahtarı.
 
-**Repository variables**
-- `AZURE_IMAGE_MODEL`: Foundry'de dağıttığın modelin deployment adı (katalogdaki model etiketi olmak zorunda değildir).
+**Repository variable (isteğe bağlı)**
+- `AZURE_IMAGE_MODEL`: Varsayılan `FLUX.2-pro`; normalde bunu değiştirmeyin.
 
-Anahtarları sohbet mesajına veya kaynak koda yazma.
+## 3. İlk testi çalıştır
 
-## 3. Testi başlat
+1. https://github.com/dewadam/cocuk-sarkilari-youtube/actions sayfasını açın.
+2. **Azure AI scene image test** iş akışını seçin.
+3. **Run workflow** düğmesine basıp `1` görsel seçin.
+4. İşlem bitince `azure-ai-scene-test` artifact'ini indirin. İçinde `scene_01.jpg` (veya PNG) ile `manifest.json` bulunur.
 
-1. [GitHub Actions](https://github.com/dewadam/cocuk-sarkilari-youtube/actions) sayfasını aç.
-2. **Azure AI scene image test** iş akışını seç.
-3. **Run workflow** → başlangıç için **6** görsel seç.
-4. Tamamlanınca `azure-ai-scene-test` artifact'ini indir. `scene_01.png` gibi dosyalar ile `manifest.json` içinde kullanılan prompt'lar bulunur.
-
-## API
-
-Kod, Microsoft Foundry FLUX Image API'sini kullanır: `/openai/v1/images/generations?api-version=preview`. Resmî dokümantasyon: https://learn.microsoft.com/en-us/azure/ai-foundry/foundry-models/how-to/use-foundry-models-flux
+İlk test başarılı olmadan 3, 6 veya 8 görsele geçmeyin. Her görsel isteği ücret doğurabilir; gerçek maliyet seçilen çözünürlük ve Azure fiyatlandırmasına bağlıdır.
 
 ## Bu aşamanın sınırları
 
