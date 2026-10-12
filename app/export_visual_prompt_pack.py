@@ -68,18 +68,18 @@ def character_bible_text(song_id: str, title: str) -> str:
         "setting": "sade, sıcak ışıklı, güvenli çocuk ortamı"
     })
     return (
-        f"# Karakter ve Görsel Tutarlılık Rehberi — {title} ({song_id})\\n\\n"
-        f"## Ana karakter\\n{spec['hero']}\\n\\n"
-        f"## Yardımcı karakterler ve nesneler\\n{spec['companions']}\\n\\n"
-        f"## Renk paleti\\n{spec['palette']}\\n\\n"
-        f"## Ortam\\n{spec['setting']}\\n\\n"
-        "## Her sahnede sabit tutulacak kurallar\\n"
-        "- Aynı ana karakter(ler)in yüzü, kafa-gövde oranı, renkleri, kıyafeti ve malzemeleri değişmesin.\\n"
-        "- Stil: yüksek kaliteli, stilize 3D okul öncesi animasyon filmi; yuvarlak formlar, yumuşak sinematik ışık, temiz kompozisyon.\\n"
-        "- Dikey 9:16 kadraj; ana karakter kadrajda açıkça görünür ve önemli nesneler kesilmez.\\n"
-        "- Görselde yazı, altyazı, logo, filigran veya tanınmış çizgi film karakteri bulunmasın.\\n"
-        "- Bir sahnede yalnızca hikâye için gerekli nesneler bulunsun; arka plan gereksiz ayrıntıyla dolmasın.\\n\\n"
-        "Her sahne istemine aşağıdaki karakter kilidini aynen ekle. Mümkünse ilk sahnenin onaylı görselini sonraki sahnelerde referans olarak kullan; yalnızca metin tam tutarlılığı garanti etmez.\\n"
+        f"# Karakter ve Görsel Tutarlılık Rehberi — {title} ({song_id})\n\n"
+        f"## Ana karakter\n{spec['hero']}\n\n"
+        f"## Yardımcı karakterler ve nesneler\n{spec['companions']}\n\n"
+        f"## Renk paleti\n{spec['palette']}\n\n"
+        f"## Ortam\n{spec['setting']}\n\n"
+        "## Her sahnede sabit tutulacak kurallar\n"
+        "- Aynı ana karakter(ler)in yüzü, kafa-gövde oranı, renkleri, kıyafeti ve malzemeleri değişmesin.\n"
+        "- Stil: yüksek kaliteli, stilize 3D okul öncesi animasyon filmi; yuvarlak formlar, yumuşak sinematik ışık, temiz kompozisyon.\n"
+        "- Dikey 9:16 kadraj; ana karakter kadrajda açıkça görünür ve önemli nesneler kesilmez.\n"
+        "- Görselde yazı, altyazı, logo, filigran veya tanınmış çizgi film karakteri bulunmasın.\n"
+        "- Bir sahnede yalnızca hikâye için gerekli nesneler bulunsun; arka plan gereksiz ayrıntıyla dolmasın.\n\n"
+        "Her sahne istemine aşağıdaki karakter kilidini aynen ekle. Mümkünse ilk sahnenin onaylı görselini sonraki sahnelerde referans olarak kullan; yalnızca metin tam tutarlılığı garanti etmez.\n"
     )
 
 
@@ -121,14 +121,14 @@ def build_pack(storyboard: dict, output_dir: Path) -> list[Path]:
             raise ValueError(f"{song_id}: {number}. sahne için görsel istemi boş.")
         prompt = prompt + character_lock + " Vertical 9:16, premium stylized 3D preschool animation, soft cinematic lighting, clear composition. No text, subtitles, logos, watermarks or copyrighted characters."
         path = folder / filename
-        path.write_text(prompt + "\\n", encoding="utf-8")
+        path.write_text(prompt + "\n", encoding="utf-8")
         created.append(path)
         index.extend([f"### Sahne {number:02d}",
                       f"- Zaman: {scene.get('start_seconds', '?')}–{scene.get('end_seconds', '?')} sn",
                       f"- Odak: {scene.get('visual_focus', 'belirtilmedi')}",
                       f"- Dosya: {filename}", ""])
     path = folder / "README.md"
-    path.write_text("\\n".join(index) + "\\n", encoding="utf-8")
+    path.write_text("\n".join(index) + "\n", encoding="utf-8")
     created.append(path)
     return created
 
