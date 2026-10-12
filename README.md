@@ -23,8 +23,8 @@ GitHub Actions üzerinde çalışacak, Türkçe çocuk şarkıları için özgü
 3. Şarkı ön kontrolü: MP3 varlığı, söz kontrol durumu, SHA-256 ve tekrar kullanım engeli — ilk sürüm eklendi
 4. Şarkı konularından dikey 9:16 storyboard taslakları üretme — ilk sürüm eklendi
 5. Sahne görsellerinden hareketli dikey MP4 render ve müzik montajı — ilk sürüm eklendi
-6. Ücretsiz 3D varlıklar ve Blender tabanlı sahne prototipi — araştırma kararı belgelendi; otomatik render henüz uygulanmadı
-7. Tek videonun uçtan uca üretimi ve kalite kontrolü (önce dry-run)
+6. Blender tabanlı tema-özel 3D sahne prototipi — TR001–TR008 için ayrı karakter/ortam taslakları ve kısa MP4 ön izleme iş akışı eklendi; tam şarkı üretimine henüz bağlanmadı
+7. Tema ön izlemesini GitHub Actions üzerinde doğrulama; ardından tam şarkı sahne akışı ve kalite kontrolüne bağlama
 8. YouTube API bağlantısı ve manuel onaylı test yüklemesi
 9. Her dört günde bir yayın takvimi; otomatik yayın ancak testler tamamlandıktan sonra
 
@@ -34,6 +34,7 @@ GitHub Actions üzerinde çalışacak, Türkçe çocuk şarkıları için özgü
 - **Actions → Blender CPU render smoke test → Run workflow:** GitHub Actions üzerinde küçük bir prosedürel 3D test sahnesi üretir ve `blender-cpu-smoke-test` artifact'i verir. Bu, yalnızca Blender/CPU render hattını sınar; nihai çocuk animasyonu değildir.
 - **Actions → Blender CPU animation smoke test → Run workflow:** 2 saniyelik, 24 FPS, 320×568 hareketli MP4 test sahnesi üretir; karaktere hafif zıplama ve kol sallama animasyonu ekler. `blender-cpu-animation-smoke-test` artifact'i MP4 ve FFprobe kalite kontrol raporunu içerir. Bu da teknik prototiptir; nihai video kalitesi veya tam şarkı üretimi anlamına gelmez.
 - **Actions → Blender CPU 30-second benchmark → Run workflow:** 30 saniyelik, döngüsel karakter hareketi içeren 320×568 MP4 render eder. Artifact; MP4, `.blend` proje dosyası, FFprobe kalite raporu ve gerçek render süresini içerir. Bu ölçüm, tam çözünürlükteki 2–3 dakikalık videoların süresini tahmin etmeden önce kullanılacak düşük çözünürlüklü CPU benchmark'ıdır.
+- **Actions → Theme-specific 3D character preview → Run workflow:** TR001–TR008 arasından tema seçerek 3, 5 veya 8 saniyelik, 320×568 prosedürel Blender 3D ön izlemesi üretir. Her tema için farklı karakter/aksesuar ve ortam yaklaşımı kullanılır; MP4, ilk kare PNG, süre/çözünürlük QC raporu ve render süresi artifact olarak verilir. Animasyon anahtar kareleri seçilen sürenin tamamına yayılır. Bu hâlâ görsel prototiptir; yüksek kaliteli nihai animasyon değildir ve ana şarkı render hattına bağlı değildir.
 - **Actions → Prepare Blender project for SheepIt → Run workflow:** Blender sahnesini GitHub Actions üzerinde `.blend` dosyası olarak hazırlar; render etmez. `sheepit-blender-project-test` artifact'ini SheepIt'e manuel yükleyerek harici render kuyruğunu test edebilirsin. Bu yalnızca kısa prototiptir ve SheepIt'in puan/kuyruk kurallarına tabidir.
 - Kenney Mini Characters, resmî sayfasında CC0 ve animasyon özelliği gösterdiği için yalnızca ilk teknik prototip adayıdır. Nihai çocuk videosu kalitesi henüz kanıtlanmış değildir.
 - Bir sonraki teknik doğrulama, GitHub Actions CPU üzerinde kısa Blender sahnesi render edip çalışma süresi ve görsel sonucu değerlendirmektir. Bu prototip başarılı olmadan tüm şarkılara yayılmayacak.
