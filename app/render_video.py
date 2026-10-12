@@ -80,13 +80,16 @@ def render_video(root: Path, song_id: str, output_path: Path) -> dict:
     output_path.parent.mkdir(parents=True, exist_ok=True)
     fps = 30
     segment_duration = duration / len(images)
+    # A short dissolve softens scene changes without adding lyric captions.
+    transition_duration = min(0.35, segment_duration / 4)
 
     with tempfile.TemporaryDirectory(prefix="kids-song-render-") as tmp:
         temp = Path(tmp)
         clip_paths = []
         for index, image in enumerate(images):
             clip = temp / f"clip_{index:03d}.mp4"
-            # The still fills the vertical frame, then a gentle zoom adds motion.
+            # Give each still a small overlap tail so xfade can dissolve into the next scene.
+            clip_duration = segment_duration + transition_duration
             zoom_filter = (
                 "scale=1080:1920:force_original_aspect_ratio=increase,"
                 "crop=1080:1920,"
@@ -97,25 +100,43 @@ def render_video(root: Path, song_id: str, output_path: Path) -> dict:
             run_checked([
                 "ffmpeg", "-y", "-hide_banner", "-loglevel", "error",
                 "-loop", "1", "-framerate", str(fps), "-i", str(image),
-                "-vf", zoom_filter, "-t", f"{segment_duration:.6f}",
+                "-vf", zoom_filter, "-t", f"{clip_duration:.6f}",
                 "-an", "-r", str(fps), "-c:v", "libx264",
                 "-preset", "veryfast", "-crf", "20", "-pix_fmt", "yuv420p",
                 str(clip),
             ])
             clip_paths.append(clip)
 
-        concat_list = temp / "clips.txt"
-        concat_list.write_text(
-            "".join("file '" + path.as_posix().replace("'", "'\\''") + "'\n" for path in clip_paths),
-            encoding="utf-8",
-        )
         joined = temp / "joined.mp4"
-        run_checked([
-            "ffmpeg", "-y", "-hide_banner", "-loglevel", "error",
-            "-f", "concat", "-safe", "0", "-i", str(concat_list),
-            "-c:v", "libx264", "-preset", "veryfast", "-crf", "20",
-            "-pix_fmt", "yuv420p", "-r", str(fps), str(joined),
-        ])
+        if len(clip_paths) == 1:
+            run_checked([
+                "ffmpeg", "-y", "-hide_banner", "-loglevel", "error",
+                "-i", str(clip_paths[0]), "-t", f"{duration:.6f}",
+                "-c:v", "libx264", "-preset", "veryfast", "-crf", "20",
+                "-pix_fmt", "yuv420p", "-r", str(fps), str(joined),
+            ])
+        else:
+            inputs = []
+            for clip in clip_paths:
+                inputs += ["-i", str(clip)]
+            filters = []
+            previous_label = "0:v"
+            for index in range(1, len(clip_paths)):
+                next_label = f"xfade{index}"
+                offset = segment_duration * index
+                filters.append(
+                    f"[{previous_label}][{index}:v]xfade=transition=fade:"
+                    f"duration={transition_duration:.6f}:offset={offset:.6f}"
+                    f"[{next_label}]"
+                )
+                previous_label = next_label
+            run_checked([
+                "ffmpeg", "-y", "-hide_banner", "-loglevel", "error",
+                *inputs, "-filter_complex", ";".join(filters),
+                "-map", f"[{previous_label}]", "-t", f"{duration:.6f}",
+                "-an", "-c:v", "libx264", "-preset", "veryfast", "-crf", "20",
+                "-pix_fmt", "yuv420p", "-r", str(fps), str(joined),
+            ])
 
         # Preschool videos are visual-first; never burn lyrics/subtitles into the picture.
         command = ["ffmpeg", "-y", "-hide_banner", "-loglevel", "error", "-i", str(joined), "-i", str(audio)]
