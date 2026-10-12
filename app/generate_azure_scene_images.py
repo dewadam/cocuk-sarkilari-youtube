@@ -88,7 +88,7 @@ def main() -> int:
         return 0
     if count < 1 or count > 8:
         fail("AZURE_IMAGE_COUNT must be between 1 and 8 to keep the test spend bounded.")
-    match = re.fullmatch(r"(\\d{3,4})x(\\d{3,4})", size)
+    match = re.fullmatch(r"(\d{3,4})x(\d{3,4})", size)
     if not match:
         fail("AZURE_IMAGE_SIZE must look like 1024x1024.")
     width, height = int(match.group(1)), int(match.group(2))
@@ -159,9 +159,9 @@ def main() -> int:
             except urllib.error.URLError as exc:
                 fail(f"Could not download generated image: {exc}")
 
-        if image_bytes.startswith(b"\\xff\\xd8\\xff"):
+        if image_bytes.startswith(b"\xff\xd8\xff"):
             ext = ".jpg"
-        elif image_bytes.startswith(b"\\x89PNG\\r\\n\\x1a\\n"):
+        elif image_bytes.startswith(b"\x89PNG\\r\n\x1a\n"):
             ext = ".png"
         else:
             fail(f"Scene {index} response was not a recognized PNG/JPEG image.")
