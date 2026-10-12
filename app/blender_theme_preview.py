@@ -171,6 +171,19 @@ def main():
     camera=bpy.context.object; camera.rotation_euler=(Vector((0,0,1.85))-camera.location).to_track_quat("-Z","Y").to_euler()
     camera.data.type="ORTHO"; camera.data.ortho_scale=5.2
     scene=bpy.context.scene; scene.camera=camera
+    # Gentle camera choreography: subtle push-in and lateral drift over the whole shot.
+    # Keep the movement restrained so preschool viewers can follow the character comfortably.
+    scene.frame_start=1
+    scene.frame_end=seconds*24
+    camera_frames = [1, max(2, round(scene.frame_end * 0.33)),
+                     max(3, round(scene.frame_end * 0.66)), scene.frame_end]
+    camera_x = [0.0, -0.10, 0.10, 0.0]
+    camera_scale = [5.2, 5.05, 4.95, 5.0]
+    for frame, x_pos, scale in zip(camera_frames, camera_x, camera_scale):
+        camera.location.x = x_pos
+        camera.keyframe_insert(data_path="location", frame=frame, group="Gentle camera drift")
+        camera.data.ortho_scale = scale
+        camera.data.keyframe_insert(data_path="ortho_scale", frame=frame, group="Gentle camera push-in")
     scene.render.engine="BLENDER_EEVEE_NEXT" if bpy.app.version >= (4,2,0) else "BLENDER_EEVEE"
     scene.render.resolution_x=320; scene.render.resolution_y=568; scene.render.resolution_percentage=100
     scene.render.fps=24; scene.frame_start=1; scene.frame_end=seconds*24
