@@ -161,7 +161,7 @@ def main() -> int:
 
         if image_bytes.startswith(b"\xff\xd8\xff"):
             ext = ".jpg"
-        elif image_bytes.startswith(b"\x89PNG\\r\n\x1a\n"):
+        elif image_bytes.startswith(b"\x89PNG\r\n\x1a\n"):
             ext = ".png"
         else:
             fail(f"Scene {index} response was not a recognized PNG/JPEG image.")
