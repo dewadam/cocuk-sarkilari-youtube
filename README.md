@@ -56,3 +56,8 @@ TR009 ve sonraki şarkılarda Gemini prompt'una `lyrics.txt` dosyasındaki sözl
 - Render sonrası `app/validate_render.py` MP4'ün okunabilirliğini, video/ses akışlarını, 1080×1920 çözünürlüğü ve ses-video süre farkını kontrol eder. Aynı artifact içinde `TRxxx_qc-report.json` raporu bulunur. Bu teknik kontrol görsel içeriğin doğruluğunu, söz senkronunu veya çocuklara uygunluğunu otomatik olarak onaylamaz.
 
 Ön kontrol aşaması şarkıyı rezerve etmez veya `used` durumuna getirmez. Otomatik yayın kapalıdır; henüz video render'ı ya da YouTube yüklemesi yapılmaz.
+
+
+### TR002 kuzu karakteri — modelleme düzeltmesi
+
+TR002 ön izlemesindeki genel balon benzeri görünüm yerine ayrı bir kuzu silüeti oluşturulur: sarkık kulaklar ve pembe iç kulaklar, yün bukleleri, ayrı yüz/muzıl ayrıntıları, dört kısa bacak ve koyu toynaklar. Kaynak doğrulayıcı bu temel anatomik bileşenlerin mevcut olduğunu kontrol eder. Bu kontrol görsel kaliteyi tek başına kanıtlamaz; gerçek Blender render çıktısı ayrıca incelenmelidir.
