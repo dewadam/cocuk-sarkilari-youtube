@@ -41,6 +41,10 @@ def validate(source: str) -> list[str]:
         errors.append("Animation keyframes are not derived from the requested duration.")
     if "keyframe_insert(data_path=\"location\"" not in source:
         errors.append("Hero movement keyframes are missing.")
+    if "Gentle camera drift" not in source or "Gentle camera push-in" not in source:
+        errors.append("Gentle camera movement keyframes are missing.")
+    if "camera.data.keyframe_insert(data_path=\"ortho_scale\"" not in source:
+        errors.append("Camera push-in animation is missing.")
     return errors
 
 
