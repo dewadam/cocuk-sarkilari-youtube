@@ -4,9 +4,9 @@ on:
   workflow_dispatch:
     inputs:
       image_count:
-        description: "Üretilecek görsel sayısı (1-8; başlangıç için 6 önerilir)"
+        description: "Üretilecek görsel sayısı (1-8; ilk doğrulama için 1 seç)"
         required: true
-        default: "6"
+        default: "1"
         type: choice
         options:
           - "1"
@@ -25,7 +25,7 @@ jobs:
       - name: Checkout repository
         uses: actions/checkout@v4
 
-      - name: Generate bounded Azure image batch
+      - name: Generate bounded Azure FLUX images
         env:
           AZURE_ENDPOINT: ${{ secrets.AZURE_ENDPOINT }}
           AZURE_API_KEY: ${{ secrets.AZURE_API_KEY }}
