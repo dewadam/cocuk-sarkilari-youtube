@@ -1,0 +1,66 @@
+name: Validate and render lamb model
+
+on:
+  push:
+    paths:
+      - "app/blender_theme_preview.py"
+      - "app/validate_theme_preview_source.py"
+      - ".github/workflows/validate-lamb-model.yml"
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  lamb-preview:
+    runs-on: ubuntu-latest
+    timeout-minutes: 45
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Validate source and lamb anatomy
+        run: python3 app/validate_theme_preview_source.py
+
+      - name: Install Blender and FFmpeg
+        run: |
+          sudo apt-get update
+          sudo apt-get install --yes blender ffmpeg libegl1 libgl1 libxrender1 libxi6 libxkbcommon0 libsm6
+
+      - name: Render TR002 lamb preview
+        env:
+          LIBGL_ALWAYS_SOFTWARE: "1"
+          QT_QPA_PLATFORM: "offscreen"
+        run: |
+          mkdir -p output
+          START_TIME=$(date +%s)
+          blender --background --python app/blender_theme_preview.py -- --song-id TR002 --duration-seconds 5 --output output/TR002_lamb-preview.mp4
+          END_TIME=$(date +%s)
+          echo "Render wall time: $((END_TIME - START_TIME)) seconds" | tee output/TR002_lamb-preview-timing.txt
+          test -s output/TR002_lamb-preview.mp4
+          test -s output/TR002_lamb-preview.png
+          ffprobe -v error -select_streams v:0 -show_entries stream=codec_name,width,height,r_frame_rate -show_entries format=duration -of json output/TR002_lamb-preview.mp4 > output/TR002_lamb-preview-qc.json
+          python3 - <<'PY'
+          import json
+          from pathlib import Path
+          report = json.loads(Path("output/TR002_lamb-preview-qc.json").read_text())
+          stream = report["streams"][0]
+          duration = float(report["format"]["duration"])
+          assert stream["codec_name"] == "h264", stream
+          assert (stream["width"], stream["height"]) == (320, 568), stream
+          assert duration >= 4.75, duration
+          print(f"QC passed: {stream['width']}x{stream['height']}, {duration:.2f}s, {stream['codec_name']}")
+          PY
+
+      - name: Upload lamb preview and QC reports
+        uses: actions/upload-artifact@v4
+        with:
+          name: TR002-lamb-model-validation
+          path: |
+            output/TR002_lamb-preview.mp4
+            output/TR002_lamb-preview.png
+            output/TR002_lamb-preview.json
+            output/TR002_lamb-preview-qc.json
+            output/TR002_lamb-preview-timing.txt
+          if-no-files-found: error
+          retention-days: 14
