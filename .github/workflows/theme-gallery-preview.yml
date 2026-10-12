@@ -1,0 +1,92 @@
+name: Theme gallery preview (all 8 songs)
+
+on:
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  render-gallery:
+    runs-on: ubuntu-latest
+    timeout-minutes: 45
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Install Blender, FFmpeg, and image tools
+        run: |
+          sudo apt-get update
+          sudo apt-get install --yes blender ffmpeg python3-pil libegl1 libgl1 libxrender1 libxi6 libxkbcommon0 libsm6
+
+      - name: Render a short preview for every song theme
+        env:
+          LIBGL_ALWAYS_SOFTWARE: "1"
+          QT_QPA_PLATFORM: "offscreen"
+        run: |
+          set -euo pipefail
+          mkdir -p output/theme-gallery
+          START_TIME=$(date +%s)
+          for SONG_ID in TR001 TR002 TR003 TR004 TR005 TR006 TR007 TR008; do
+            echo "Rendering theme: $SONG_ID"
+            blender --background --python app/blender_theme_preview.py -- \
+              --song-id "$SONG_ID" --duration-seconds 3 \
+              --output "output/theme-gallery/${SONG_ID}.mp4"
+            test -s "output/theme-gallery/${SONG_ID}.mp4"
+            test -s "output/theme-gallery/${SONG_ID}.png"
+            ffprobe -v error -select_streams v:0 \
+              -show_entries stream=codec_name,width,height,r_frame_rate \
+              -show_entries format=duration -of json \
+              "output/theme-gallery/${SONG_ID}.mp4" > "output/theme-gallery/${SONG_ID}-qc.json"
+          done
+          END_TIME=$(date +%s)
+          echo "All-theme render wall time: $((END_TIME - START_TIME)) seconds" | tee output/theme-gallery/render-timing.txt
+
+      - name: Build contact sheet and validate all previews
+        run: |
+          python3 - <<'PY'
+          import json
+          from pathlib import Path
+          from PIL import Image, ImageDraw, ImageFont
+
+          folder = Path("output/theme-gallery")
+          ids = [f"TR{i:03d}" for i in range(1, 9)]
+          thumbs = []
+          errors = []
+          for song_id in ids:
+              report = json.loads((folder / f"{song_id}-qc.json").read_text())
+              streams = report.get("streams", [])
+              if not streams:
+                  errors.append(f"{song_id}: video stream missing")
+                  continue
+              stream = streams[0]
+              duration = float(report["format"]["duration"])
+              if stream.get("codec_name") != "h264":
+                  errors.append(f"{song_id}: expected h264, got {stream.get('codec_name')}")
+              if (stream.get("width"), stream.get("height")) != (320, 568):
+                  errors.append(f"{song_id}: unexpected resolution")
+              if duration < 2.75:
+                  errors.append(f"{song_id}: preview too short ({duration:.2f}s)")
+              image = Image.open(folder / f"{song_id}.png").convert("RGB")
+              image.thumbnail((240, 426))
+              card = Image.new("RGB", (260, 470), "white")
+              card.paste(image, ((260-image.width)//2, 12))
+              draw = ImageDraw.Draw(card)
+              draw.text((12, 445), f"{song_id} | {duration:.1f}s", fill="black")
+              thumbs.append(card)
+          if errors:
+              raise SystemExit("\n".join(errors))
+          sheet = Image.new("RGB", (260*4, 470*2), (235, 238, 242))
+          for index, card in enumerate(thumbs):
+              sheet.paste(card, ((index % 4)*260, (index // 4)*470))
+          sheet.save(folder / "theme-contact-sheet.jpg", quality=90)
+          print(f"Validated {len(thumbs)} theme previews.")
+          PY
+
+      - name: Upload all theme previews and contact sheet
+        uses: actions/upload-artifact@v4
+        with:
+          name: all-eight-theme-gallery
+          path: output/theme-gallery/
+          if-no-files-found: error
+          retention-days: 14
