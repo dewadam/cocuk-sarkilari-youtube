@@ -171,16 +171,27 @@ def main():
     scene.render.fps=24; scene.frame_start=1; scene.frame_end=seconds*24
     scene.view_settings.view_transform="Standard"
     scene.render.image_settings.color_mode="RGB"
-    # Make the whole hero group gently bounce and wave over a seamless loop.
-    for frame,z in [(1,0),(13,.13),(25,0),(37,.13),(49,0)]:
-        root.location.z=z; root.keyframe_insert(data_path="location",frame=frame,group="Bounce")
-    for arm,side in arms:
-        for frame,angle in [(1,side*-.18),(13,side*.22),(25,side*-.18),(37,side*.22),(49,side*-.18)]:
-            arm.rotation_euler[1]=angle; arm.keyframe_insert(data_path="rotation_euler",frame=frame,group="Wave")
+    # Animate across the entire selected duration. Earlier versions keyed only
+    # the first 49 frames, which made 5s/8s previews hold still near the end.
+    # The final pose matches the first pose so the movement loops cleanly.
+    last_frame = scene.frame_end
+    quarter = max(2, round((last_frame - 1) / 4))
+    loop_frames = [1, 1 + quarter, 1 + 2 * quarter, 1 + 3 * quarter, last_frame]
+    bounce_values = [0.0, 0.13, 0.0, 0.13, 0.0]
+    for frame, z in zip(loop_frames, bounce_values):
+        root.location.z = z
+        root.keyframe_insert(data_path="location", frame=frame, group="Bounce")
+    for arm, side in arms:
+        wave_values = [side * -0.18, side * 0.22, side * -0.18, side * 0.22, side * -0.18]
+        for frame, angle in zip(loop_frames, wave_values):
+            arm.rotation_euler[1] = angle
+            arm.keyframe_insert(data_path="rotation_euler", frame=frame, group="Wave")
+    # Keyframe interpolation is sufficient because the key poses span the full
+    # preview duration; avoid version-specific Action F-Curve APIs.
     for action in bpy.data.actions:
-        for fc in getattr(action,"fcurves",[]):
-            for key in fc.keyframe_points: key.interpolation="BEZIER"
-            fc.modifiers.new(type="CYCLES")
+        for fc in getattr(action, "fcurves", []):
+            for key in fc.keyframe_points:
+                key.interpolation = "BEZIER"
     output.parent.mkdir(parents=True,exist_ok=True)
     scene.render.image_settings.file_format="FFMPEG"; scene.render.ffmpeg.format="MPEG4"
     scene.render.ffmpeg.codec="H264"; scene.render.ffmpeg.constant_rate_factor="MEDIUM"
