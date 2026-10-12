@@ -182,7 +182,7 @@ def main():
             cylinder("Balloon string",(x,0,1.98),.012,.55,mats["white"])
     # Shared animated arms and stage props, with distinct palette per topic.
     arms=[]
-    if song_id not in ("TR004","TR006","TR008"):
+    if song_id not in ("TR002","TR004","TR006","TR008"):
         for side in (-1,1):
             arm=uv("Animated arm",(side*.76,-.02,1.45),(.15,.16,.38),mats[hero_key if hero_key in mats else "teal"],root)
             arms.append((arm,side))
