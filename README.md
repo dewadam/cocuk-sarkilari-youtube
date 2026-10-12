@@ -44,6 +44,11 @@ GitHub Actions üzerinde çalışacak, Türkçe çocuk şarkıları için özgü
 ## Müzik prompt standardı
 TR009 ve sonraki şarkılarda Gemini prompt'una `lyrics.txt` dosyasındaki sözlerin tamamı doğrudan eklenecek; yalnızca dosya yolu yazılmayacak. Her şarkının müzik tarzı besteye ve hikâyeye göre değiştirilecek; son dört şarkının tür/ritim/enstrüman kombinasyonu tekrar edilmeyecek. Şablon: `templates/music_prompt_template.txt`; ayrıntılar: `docs/music-prompt-rules.md`. Song library preflight yeni şarkılarda tam sözlerin prompt içinde olmasını kontrol eder.
 
+## Azure AI görsel üretimi ve YouTube yayınlama
+
+- **Actions → Azure AI scene image test → Run workflow:** Azure AI Foundry FLUX dağıtımından 1–8 sahne görseli üretir. Kurulum: `docs/AZURE_AI_SCENE_TEST.md`. İş akışı yalnızca manuel başlatılır ve görselleri artifact olarak verir.
+- **YouTube OAuth bağlantısı:** `docs/YOUTUBE_UPLOAD_SETUP.md`. `Render vertical song video` iş akışı QC başarılı olduktan sonra, `publish_to_youtube=true` seçiliyse ve şarkı `metadata.json` durumu `ready` ise herkese açık yükleme yapabilir. OAuth secret yoksa yükleme tamamlanmaz. İlk yayın için MP3 söz eşleştirmesi ve sahne görselleri şarttır.
+
 ## Testler
 - Ekran altyazısı ve otomatik SRT üretimi ana üretim hattından çıkarıldı. Okul öncesi videolar müzik ve görsel hikâyeye odaklanır; storyboard sahneleri doğrulanmamış şarkı sözlerinden değil konu ve öğrenme hedefinden üretilir.
 - **Actions → End-to-end song production dry run → Run workflow:** Bir `TRxxx` şarkısını kütüphane uygunluğu, storyboard, görsel istem paketi ve sahne görselleri ön kontrolünden geçirir. Rapor ve oluşturulan dosyalar artifact olarak sunulur. MP4 üretmez, YouTube'a yüklemez ve şarkıyı kullanılmış olarak işaretlemez.
