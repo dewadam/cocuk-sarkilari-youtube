@@ -29,6 +29,7 @@ def main():
         m.node_tree.nodes["Principled BSDF"].inputs["Base Color"].default_value=(*color,1)
         m.node_tree.nodes["Principled BSDF"].inputs["Roughness"].default_value=roughness
         return m
+    floaters = []
     mats = {
       "blue": material("Sky blue",(.12,.48,.86)), "navy": material("Deep space",(.025,.035,.16)),
       "green": material("Garden green",(.12,.48,.22)), "grass": material("Bright grass",(.28,.68,.22)),
@@ -45,6 +46,7 @@ def main():
         o=bpy.context.object; o.name=name; o.scale=scale; o.data.materials.append(mat)
         for p in o.data.polygons: p.use_smooth=True
         if parent: o.parent=parent
+        elif any(token in name.casefold() for token in ("floating", "balloon", "bubble", "flower", "planet", "star", "fruit", "leaf", "toy block")): floaters.append(o)
         return o
     def cube(name, loc, scale, mat, bevel=.08):
         bpy.ops.mesh.primitive_cube_add(size=1, location=loc)
@@ -52,16 +54,19 @@ def main():
         bpy.ops.object.transform_apply(location=False, rotation=False, scale=True); o.data.materials.append(mat)
         if bevel:
             mod=o.modifiers.new("Rounded child-friendly edges","BEVEL"); mod.width=bevel; mod.segments=3
+        if any(token in name.casefold() for token in ("floating", "toy block")): floaters.append(o)
         return o
     def cone(name, loc, radius, depth, mat):
         bpy.ops.mesh.primitive_cone_add(vertices=32, radius1=radius, depth=depth, location=loc)
         o=bpy.context.object; o.name=name; o.data.materials.append(mat)
         bevel=o.modifiers.new("Soft edges","BEVEL"); bevel.width=.06; bevel.segments=2
+        if "floating" in name.casefold(): floaters.append(o)
         return o
     def cylinder(name, loc, radius, depth, mat):
         bpy.ops.mesh.primitive_cylinder_add(vertices=24, radius=radius, depth=depth, location=loc)
         o=bpy.context.object; o.name=name; o.data.materials.append(mat)
         bevel=o.modifiers.new("Soft edges","BEVEL"); bevel.width=.04; bevel.segments=2
+        if any(token in name.casefold() for token in ("flower", "plant leaf", "shared fruit")): floaters.append(o)
         return o
     def eyes(parent, z=2.35, y=-.57, spacing=.24, size=.075):
         for x in (-spacing, spacing):
@@ -186,6 +191,16 @@ def main():
         for frame, angle in zip(loop_frames, wave_values):
             arm.rotation_euler[1] = angle
             arm.keyframe_insert(data_path="rotation_euler", frame=frame, group="Wave")
+    # Small set props gently bob at staggered phases so the whole frame feels
+    # alive rather than only the hero moving. All curves span the full duration.
+    for index, prop in enumerate(floaters):
+        base_z = prop.location.z
+        phase = index % 2
+        values = [0.0, 0.07 if phase == 0 else -0.035, 0.0,
+                  -0.035 if phase == 0 else 0.07, 0.0]
+        for frame, offset in zip(loop_frames, values):
+            prop.location.z = base_z + offset
+            prop.keyframe_insert(data_path="location", frame=frame, group="Floating set props")
     # Keyframe interpolation is sufficient because the key poses span the full
     # preview duration; avoid version-specific Action F-Curve APIs.
     for action in bpy.data.actions:
