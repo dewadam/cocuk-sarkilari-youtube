@@ -73,12 +73,39 @@ def render_video(root: Path, song_id: str, output_path: Path) -> dict:
     audio = folder / str(metadata.get("audio_file", "song.mp3"))
     if not audio.is_file():
         raise ValueError(f"Ses dosyası eksik: {audio.name}")
-    images = list_scene_images(folder)
-    if not images:
-        raise ValueError(f"Görsel bulunamadı. PNG/JPG/WEBP sahnelerini {folder.name}/visuals/scene_01.png konumuna ekleyin.")
     duration = get_duration(audio)
     output_path.parent.mkdir(parents=True, exist_ok=True)
     fps = 30
+
+    # Preferred production path: one song-specific AI dance clip, looped to the exact song duration.
+    dance_loop = folder / "visuals" / "dance_loop.mp4"
+    if dance_loop.is_file():
+        run_checked([
+            "ffmpeg", "-y", "-hide_banner", "-loglevel", "error",
+            "-stream_loop", "-1", "-i", str(dance_loop), "-i", str(audio),
+            "-map", "0:v:0", "-map", "1:a:0",
+            "-vf", "scale=720:1280:force_original_aspect_ratio=increase,crop=720:1280,scale=1080:1920,fps=30,format=yuv420p",
+            "-t", f"{duration:.6f}", "-c:v", "libx264", "-preset", "veryfast",
+            "-crf", "20", "-pix_fmt", "yuv420p", "-c:a", "aac", "-b:a", "192k",
+            "-shortest", "-movflags", "+faststart", str(output_path),
+        ])
+        return {
+            "song_id": song_id,
+            "title": metadata.get("title", song_id),
+            "output": str(output_path),
+            "audio_duration_seconds": round(duration, 3),
+            "source_video": str(dance_loop.relative_to(root)),
+            "looped_source_video": True,
+            "captions_embedded": False,
+            "on_screen_lyrics": False,
+            "resolution": "1080x1920",
+            "fps": fps,
+            "youtube_uploaded": False,
+        }
+
+    images = list_scene_images(folder)
+    if not images:
+        raise ValueError(f"Ne dance_loop.mp4 ne de sahne görselleri bulundu: {folder.name}/visuals/")
     segment_duration = duration / len(images)
     # A short dissolve softens scene changes without adding lyric captions.
     transition_duration = min(0.35, segment_duration / 4)
