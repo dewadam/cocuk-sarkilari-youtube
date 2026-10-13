@@ -33,6 +33,9 @@ jobs:
       - name: Run unit tests before paid image requests
         run: python -m unittest discover -s tests -v
 
+      - name: Check production script syntax before paid requests
+        run: python -m py_compile app/generate_song_visuals.py app/build_storyboards.py app/render_video.py app/validate_assets.py app/validate_render.py
+
       - name: Build selected song storyboard
         env:
           SONG_ID: ${{ inputs.song_id }}
