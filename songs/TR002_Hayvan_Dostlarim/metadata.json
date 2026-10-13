@@ -26,7 +26,7 @@
     "ördek göleti",
     "kuzu ve horoz"
   ],
-  "notes": "song.mp3 depoda mevcut. Görsel üretim, Sora 2/FLUX kotası gerektirmeyen Pillow + FFmpeg tabanlı özgün prosedürel çiftlik dans döngüsü kullanır. Her şarkı kimliği görsel detayları farklılaştırır; 10 saniyelik döngü şarkı süresine uzatılır. lyrics_must_match_final_audio=true olduğu için söz-ses eşleşmesi kontrol edilene kadar YouTube'a herkese açık yayın kilitli kalır.",
+  "notes": "song.mp3 depoda mevcut. Nihai görsel hedefi Azure üzerinde çalışan gerçek AI üretimli stilize 3D karakter animasyonudur; prosedürel çizim nihai üretim yöntemi değildir. Azure GPU worker ve model kotası doğrulandıktan sonra klipler üretilip kalıcı animasyon kataloğuna eklenecektir. lyrics_must_match_final_audio=true olduğu için söz-ses eşleşmesi kontrol edilene kadar YouTube'a herkese açık yayın kilitli kalır.",
   "youtube_title": "Hayvan Dostlarım 🐮🦆 | Türkçe Çocuk Şarkısı",
   "youtube_description": "İnek, kuzu, ördek ve horozla çiftlikte neşeli bir dans! Hayvan seslerini ve hareketlerini keşfeden minikler için Türkçe çocuk şarkısı. #ÇocukŞarkıları #HayvanSesleri #TürkçeÇocukŞarkısı"
 }
