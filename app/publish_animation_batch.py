@@ -24,6 +24,7 @@ def main() -> int:
     p.add_argument("--tag", required=True, help="unique release tag, e.g. animation-batch-2026-10-13-01")
     p.add_argument("--catalog", type=Path, default=DEFAULT_CATALOG)
     p.add_argument("--dry-run", action="store_true")
+    p.add_argument("--commit-catalog", action="store_true", help="commit and push catalog from a configured GitHub Actions checkout")
     a = p.parse_args()
     if not re.fullmatch(r"[A-Za-z0-9._-]{3,100}", a.tag):
         raise ValueError("Release tag may contain only letters, numbers, dot, underscore and hyphen")
@@ -69,6 +70,12 @@ def main() -> int:
     catalog["clips"] = sorted(by_id.values(), key=lambda item: item.get("clip_id", ""))
     if not a.dry_run:
         save_catalog(catalog, a.catalog)
+        if a.commit_catalog:
+            run(["git", "config", "user.name", "github-actions[bot]"])
+            run(["git", "config", "user.email", "41898282+github-actions[bot]@users.noreply.github.com"])
+            run(["git", "add", str(a.catalog)])
+            run(["git", "commit", "-m", "Catalog animation batch " + a.tag])
+            run(["git", "push"])
     print(f"Validated {len(records)} clips; catalog will contain {len(catalog['clips'])} records.")
     if a.dry_run:
         print("DRY RUN: no Release or catalog files were changed.")
