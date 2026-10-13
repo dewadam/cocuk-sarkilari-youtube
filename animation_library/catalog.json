@@ -1,0 +1,6 @@
+{
+  "schema_version": 1,
+  "description": "Persistent metadata catalog for reusable 3D children's-song animation clips. Video binaries are stored as GitHub Release assets, not in Git history.",
+  "updated_at": null,
+  "clips": []
+}
