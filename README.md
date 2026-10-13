@@ -66,3 +66,13 @@ TR009 ve sonraki şarkılarda Gemini prompt'una `lyrics.txt` dosyasındaki sözl
 ### TR002 kuzu karakteri — modelleme düzeltmesi
 
 TR002 ön izlemesindeki genel balon benzeri görünüm yerine ayrı bir kuzu silüeti oluşturulur: sarkık kulaklar ve pembe iç kulaklar, yün bukleleri, ayrı yüz/muzıl ayrıntıları, dört kısa bacak ve koyu toynaklar. Kaynak doğrulayıcı bu temel anatomik bileşenlerin mevcut olduğunu kontrol eder. Bu kontrol görsel kaliteyi tek başına kanıtlamaz; gerçek Blender render çıktısı ayrıca incelenmelidir.
+
+
+## Kalıcı 3D animasyon arşivi ve katalog
+
+- Hedef: Azure oturumlarında yaklaşık 30 saniyelik gerçek AI üretimi 3D animasyon kliplerini toplu üretmek; onaylanan klipleri gelecek şarkılarda yeniden kullanmak.
+- Kalıcı katalog: `animation_library/catalog.json`. Her klip için benzersiz kimlik, dosya adı, kategori, Türkçe anahtar kelimeler/etiketler, karakter, eylem, ortam, ruh hâli, süre, döngü uygunluğu ve MP4 adresi tutulur.
+- MP4 dosyaları normal Git geçmişine konmaz. `app/publish_animation_batch.py` onaylı MP4 + aynı adlı JSON yan dosyalarını bir GitHub Release'e yükleyip katalog kaydını hazırlar. Bu betik, Azure üretim adımından sonra çağrılacak; Azure model/endpoint ayarı ayrıca yapılacak.
+- `app/animation_catalog.py` katalog doğrulama ve Türkçe arama yapar. `app/select_animation_clips.py` şarkı sözlerinden etiket eşleşmeleri bulup şarkı süresine göre tekrar edilebilir bir oynatma listesi üretir.
+- Aylık şarkı temizliği geçici dosyaları temizlemeli; Release varlıkları ve katalog kayıtları kalıcı kalmalıdır.
+- Depo MP4 arşiviyle henüz doldurulmadı. Önce Azure üretim modeli ve test klibi doğrulanacak, sonra ilk 10–20 kliplik paket yüklenecek.
