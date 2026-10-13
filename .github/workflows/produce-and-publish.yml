@@ -30,11 +30,10 @@ jobs:
         with:
           python-version: "3.12"
 
-      - name: Install FFmpeg and image dependency
+      - name: Install FFmpeg
         run: |
           sudo apt-get update
           sudo apt-get install --yes ffmpeg
-          python -m pip install --disable-pip-version-check Pillow
 
       - name: Run unit tests
         run: python -m unittest discover -s tests -v
@@ -60,10 +59,13 @@ jobs:
           print(f"Release status: {metadata.get('status')}")
           PY
 
-      - name: Generate song-specific seamless dance loop (no external AI quota)
+      - name: Generate real AI 3D animation on Azure GPU
         env:
           SONG_ID: ${{ inputs.song_id }}
-        run: python app/generate_procedural_dance_loop.py
+          AZURE_VIDEO_WORKER_URL: ${{ secrets.AZURE_VIDEO_WORKER_URL }}
+          AZURE_VIDEO_WORKER_TOKEN: ${{ secrets.AZURE_VIDEO_WORKER_TOKEN }}
+          AZURE_VIDEO_MODEL: ${{ vars.AZURE_VIDEO_MODEL }}
+        run: python app/generate_azure_video_worker.py --song-id "$SONG_ID" --seconds 30 --timeout-minutes 100
 
       - name: Render loop to full song length
         env:
