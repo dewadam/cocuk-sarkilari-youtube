@@ -4,7 +4,7 @@
   "language": "tr-TR",
   "theme": "Renkleri öğrenme",
   "target_age": "preschool",
-  "status": "audio_uploaded_lyrics_check",
+  "status": "ready",
   "audio_file": "song.mp3",
   "lyrics_file": "lyrics.txt",
   "music_prompt_file": "music_prompt.txt",
@@ -16,5 +16,7 @@
   "used_in_video_id": null,
   "used_at": null,
   "made_for_kids": true,
-  "notes": "GitHub deposunda song.mp3 dosyası mevcut. Gemini sözlere eklemeler yapmış olabilir; video görselleri konu ve öğrenme hedefi üzerinden hazırlanır, ekranda şarkı sözü veya altyazı kullanılmaz."
+  "notes": "Üretim hattı görsel hikâye kullanır; videoda şarkı sözü veya altyazı gösterilmez. Görseller şarkının renkleri öğrenme temasına göre oluşturulur. Otomatik yayımlamadan önce üretilen videonun görsel kalite kontrolü yapılır.",
+  "youtube_title": "Renkler Bahçesi 🌈 | Türkçe Çocuk Şarkısı",
+  "youtube_description": "Renkler Bahçesi ile kırmızı, sarı, mavi ve yeşil renkleri neşeli bir müzik ve renkli görsellerle keşfedelim! 🌈🍎☀️\n\nOkul öncesi çocuklar için Türkçe çocuk şarkısı.\n\n#ÇocukŞarkıları #TürkçeÇocukŞarkıları #Renkler #OkulÖncesi"
 }
