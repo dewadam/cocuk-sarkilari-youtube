@@ -6,7 +6,7 @@
   "core_idea": "Bir çiftlik sabahında çocuk, her hayvanın sesini ve hareketini keşfeder; hayvanlar sırayla ritme katılır.",
   "learning_goal": "Hayvanları ve seslerini eşleştirme",
   "target_age": "preschool",
-  "status": "awaiting_audio_upload",
+  "status": "audio_uploaded_lyrics_check",
   "audio_file": "song.mp3",
   "lyrics_file": "lyrics.txt",
   "music_prompt_file": "music_prompt.txt",
@@ -26,5 +26,7 @@
     "ördek göleti",
     "kuzu ve horoz"
   ],
-  "notes": "MP3 Gemini sohbet ekranında üretildikten sonra song.mp3 adıyla bu klasöre yüklenmeli. Gemini sözleri değiştirdiyse lyrics.txt gerçek sesle eşleştirilmeli."
+  "notes": "song.mp3 depoda mevcut. Üretim sistemi her şarkı için ayrı bir Sora 2 dans videosu üretir ve döngüyü şarkı süresine uzatır. lyrics_must_match_final_audio=true olduğu için söz-ses eşleşmesi kontrol edilene kadar YouTube'a herkese açık yayın kilitli kalır.",
+  "youtube_title": "Hayvan Dostlarım 🐮🦆 | Türkçe Çocuk Şarkısı",
+  "youtube_description": "İnek, kuzu, ördek ve horozla çiftlikte neşeli bir dans! Hayvan seslerini ve hareketlerini keşfeden minikler için Türkçe çocuk şarkısı. #ÇocukŞarkıları #HayvanSesleri #TürkçeÇocukŞarkısı"
 }
