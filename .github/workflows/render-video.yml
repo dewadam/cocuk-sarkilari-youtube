@@ -10,7 +10,7 @@ on:
       publish_to_youtube:
         description: "QC başarılıysa YouTube'a herkese açık yükle (metadata status=ready ve OAuth secret gerekir)"
         required: true
-        default: true
+        default: false
         type: boolean
 
 permissions:
