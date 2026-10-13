@@ -1,0 +1,86 @@
+name: Produce song video preview
+
+on:
+  workflow_dispatch:
+    inputs:
+      song_id:
+        description: "Şarkı kimliği (ör. TR001)"
+        required: true
+        default: "TR001"
+        type: string
+
+permissions:
+  contents: read
+
+jobs:
+  produce:
+    runs-on: ubuntu-latest
+    timeout-minutes: 50
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+
+      - name: Install FFmpeg
+        run: |
+          sudo apt-get update
+          sudo apt-get install --yes ffmpeg fonts-dejavu-core
+
+      - name: Run unit tests before paid image requests
+        run: python -m unittest discover -s tests -v
+
+      - name: Build selected song storyboard
+        env:
+          SONG_ID: ${{ inputs.song_id }}
+        run: |
+          python app/build_storyboards.py --song-id "$SONG_ID"
+          python app/export_visual_prompt_pack.py --song-id "$SONG_ID"
+          python app/validate_visual_prompt_pack.py --song-id "$SONG_ID"
+
+      - name: Generate 6 storyboard-driven Azure images (no automatic retries)
+        env:
+          SONG_ID: ${{ inputs.song_id }}
+          AZURE_ENDPOINT: ${{ secrets.AZURE_ENDPOINT }}
+          AZURE_API_KEY: ${{ secrets.AZURE_API_KEY }}
+          AZURE_IMAGE_MODEL: ${{ vars.AZURE_IMAGE_MODEL }}
+          AZURE_IMAGE_SIZE: "1024x1536"
+          MAX_SCENES: "6"
+        run: python app/generate_song_visuals.py
+
+      - name: Validate scene assets
+        if: always()
+        env:
+          SONG_ID: ${{ inputs.song_id }}
+        run: |
+          SONG_FOLDER="$(find songs -maxdepth 1 -type d -name "${SONG_ID}_*" -print -quit)"
+          if [ -n "$SONG_FOLDER" ]; then
+            python app/validate_assets.py --song-folder "$SONG_FOLDER" --report "output/${SONG_ID}_asset-preflight-report.json" || true
+          fi
+
+      - name: Render vertical MP4 preview
+        env:
+          SONG_ID: ${{ inputs.song_id }}
+        run: python app/render_video.py --song-id "$SONG_ID"
+
+      - name: Validate rendered MP4
+        env:
+          SONG_ID: ${{ inputs.song_id }}
+        run: python app/validate_render.py --input "output/${SONG_ID}_preview.mp4" --report "output/${SONG_ID}_qc-report.json"
+
+      - name: Upload video, scene images, and reports
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: ${{ inputs.song_id }}-production-preview
+          path: |
+            output/${{ inputs.song_id }}_preview.mp4
+            output/${{ inputs.song_id }}_qc-report.json
+            output/${{ inputs.song_id }}_asset-preflight-report.json
+            output/${{ inputs.song_id }}_visual-generation-manifest.json
+            songs/${{ inputs.song_id }}_*/visuals/*
+          if-no-files-found: warn
+          retention-days: 14
