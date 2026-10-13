@@ -29,7 +29,17 @@ BASE_PROMPT = (
     "characters, beautifully art-directed pastel colors, clear readable silhouette, professional "
     "family animation quality. No text, no letters, no subtitles, no logo, no watermark."
 )
-SCENES = [
+COLOR_GARDEN_SCENES = [
+    "A joyful colorful preschool 3D animated garden, a large bright red balloon floating above a flower bed, sunny yellow sun, blue sky and green grass, wide establishing shot, no text.",
+    "A shiny red apple hanging from a small tree, a cute friendly little white rabbit looking up at it, vivid green leaves, warm sunny garden, clear red color focal point.",
+    "A cute yellow duckling gently landing on a small pond, golden yellow feathers, blue water ripples, green reeds, child-friendly cinematic 3D animation.",
+    "A bright blue kite flying high beside soft white clouds in a vivid blue sky, green meadow below, cheerful colorful preschool animation, dynamic wide shot.",
+    "A large fresh green leaf swaying in a sunny garden, friendly tiny forest animal friends watching happily, lush green plants and flowers, polished 3D animation.",
+    "The same cheerful garden with red balloon, yellow sun, blue sky and green grass, cute rabbit and yellow duckling together, colorful flowers, joyful medium-wide composition.",
+    "A playful red balloon, yellow flowers, blue butterfly and green leaves arranged naturally in one magical garden scene, vibrant but harmonious primary colors, cinematic preschool animation.",
+    "Final celebratory wide shot of the same colorful garden at golden sunlight, red balloon floating, yellow sun, blue sky, green grass, friendly rabbit and duckling smiling, joyful ending composition.",
+]
+LAMB_SCENES = [
     "A cute baby lamb with ivory wool curls, cream face, floppy ears, large kind glossy eyes and four short legs stands in a sunlit spring meadow, tiny flowers and rolling green hills, full body, natural quadruped anatomy, no arms or wings.",
     "The same cute baby lamb with ivory wool curls and cream face gently hops beside colorful spring flowers in a sunny meadow, joyful expression, dynamic but anatomically natural four-legged lamb pose.",
     "The same cute baby lamb discovers a small blue butterfly resting on a flower, close medium shot, soft morning sunlight, lush meadow, gentle curiosity.",
@@ -69,6 +79,7 @@ def find_image_value(value: Any) -> tuple[str | None, str | None]:
 
 
 def main() -> int:
+    song_id = os.environ.get("SONG_ID", "").strip()
     endpoint = os.environ.get("AZURE_ENDPOINT", "").strip().rstrip("/")
     key = os.environ.get("AZURE_API_KEY", "").strip()
     model = os.environ.get("AZURE_IMAGE_MODEL", "FLUX.2-pro").strip() or "FLUX.2-pro"
@@ -78,6 +89,13 @@ def main() -> int:
     except ValueError:
         fail("AZURE_IMAGE_COUNT must be an integer.")
 
+    global OUTPUT
+    if song_id:
+        matches = sorted(p for p in (ROOT / "songs").glob(f"{song_id}_*") if p.is_dir())
+        if len(matches) != 1:
+            fail(f"SONG_ID={song_id}: expected exactly one song folder, found {len(matches)}")
+        OUTPUT = matches[0] / "visuals"
+    scenes = COLOR_GARDEN_SCENES if song_id == "TR001" else LAMB_SCENES
     if not endpoint or not key:
         print("SETUP_REQUIRED: Configure AZURE_ENDPOINT and AZURE_API_KEY as GitHub Actions secrets.")
         OUTPUT.mkdir(parents=True, exist_ok=True)
@@ -86,8 +104,8 @@ def main() -> int:
             encoding="utf-8",
         )
         return 0
-    if count < 1 or count > 8:
-        fail("AZURE_IMAGE_COUNT must be between 1 and 8 to keep the test spend bounded.")
+    if count < 6 or count > 8:
+        fail("Production image count must be between 6 and 8.")
     match = re.fullmatch(r"(\d{3,4})x(\d{3,4})", size)
     if not match:
         fail("AZURE_IMAGE_SIZE must look like 1024x1024.")
@@ -101,6 +119,7 @@ def main() -> int:
         "model": model,
         "endpoint_route": "/providers/blackforestlabs/v1/flux-2-pro?api-version=preview",
         "size": size,
+        "song_id": song_id or None,
         "requested_images": count,
         "prompt_prefix": BASE_PROMPT,
         "images": [],
@@ -110,7 +129,7 @@ def main() -> int:
     manifest_path = OUTPUT / "manifest.json"
     manifest_path.write_text(json.dumps(manifest, ensure_ascii=False, indent=2) + "\n", encoding="utf-8")
 
-    for index, scene in enumerate(SCENES[:count], start=1):
+    for index, scene in enumerate(scenes[:count], start=1):
         prompt = BASE_PROMPT + " " + scene
         body = json.dumps({
             "model": model,
