@@ -167,6 +167,7 @@ def build_storyboard(topic: dict, package_dir: Path, project: dict) -> dict:
                 "cinematic soft lighting, clear focal point, uncluttered background, premium 3D animation render. "
                 "Keep the same character design across all scenes. No text, no logos, no watermark, no copied copyrighted characters."
             ),
+            "lyric_cue_draft": "Taslak görsel ipucu: " + str(motif) + " (MP3 sözleriyle eşleştirilmiş değildir; yayın öncesi doğrulanmalı).",
             "sync_note": "Geçici zaman aralığı; sahne geçişleri müziğin genel temposuna göre gözden geçirilecek, söz senkronu kullanılmayacak."
         })
 
