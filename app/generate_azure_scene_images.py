@@ -3,7 +3,7 @@
 
 Uses the BFL provider-specific API documented by Microsoft for FLUX.2-pro.
 Required environment:
-  AZURE_ENDPOINT=https://<resource-name>.api.cognitive.microsoft.com
+  AZURE_ENDPOINT=https://<resource-name>.services.ai.azure.com
   AZURE_API_KEY=<resource key>
 Optional:
   AZURE_IMAGE_COUNT=1
@@ -94,12 +94,6 @@ def main() -> int:
     width, height = int(match.group(1)), int(match.group(2))
     if width * height > 4_000_000:
         fail("FLUX.2-pro output is limited to 4 megapixels.")
-    if "services.ai.azure.com" in endpoint:
-        fail(
-            "This is the Image API endpoint. FLUX.2-pro requires the BFL provider endpoint "
-            "https://<resource-name>.api.cognitive.microsoft.com"
-        )
-
     url = endpoint + "/providers/blackforestlabs/v1/flux-2-pro?api-version=preview"
     OUTPUT.mkdir(parents=True, exist_ok=True)
     manifest = {
