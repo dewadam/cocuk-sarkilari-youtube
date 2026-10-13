@@ -106,6 +106,10 @@ def main() -> int:
         "images": [],
     }
 
+    # Write the manifest immediately so partial progress survives a later timeout.
+    manifest_path = OUTPUT / "manifest.json"
+    manifest_path.write_text(json.dumps(manifest, ensure_ascii=False, indent=2) + "\n", encoding="utf-8")
+
     for index, scene in enumerate(SCENES[:count], start=1):
         prompt = BASE_PROMPT + " " + scene
         body = json.dumps({
@@ -132,6 +136,12 @@ def main() -> int:
         except urllib.error.HTTPError as exc:
             details = exc.read().decode("utf-8", errors="replace")[-3000:]
             fail(f"Azure FLUX request {index}/{count} failed with HTTP {exc.code}: {details}")
+        except TimeoutError:
+            # Do not retry automatically: the provider may still finish processing and a retry can incur another charge.
+            manifest["last_error"] = f"Scene {index}/{count} timed out while waiting for Azure. No automatic retry was sent."
+            manifest["completed_images"] = len(manifest["images"])
+            manifest_path.write_text(json.dumps(manifest, ensure_ascii=False, indent=2) + "\n", encoding="utf-8")
+            fail(f"Azure FLUX request {index}/{count} timed out after 300 seconds. No automatic retry was sent to avoid duplicate charges. Completed images: {len(manifest['images'])}.")
         except urllib.error.URLError as exc:
             fail(f"Could not reach Azure AI Foundry: {exc}")
 
@@ -167,10 +177,11 @@ def main() -> int:
             "prompt": prompt,
         })
         print(f"Generated {index}/{count}: {filename} ({len(image_bytes)} bytes)")
+        manifest["completed_images"] = len(manifest["images"])
+        manifest_path.write_text(json.dumps(manifest, ensure_ascii=False, indent=2) + "\n", encoding="utf-8")
 
-    (OUTPUT / "manifest.json").write_text(
-        json.dumps(manifest, ensure_ascii=False, indent=2) + "\n", encoding="utf-8"
-    )
+    manifest["completed_images"] = len(manifest["images"])
+    manifest_path.write_text(json.dumps(manifest, ensure_ascii=False, indent=2) + "\n", encoding="utf-8")
     print(f"Done: {len(manifest['images'])} images saved under {OUTPUT}")
     return 0
 
