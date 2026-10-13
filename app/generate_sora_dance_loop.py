@@ -4,6 +4,7 @@ from __future__ import annotations
 
 import json
 import os
+import subprocess
 import time
 import urllib.error
 import urllib.request
@@ -84,6 +85,7 @@ def main() -> int:
     out_dir = folder / "visuals"
     out_dir.mkdir(parents=True, exist_ok=True)
     output = out_dir / "dance_loop.mp4"
+    raw_output = out_dir / "dance_source.mp4"
     manifest_path = out_dir / "dance_loop_manifest.json"
     manifest = {
         "song_id": song_id, "model_deployment": deployment,
@@ -140,10 +142,23 @@ def main() -> int:
         raise RuntimeError(f"Could not download generated video (HTTP {exc.code}): {detail}") from exc
     if len(video_bytes) < 100_000:
         raise RuntimeError(f"Downloaded video is unexpectedly small: {len(video_bytes)} bytes")
-    output.write_bytes(video_bytes)
+    raw_output.write_bytes(video_bytes)
+    # Sora 2 supports up to 20 seconds. Generate a 15-second cyclic dance,
+    # then make a 30-second base clip by repeating it once; the renderer loops this base.
+    result = subprocess.run([
+        "ffmpeg", "-y", "-hide_banner", "-loglevel", "error",
+        "-stream_loop", "-1", "-i", str(raw_output), "-t", "30", "-an",
+        "-vf", "scale=720:1280:force_original_aspect_ratio=increase,crop=720:1280,fps=30,format=yuv420p",
+        "-c:v", "libx264", "-preset", "veryfast", "-crf", "20",
+        "-pix_fmt", "yuv420p", "-movflags", "+faststart", str(output),
+    ], capture_output=True, text=True)
+    if result.returncode != 0:
+        raise RuntimeError("Could not assemble 30-second loop base: " + (result.stderr or "")[-3000:])
+    raw_output.unlink(missing_ok=True)
     manifest.update({
         "status": "downloaded", "generation_id": generation_id,
-        "output": str(output.relative_to(ROOT)), "size_bytes": len(video_bytes),
+        "output": str(output.relative_to(ROOT)), "size_bytes": output.stat().st_size,
+        "base_clip_duration_seconds": 30, "generated_cycle_duration_seconds": 15,
     })
     manifest_path.write_text(json.dumps(manifest, ensure_ascii=False, indent=2) + "\n", encoding="utf-8")
     print(json.dumps(manifest, ensure_ascii=False, indent=2))
