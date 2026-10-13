@@ -1,17 +1,17 @@
-name: Produce and publish song video
+name: Generate seamless dance video and publish song
 
 on:
   workflow_dispatch:
     inputs:
       song_id:
-        description: "Üretilecek şarkı kimliği (ör. TR001)"
+        description: "Üretilecek şarkı kimliği (ör. TR002)"
         required: true
-        default: "TR001"
+        default: "TR002"
         type: string
       publish_to_youtube:
-        description: "QC başarılıysa ve metadata status=ready ise YouTube'a yükle"
+        description: "Yalnızca metadata status=ready ise QC sonrası YouTube'a yükle"
         required: true
-        default: true
+        default: false
         type: boolean
 
 permissions:
@@ -20,7 +20,7 @@ permissions:
 jobs:
   produce:
     runs-on: ubuntu-latest
-    timeout-minutes: 90
+    timeout-minutes: 45
     steps:
       - name: Checkout repository
         uses: actions/checkout@v4
@@ -33,52 +33,63 @@ jobs:
       - name: Install FFmpeg
         run: |
           sudo apt-get update
-          sudo apt-get install --yes ffmpeg fonts-dejavu-core
+          sudo apt-get install --yes ffmpeg
 
       - name: Run unit tests
         run: python -m unittest discover -s tests -v
 
-      - name: Generate eight song-specific scene images directly into song folder
-        env:
-          SONG_ID: ${{ inputs.song_id }}
-          AZURE_ENDPOINT: ${{ secrets.AZURE_ENDPOINT }}
-          AZURE_API_KEY: ${{ secrets.AZURE_API_KEY }}
-          AZURE_IMAGE_MODEL: ${{ vars.AZURE_IMAGE_MODEL }}
-          AZURE_IMAGE_COUNT: "8"
-          AZURE_IMAGE_SIZE: "1024x1024"
-        run: python app/generate_azure_scene_images.py
-
-      - name: Validate generated scenes and audio
+      - name: Validate selected song audio and metadata
         env:
           SONG_ID: ${{ inputs.song_id }}
         run: |
-          SONG_FOLDER="$(find songs -maxdepth 1 -type d -name "${SONG_ID}_*" -print -quit)"
-          if [ -z "$SONG_FOLDER" ]; then
-            echo "Song folder not found: $SONG_ID"
-            exit 1
-          fi
-          python app/validate_assets.py --song-folder "$SONG_FOLDER" --report "output/${SONG_ID}_asset-preflight-report.json"
+          python - <<'PY'
+          import json, os
+          from pathlib import Path
+          song_id = os.environ["SONG_ID"]
+          matches = list(Path("songs").glob(f"{song_id}_*"))
+          if len(matches) != 1:
+              raise SystemExit(f"Expected one song folder for {song_id}; found {len(matches)}")
+          folder = matches[0]
+          metadata = json.loads((folder / "metadata.json").read_text(encoding="utf-8"))
+          audio = folder / metadata.get("audio_file", "song.mp3")
+          if not audio.is_file():
+              raise SystemExit(f"Missing song audio: {audio}")
+          print(f"Song: {metadata.get('title', song_id)}")
+          print(f"Audio: {audio} ({audio.stat().st_size} bytes)")
+          print(f"Release status: {metadata.get('status')}")
+          PY
 
-      - name: Render full vertical video
+      - name: Generate unique seamless dance loop with Sora 2
         env:
           SONG_ID: ${{ inputs.song_id }}
-        run: python app/render_video.py --song-id "$SONG_ID"
+          AZURE_OPENAI_ENDPOINT: ${{ secrets.AZURE_OPENAI_ENDPOINT }}
+          AZURE_OPENAI_API_KEY: ${{ secrets.AZURE_OPENAI_API_KEY }}
+          AZURE_OPENAI_DEPLOYMENT_NAME: ${{ vars.AZURE_OPENAI_DEPLOYMENT_NAME }}
+        run: python app/generate_sora_dance_loop.py
+
+      - name: Render loop to full song length
+        env:
+          SONG_ID: ${{ inputs.song_id }}
+        run: python app/render_video.py --song-id "$SONG_ID" --output "output/${SONG_ID}_preview.mp4"
 
       - name: Validate rendered video
         env:
           SONG_ID: ${{ inputs.song_id }}
         run: |
-          python app/validate_render.py --input "output/${SONG_ID}_preview.mp4" --report "output/${SONG_ID}_qc-report.json"
+          python app/validate_render.py \
+            --input "output/${SONG_ID}_preview.mp4" \
+            --report "output/${SONG_ID}_qc-report.json"
 
       - name: Upload final video and reports as artifact
         if: always()
         uses: actions/upload-artifact@v4
         with:
-          name: ${{ inputs.song_id }}-production-video
+          name: ${{ inputs.song_id }}-seamless-dance-video
           path: |
             output/${{ inputs.song_id }}_preview.mp4
             output/${{ inputs.song_id }}_qc-report.json
-            output/${{ inputs.song_id }}_asset-preflight-report.json
+            songs/${{ inputs.song_id }}_*/visuals/dance_loop.mp4
+            songs/${{ inputs.song_id }}_*/visuals/dance_loop_manifest.json
           if-no-files-found: warn
           retention-days: 30
 
@@ -88,12 +99,12 @@ jobs:
 
       - name: Confirm publication approval
         if: ${{ inputs.publish_to_youtube }}
-        id: approval
         env:
           SONG_ID: ${{ inputs.song_id }}
         run: |
           SONG_FOLDER="$(find songs -maxdepth 1 -type d -name "${SONG_ID}_*" -print -quit)"
-          python -c "import json,os,sys; p=os.path.join(os.environ['SONG_FOLDER'],'metadata.json') if 'SONG_FOLDER' in os.environ else '$SONG_FOLDER/metadata.json'; d=json.load(open(p,encoding='utf-8')); print('Release status:',d.get('status')); sys.exit(0 if d.get('status')=='ready' else 1)"
+          echo "SONG_FOLDER=$SONG_FOLDER" >> "$GITHUB_ENV"
+          python -c "import json,os,sys; p=os.path.join(os.environ['SONG_FOLDER'],'metadata.json'); d=json.load(open(p,encoding='utf-8')); print('Release status:',d.get('status')); sys.exit(0 if d.get('status')=='ready' else 1)"
 
       - name: Upload QC-passed video to YouTube
         if: ${{ inputs.publish_to_youtube }}
@@ -102,7 +113,7 @@ jobs:
           YOUTUBE_VIDEO_PATH: output/${{ inputs.song_id }}_preview.mp4
           SONG_ID: ${{ inputs.song_id }}
           YOUTUBE_PRIVACY_STATUS: public
-          YOUTUBE_TAGS: çocuk şarkıları, Türkçe çocuk şarkıları, okul öncesi, çocuk müziği
+          YOUTUBE_TAGS: çocuk şarkıları, Türkçe çocuk şarkıları, okul öncesi, çocuk müziği, hayvan sesleri
         run: |
           SONG_FOLDER="$(find songs -maxdepth 1 -type d -name "${SONG_ID}_*" -print -quit)"
           export YOUTUBE_METADATA_PATH="$SONG_FOLDER/metadata.json"
