@@ -38,7 +38,7 @@ def main():
         raise RuntimeError("AZURE_ENDPOINT / AZURE_API_KEY missing; no request was sent.")
     if MAX_SCENES < 6 or MAX_SCENES > 8:
         raise RuntimeError("MAX_SCENES must be between 6 and 8.")
-    match=re.fullmatch(r"(\\d{3,4})x(\\d{3,4})",SIZE)
+    match=re.fullmatch(r"(\d{3,4})x(\d{3,4})",SIZE)
     if not match or int(match.group(1))*int(match.group(2))>4_000_000:
         raise RuntimeError("AZURE_IMAGE_SIZE invalid or above 4 megapixels.")
     story_path=ROOT/"output"/"storyboards"/f"{SONG_ID}_storyboard.json"
