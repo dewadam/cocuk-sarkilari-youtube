@@ -1,0 +1,73 @@
+name: Azure AI 3D animation loop
+
+on:
+  workflow_dispatch:
+    inputs:
+      song_id:
+        description: "Song ID to generate for"
+        required: true
+        default: "TR002"
+        type: string
+      duration_seconds:
+        description: "Short test duration first; use 5 or 10 until visual QC passes"
+        required: true
+        default: "5"
+        type: choice
+        options:
+          - "5"
+          - "10"
+          - "15"
+          - "30"
+
+permissions:
+  contents: read
+
+jobs:
+  generate:
+    runs-on: ubuntu-latest
+    timeout-minutes: 120
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+      - name: Install FFmpeg
+        run: |
+          sudo apt-get update
+          sudo apt-get install --yes ffmpeg
+      - name: Check required Azure worker settings
+        env:
+          AZURE_VIDEO_WORKER_URL: ${{ secrets.AZURE_VIDEO_WORKER_URL }}
+          AZURE_VIDEO_WORKER_TOKEN: ${{ secrets.AZURE_VIDEO_WORKER_TOKEN }}
+        run: |
+          test -n "$AZURE_VIDEO_WORKER_URL" || (echo "::error::Missing AZURE_VIDEO_WORKER_URL secret" && exit 1)
+          test -n "$AZURE_VIDEO_WORKER_TOKEN" || (echo "::error::Missing AZURE_VIDEO_WORKER_TOKEN secret" && exit 1)
+      - name: Generate AI animation with Azure GPU worker
+        env:
+          SONG_ID: ${{ inputs.song_id }}
+          AZURE_VIDEO_WORKER_URL: ${{ secrets.AZURE_VIDEO_WORKER_URL }}
+          AZURE_VIDEO_WORKER_TOKEN: ${{ secrets.AZURE_VIDEO_WORKER_TOKEN }}
+          AZURE_VIDEO_MODEL: ${{ vars.AZURE_VIDEO_MODEL }}
+        run: |
+          python app/generate_azure_video_worker.py --song-id "$SONG_ID" --seconds "${{ inputs.duration_seconds }}" --timeout-minutes 100
+      - name: Inspect generated MP4
+        env:
+          SONG_ID: ${{ inputs.song_id }}
+        run: |
+          SONG_FOLDER="$(find songs -maxdepth 1 -type d -name "${SONG_ID}_*" -print -quit)"
+          test -n "$SONG_FOLDER"
+          VIDEO="$SONG_FOLDER/visuals/dance_loop.mp4"
+          test -s "$VIDEO"
+          ffprobe -v error -show_entries format=duration:stream=codec_name,width,height -of json "$VIDEO" > "$SONG_FOLDER/visuals/azure-video-qc.json"
+          cat "$SONG_FOLDER/visuals/azure-video-qc.json"
+      - name: Upload AI video and generation manifest
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: ${{ inputs.song_id }}-azure-ai-animation-test
+          path: |
+            songs/${{ inputs.song_id }}_*/visuals/dance_loop.mp4
+            songs/${{ inputs.song_id }}_*/visuals/dance_loop_manifest.json
+            songs/${{ inputs.song_id }}_*/visuals/azure-video-qc.json
+          if-no-files-found: warn
+          retention-days: 30
