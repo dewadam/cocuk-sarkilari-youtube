@@ -36,4 +36,4 @@ jobs:
       - name: Validate catalog
         run: python app/animation_catalog.py validate
       - name: Run catalog tests
-        run: python -m unittest tests/test_animation_catalog.py -v
+        run: python -m unittest discover -s tests -p 'test_animation_catalog.py' -v
