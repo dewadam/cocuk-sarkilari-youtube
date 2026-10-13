@@ -30,10 +30,11 @@ jobs:
         with:
           python-version: "3.12"
 
-      - name: Install FFmpeg
+      - name: Install FFmpeg and image dependency
         run: |
           sudo apt-get update
           sudo apt-get install --yes ffmpeg
+          python -m pip install --disable-pip-version-check Pillow
 
       - name: Run unit tests
         run: python -m unittest discover -s tests -v
@@ -59,13 +60,10 @@ jobs:
           print(f"Release status: {metadata.get('status')}")
           PY
 
-      - name: Generate unique seamless dance loop with Sora 2
+      - name: Generate song-specific seamless dance loop (no external AI quota)
         env:
           SONG_ID: ${{ inputs.song_id }}
-          AZURE_OPENAI_ENDPOINT: ${{ secrets.AZURE_OPENAI_ENDPOINT }}
-          AZURE_OPENAI_API_KEY: ${{ secrets.AZURE_OPENAI_API_KEY }}
-          AZURE_OPENAI_DEPLOYMENT_NAME: ${{ vars.AZURE_OPENAI_DEPLOYMENT_NAME }}
-        run: python app/generate_sora_dance_loop.py
+        run: python app/generate_procedural_dance_loop.py
 
       - name: Render loop to full song length
         env:
@@ -84,7 +82,7 @@ jobs:
         if: always()
         uses: actions/upload-artifact@v4
         with:
-          name: ${{ inputs.song_id }}-seamless-dance-video
+          name: ${{ inputs.song_id }}-dance-video-preview
           path: |
             output/${{ inputs.song_id }}_preview.mp4
             output/${{ inputs.song_id }}_qc-report.json
