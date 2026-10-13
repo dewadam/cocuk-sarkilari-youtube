@@ -1,0 +1,39 @@
+name: Animation library checks
+
+on:
+  push:
+    paths:
+      - "animation_library/**"
+      - "app/animation_catalog.py"
+      - "app/select_animation_clips.py"
+      - "app/publish_animation_batch.py"
+      - "tests/test_animation_catalog.py"
+      - ".github/workflows/animation-library-check.yml"
+  pull_request:
+    paths:
+      - "animation_library/**"
+      - "app/animation_catalog.py"
+      - "app/select_animation_clips.py"
+      - "app/publish_animation_batch.py"
+      - "tests/test_animation_catalog.py"
+      - ".github/workflows/animation-library-check.yml"
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  check:
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+      - name: Compile animation scripts
+        run: python -m py_compile app/animation_catalog.py app/select_animation_clips.py app/publish_animation_batch.py
+      - name: Validate catalog
+        run: python app/animation_catalog.py validate
+      - name: Run catalog tests
+        run: python -m unittest tests/test_animation_catalog.py -v
