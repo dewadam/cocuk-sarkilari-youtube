@@ -64,6 +64,9 @@ jobs:
           mkdir -p output
           endpoint="https://aicocukvideonew.services.ai.azure.com/managed-deployments/nvidia--cosmos3-nano/v1/videos/sync"
 
+          # The Foundry OpenAI-compatible endpoint was validated in the previous step.
+          # Cosmos3 video generation may require a model-specific runtime endpoint; preserve
+          # the exact HTTP response and request IDs to diagnose the managed route.
           request_video() {
             auth_mode="$1"
             auth_header="$2"
@@ -75,6 +78,7 @@ jobs:
               --header "$auth_header" \
               --header "Accept: video/mp4" \
               --output output/response.bin \
+              --dump-header output/response-headers.txt \
               --write-out "%{http_code}" \
               --form-string 'prompt=A short, cheerful, high-quality 3D animated scene for a children song: a cute yellow duckling, a friendly brown puppy, and a little white bunny dance together in a bright pastel meadow. Full bodies visible, smooth simple choreography, family-friendly, no text, no logos.' \
               --form-string 'negative_prompt=blurry, low quality, deformed characters, extra limbs, text, watermark, logos, scary imagery' \
