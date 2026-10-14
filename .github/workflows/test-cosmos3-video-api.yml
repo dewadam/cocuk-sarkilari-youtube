@@ -26,6 +26,34 @@ jobs:
           fi
           echo "API key secret is present. Its value will not be printed."
 
+      - name: Validate account key and deployment route
+        shell: bash
+        env:
+          COSMOS_AZURE_API_KEY: ${{ secrets.COSMOS_AZURE_API_KEY }}
+        run: |
+          set -u
+          endpoint="https://aicocukvideonew.services.ai.azure.com/openai/v1/chat/completions"
+          printf '%s' '{"model":"nvidia--cosmos3-nano","messages":[{"role":"user","content":"Reply with the single word OK."}],"max_tokens":8}' > request.json
+          status=$(curl --silent --show-error --connect-timeout 30 --max-time 120 \
+            --request POST "$endpoint" \
+            --header "Authorization: Bearer $COSMOS_AZURE_API_KEY" \
+            --header "Content-Type: application/json" \
+            --output response.json \
+            --write-out "%{http_code}" \
+            --data-binary @request.json) || {
+              echo "::error::Could not reach the standard OpenAI-compatible endpoint."
+              exit 1
+            }
+          echo "Standard chat endpoint HTTP status: $status"
+          if [ "$status" -lt 200 ] || [ "$status" -ge 300 ]; then
+            echo "Standard endpoint response (body only):"
+            head -c 3000 response.json || true
+            echo
+            echo "::error::The account key/deployment route check failed; video endpoint test stopped."
+            exit 1
+          fi
+          echo "The account key and standard deployment route were accepted."
+
       - name: Request a short test video
         id: generate
         shell: bash
