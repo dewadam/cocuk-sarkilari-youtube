@@ -1,0 +1,92 @@
+name: Cosmos 3 Nano video API smoke test
+
+on:
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: cosmos3-video-api-smoke-test
+  cancel-in-progress: false
+
+jobs:
+  test-video-endpoint:
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    steps:
+      - name: Check required secret
+        shell: bash
+        env:
+          COSMOS_AZURE_API_KEY: ${{ secrets.COSMOS_AZURE_API_KEY }}
+        run: |
+          if [ -z "$COSMOS_AZURE_API_KEY" ]; then
+            echo "::error::Repository secret COSMOS_AZURE_API_KEY is missing."
+            exit 1
+          fi
+          echo "API key secret is present. Its value will not be printed."
+
+      - name: Request a short test video
+        id: generate
+        shell: bash
+        env:
+          COSMOS_AZURE_API_KEY: ${{ secrets.COSMOS_AZURE_API_KEY }}
+        run: |
+          set -u
+          mkdir -p output
+          endpoint="https://aicocukvideonew.services.ai.azure.com/managed-deployments/nvidia--cosmos3-nano/v1/videos/sync"
+
+          echo "Calling the managed deployment video endpoint."
+          status=$(curl --silent --show-error \
+            --connect-timeout 30 \
+            --max-time 1500 \
+            --request POST "$endpoint" \
+            --header "Authorization: Bearer $COSMOS_AZURE_API_KEY" \
+            --header "Accept: video/mp4" \
+            --output output/response.bin \
+            --write-out "%{http_code}" \
+            --form-string 'prompt=A short, cheerful, high-quality 3D animated scene for a children song: a cute yellow duckling, a friendly brown puppy, and a little white bunny dance together in a bright pastel meadow. Full bodies visible, smooth simple choreography, family-friendly, no text, no logos.' \
+            --form-string 'negative_prompt=blurry, low quality, deformed characters, extra limbs, text, watermark, logos, scary imagery' \
+            --form-string 'size=640x480' \
+            --form-string 'num_frames=25' \
+            --form-string 'fps=24' \
+            --form-string 'num_inference_steps=10' \
+            --form-string 'guidance_scale=4.0' \
+            --form-string 'seed=42' \
+            --form-string 'extra_params={"use_resolution_template":false,"use_duration_template":false,"guardrails":true}') || {
+              echo "::error::The request could not reach the endpoint or timed out."
+              exit 1
+            }
+
+          echo "HTTP status: $status"
+          echo "http_status=$status" >> "$GITHUB_OUTPUT"
+
+          if [ "$status" -lt 200 ] || [ "$status" -ge 300 ]; then
+            echo "The endpoint did not return a successful response. A redacted-safe response artifact will be uploaded for diagnosis."
+            mv output/response.bin output/error-response.bin
+            exit 1
+          fi
+
+          if ! file output/response.bin | grep -Eqi 'video|MP4|ISO Media'; then
+            echo "::error::The endpoint returned HTTP success, but the response does not look like an MP4 video."
+            echo "Response file type:"
+            file output/response.bin || true
+            # Keep the body as a diagnostic artifact without printing potentially large content.
+            exit 1
+          fi
+
+          mv output/response.bin output/cosmos3-smoke-test.mp4
+          size_bytes=$(wc -c < output/cosmos3-smoke-test.mp4)
+          echo "Generated video bytes: $size_bytes"
+          if [ "$size_bytes" -lt 10000 ]; then
+            echo "::warning::The returned video file is unusually small; inspect the artifact."
+          fi
+
+      - name: Upload video or diagnostic response
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: cosmos3-video-api-test
+          path: output/
+          if-no-files-found: warn
+          retention-days: 3
