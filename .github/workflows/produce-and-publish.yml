@@ -19,8 +19,9 @@ permissions:
 
 jobs:
   produce:
+    # The Azure worker may take up to 100 minutes; leave time for setup, rendering, QC, and artifacts.
     runs-on: ubuntu-latest
-    timeout-minutes: 45
+    timeout-minutes: 150
     steps:
       - name: Checkout repository
         uses: actions/checkout@v4
@@ -87,7 +88,7 @@ jobs:
           name: ${{ inputs.song_id }}-dance-video-preview
           path: |
             output/${{ inputs.song_id }}_preview.mp4
-            output/${{ inputs.song_id }}_qc-report.json
+            output/${{ inputs.song_id }}-qc-report.json
             songs/${{ inputs.song_id }}_*/visuals/dance_loop.mp4
             songs/${{ inputs.song_id }}_*/visuals/dance_loop_manifest.json
           if-no-files-found: warn
