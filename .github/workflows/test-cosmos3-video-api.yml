@@ -36,29 +36,39 @@ jobs:
           mkdir -p output
           endpoint="https://aicocukvideonew.services.ai.azure.com/managed-deployments/nvidia--cosmos3-nano/v1/videos/sync"
 
-          echo "Calling the managed deployment video endpoint."
-          status=$(curl --silent --show-error \
-            --connect-timeout 30 \
-            --max-time 1500 \
-            --request POST "$endpoint" \
-            --header "Authorization: Bearer $COSMOS_AZURE_API_KEY" \
-            --header "Accept: video/mp4" \
-            --output output/response.bin \
-            --write-out "%{http_code}" \
-            --form-string 'prompt=A short, cheerful, high-quality 3D animated scene for a children song: a cute yellow duckling, a friendly brown puppy, and a little white bunny dance together in a bright pastel meadow. Full bodies visible, smooth simple choreography, family-friendly, no text, no logos.' \
-            --form-string 'negative_prompt=blurry, low quality, deformed characters, extra limbs, text, watermark, logos, scary imagery' \
-            --form-string 'size=640x480' \
-            --form-string 'num_frames=25' \
-            --form-string 'fps=24' \
-            --form-string 'num_inference_steps=10' \
-            --form-string 'guidance_scale=4.0' \
-            --form-string 'seed=42' \
-            --form-string 'extra_params={"use_resolution_template":false,"use_duration_template":false,"guardrails":true}') || {
-              echo "::error::The request could not reach the endpoint or timed out."
-              exit 1
-            }
+          request_video() {
+            auth_mode="$1"
+            auth_header="$2"
+            echo "Trying endpoint with authentication mode: $auth_mode"
+            status=$(curl --silent --show-error \
+              --connect-timeout 30 \
+              --max-time 1500 \
+              --request POST "$endpoint" \
+              --header "$auth_header" \
+              --header "Accept: video/mp4" \
+              --output output/response.bin \
+              --write-out "%{http_code}" \
+              --form-string 'prompt=A short, cheerful, high-quality 3D animated scene for a children song: a cute yellow duckling, a friendly brown puppy, and a little white bunny dance together in a bright pastel meadow. Full bodies visible, smooth simple choreography, family-friendly, no text, no logos.' \
+              --form-string 'negative_prompt=blurry, low quality, deformed characters, extra limbs, text, watermark, logos, scary imagery' \
+              --form-string 'size=640x480' \
+              --form-string 'num_frames=25' \
+              --form-string 'fps=24' \
+              --form-string 'num_inference_steps=10' \
+              --form-string 'guidance_scale=4.0' \
+              --form-string 'seed=42' \
+              --form-string 'extra_params={"use_resolution_template":false,"use_duration_template":false,"guardrails":true}') || {
+                echo "::error::The request could not reach the endpoint or timed out."
+                return 1
+              }
+            echo "HTTP status ($auth_mode): $status"
+          }
 
-          echo "HTTP status: $status"
+          request_video bearer "Authorization: Bearer $COSMOS_AZURE_API_KEY"
+          if [ "$status" = "401" ]; then
+            echo "Bearer authentication was rejected; retrying once with the api-key header."
+            request_video api-key "api-key: $COSMOS_AZURE_API_KEY"
+          fi
+
           echo "http_status=$status" >> "$GITHUB_OUTPUT"
 
           if [ "$status" -lt 200 ] || [ "$status" -ge 300 ]; then
