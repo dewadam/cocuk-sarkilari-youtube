@@ -1,0 +1,109 @@
+name: Cosmos 3 Nano private video server test
+
+on:
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: cosmos3-private-video-server-test
+  cancel-in-progress: false
+
+jobs:
+  test-video-server:
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    steps:
+      - name: Check required secrets
+        shell: bash
+        env:
+          VIDEO_BASE_URL: ${{ secrets.COSMOS3_VIDEO_BASE_URL }}
+          VIDEO_API_KEY: ${{ secrets.COSMOS3_VIDEO_API_KEY }}
+        run: |
+          if [ -z "$VIDEO_BASE_URL" ] || [ -z "$VIDEO_API_KEY" ]; then
+            echo "::error::Set COSMOS3_VIDEO_BASE_URL and COSMOS3_VIDEO_API_KEY after deploying the private vLLM-Omni server."
+            exit 1
+          fi
+          echo "Private video server secrets are present."
+
+      - name: Verify model server
+        shell: bash
+        env:
+          VIDEO_BASE_URL: ${{ secrets.COSMOS3_VIDEO_BASE_URL }}
+          VIDEO_API_KEY: ${{ secrets.COSMOS3_VIDEO_API_KEY }}
+        run: |
+          set -u
+          base="${VIDEO_BASE_URL%/}"
+          status=$(curl --silent --show-error --connect-timeout 20 --max-time 60 \
+            --header "Authorization: Bearer $VIDEO_API_KEY" \
+            --output models.json --write-out "%{http_code}" \
+            "$base/v1/models") || {
+              echo "::error::Could not reach the configured video server."
+              exit 1
+            }
+          echo "GET /v1/models HTTP status: $status"
+          if [ "$status" -lt 200 ] || [ "$status" -ge 300 ]; then
+            head -c 2000 models.json || true
+            echo
+            exit 1
+          fi
+          if ! grep -qi 'Cosmos3-Nano\|cosmos3-nano' models.json; then
+            echo "::error::The server responded, but its model list did not identify Cosmos3-Nano."
+            head -c 2000 models.json || true
+            exit 1
+          fi
+          echo "Cosmos3-Nano model is listed."
+
+      - name: Generate a short MP4 smoke test
+        shell: bash
+        env:
+          VIDEO_BASE_URL: ${{ secrets.COSMOS3_VIDEO_BASE_URL }}
+          VIDEO_API_KEY: ${{ secrets.COSMOS3_VIDEO_API_KEY }}
+        run: |
+          set -u
+          mkdir -p output
+          base="${VIDEO_BASE_URL%/}"
+          status=$(curl --silent --show-error --connect-timeout 30 --max-time 1500 \
+            --request POST "$base/v1/videos/sync" \
+            --header "Authorization: Bearer $VIDEO_API_KEY" \
+            --header "Accept: video/mp4" \
+            --output output/response.bin \
+            --dump-header output/response-headers.txt \
+            --write-out "%{http_code}" \
+            --form-string 'model=nvidia/Cosmos3-Nano' \
+            --form-string 'prompt=A cute yellow duckling, a friendly puppy and a little bunny dance together in a bright pastel meadow. Full bodies visible, smooth child-friendly motion, no text or logos.' \
+            --form-string 'negative_prompt=blurry, distorted, low quality, jittery, deformed, watermark' \
+            --form-string 'size=640x480' \
+            --form-string 'num_frames=25' \
+            --form-string 'fps=8' \
+            --form-string 'num_inference_steps=10' \
+            --form-string 'guidance_scale=6.0' \
+            --form-string 'seed=42') || {
+              echo "::error::The video request could not reach the server or timed out."
+              exit 1
+            }
+          echo "Video endpoint HTTP status: $status"
+          if [ "$status" -lt 200 ] || [ "$status" -ge 300 ]; then
+            echo "Video server response (body only):"
+            head -c 3000 output/response.bin || true
+            echo
+            exit 1
+          fi
+          if ! file output/response.bin | grep -Eqi 'video|MP4|ISO Media'; then
+            echo "::error::HTTP succeeded, but response is not recognized as an MP4."
+            file output/response.bin || true
+            head -c 1000 output/response.bin || true
+            exit 1
+          fi
+          mv output/response.bin output/cosmos3-smoke-test.mp4
+          echo "MP4 bytes: $(wc -c < output/cosmos3-smoke-test.mp4)"
+
+      - name: Upload test output
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: cosmos3-private-video-smoke-test
+          path: output/
+          if-no-files-found: warn
+          retention-days: 3
