@@ -64,6 +64,10 @@ jobs:
           if [ "$status" -lt 200 ] || [ "$status" -ge 300 ]; then
             echo "The endpoint did not return a successful response. A redacted-safe response artifact will be uploaded for diagnosis."
             mv output/response.bin output/error-response.bin
+            echo "---- Azure error response (body only; no request headers or secrets) ----"
+            head -c 4000 output/error-response.bin || true
+            echo
+            echo "---- End Azure error response ----"
             exit 1
           fi
 
