@@ -44,16 +44,24 @@ GitHub Actions üzerinde çalışacak, Türkçe çocuk şarkıları için özgü
 ## Müzik prompt standardı
 TR009 ve sonraki şarkılarda Gemini prompt'una `lyrics.txt` dosyasındaki sözlerin tamamı doğrudan eklenecek; yalnızca dosya yolu yazılmayacak. Her şarkının müzik tarzı besteye ve hikâyeye göre değiştirilecek; son dört şarkının tür/ritim/enstrüman kombinasyonu tekrar edilmeyecek. Şablon: `templates/music_prompt_template.txt`; ayrıntılar: `docs/music-prompt-rules.md`. Song library preflight yeni şarkılarda tam sözlerin prompt içinde olmasını kontrol eder.
 
-## Azure iptal edildi: ücretsiz toplu video üretimi
+## Pufi Kids: 30 saniyelik animasyon kütüphanesiyle otomatik yayın
 
-Azure AI görsel/video üretimi aktif üretim hattından çıkarıldı. Yeni üretim akışı Pillow + FFmpeg ile prosedürel animasyon döngüsü oluşturur; Azure endpoint veya secret gerektirmez.
+Aktif hedef akış, yeni şarkı üretmek için otomatik müzik servisi kullanmak değil; Gemini'de senin hazırladığın MP3'leri GitHub'a yüklediğinde bunları hazır animasyon kütüphanesiyle eşleştirmektir.
 
-- **Actions → Pufi Kids - Sequential batch render (up to 500) → Run workflow:** Hazır şarkı paketlerini sırayla işler. `max_videos` değeri 1–500 arasında seçilebilir.
-- Her şarkı için MP3 dosyası kontrol edilir, döngü animasyonu yoksa üretilir, dikey MP4 şarkının süresine göre render edilir ve QC kontrolünden geçirilir.
-- Çıktılar ve `batch-report.json`, `pufi-kids-batch-videos-<run>` artifact'inde tutulur.
-- Depoda şu an 8 şarkı paketi var. İş akışı en fazla 500 **mevcut ve uygun** paketi işler; 500 ayrı video için 500 farklı şarkı paketi/MP3 gerekir.
-- Toplu render YouTube'a yükleme yapmaz ve şarkıları kullanılmış olarak işaretlemez. Yayın ayrı bir adımdır.
-- Not: Aktif prosedürel animasyon 2D prototiptir; yüksek kaliteli 3D animasyonla aynı kalite seviyesinde değildir. Bu sınırlama Azure iptali sonrası açıkça belirtilmiştir.
+1. Sen Gemini'de şarkıyı üretir, şarkı klasörüne `song.mp3` ve eşleşecek `lyrics.txt` dosyasını yüklersin. Yayına hazır şarkının `metadata.json` dosyasında `status: "ready"` olmalı.
+2. 500'e kadar yaklaşık 30 saniyelik MP4 klibini GitHub Release asset'leri olarak saklarsın. Büyük MP4'leri normal Git geçmişine ekleme.
+3. Her klip için `animation_library/catalog.json` kaydı gerekir: `clip_id`, `asset_url`, `duration_seconds`, `approved`, Türkçe `keywords` ve `tags` ile karakter/eylem/ortam alanları. Video adının tek başına yeterli olduğu varsayılmaz.
+4. `.github/workflows/pufi-kids-song-pipeline.yml`, yeni `songs/**/song.mp3` push edildiğinde çalışır. Şarkı sözlerini satır satır tarar, anahtar kelimelerle onaylı klipleri seçer, klipleri art arda birleştirir ve MP3'ü ekleyerek şarkı süresinde 1080×1920 MP4 oluşturur.
+5. QC başarısızsa YouTube'a yükleme ve MP3 silme adımı çalışmaz. Push ile başlayan üretimde QC başarılıysa YouTube Data API üzerinden yükleme yapılır. Yükleme başarılı video ID'si döndürdükten sonra kaynak `song.mp3` silinir ve `metadata.json` içinde yayın bilgisi korunur.
+6. YouTube kimlik bilgileri GitHub Actions secret `YOUTUBE_OAUTH_TOKEN_JSON` içinde bulunmalıdır. YouTube yüklemesi çocuklara yönelik (`Made for Kids`) olarak işaretlenir.
+
+### İlk kullanım öncesi önemli
+
+- `animation_library/catalog.json` şu anda boş; 500 klibin kendisi ve eşleştirme metadata kayıtları henüz eklenmiş değil. Bu nedenle kütüphane dolmadan üretim iş akışı bilinçli olarak hata verir; rastgele klip seçmez.
+- Mevcut şarkı klasörlerinin hepsi otomatik yayına hazır kabul edilmez. Yalnızca `metadata.json` içinde `status: "ready"` olan şarkılar yayınlanabilir.
+- Otomatik tetiklenen iş akışı MP3 yüklemesi sonrası yayın yapar. Önce yalnızca önizleme denemek için workflow'u elle başlatıp `publish=false` bırak; yayın için `publish=true` seç.
+- GitHub Actions'ın `contents: write` izni, yükleme doğrulandıktan sonra kaynak MP3'ü kaldırıp metadata güncellemesini depoya commit etmek için kullanılır.
+- Eski `Pufi Kids - Sequential batch render (up to 500)` iş akışı önceki prosedürel render prototipidir; 500 hazır klip kütüphanesiyle yayın akışının yerine geçmez.
 
 ## Testler
 - Ekran altyazısı ve otomatik SRT üretimi ana üretim hattından çıkarıldı. Okul öncesi videolar müzik ve görsel hikâyeye odaklanır; storyboard sahneleri doğrulanmamış şarkı sözlerinden değil konu ve öğrenme hedefinden üretilir.
