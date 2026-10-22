@@ -1,0 +1,74 @@
+name: Pufi Kids - Sequential batch render (up to 500)
+
+on:
+  workflow_dispatch:
+    inputs:
+      max_videos:
+        description: "İşlenecek en fazla hazır şarkı paketi (1-500)"
+        required: true
+        default: "500"
+        type: string
+      fail_fast:
+        description: "İlk hata olduğunda durdur"
+        required: true
+        default: false
+        type: boolean
+
+permissions:
+  contents: read
+
+concurrency:
+  group: pufi-kids-batch-render
+  cancel-in-progress: false
+
+jobs:
+  batch-render:
+    runs-on: ubuntu-latest
+    timeout-minutes: 350
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+
+      - name: Install FFmpeg and Pillow
+        run: |
+          sudo apt-get update
+          sudo apt-get install --yes ffmpeg
+          python -m pip install --disable-pip-version-check "Pillow>=10,<13"
+
+      - name: Validate batch limit
+        env:
+          MAX_VIDEOS: ${{ inputs.max_videos }}
+        run: |
+          python - <<'PY'
+          import os
+          value = int(os.environ["MAX_VIDEOS"])
+          if not 1 <= value <= 500:
+              raise SystemExit("max_videos must be between 1 and 500")
+          print(f"Batch limit: {value}")
+          PY
+
+      - name: Run unit tests
+        run: python -m unittest discover -s tests -v
+
+      - name: Generate videos sequentially without Azure
+        env:
+          MAX_VIDEOS: ${{ inputs.max_videos }}
+          FAIL_FAST: ${{ inputs.fail_fast }}
+        run: |
+          ARGS=(--limit "$MAX_VIDEOS" --output-dir output/batch)
+          if [ "$FAIL_FAST" = "true" ]; then ARGS+=(--fail-fast); fi
+          python app/batch_render_videos.py "${ARGS[@]}"
+
+      - name: Upload videos and batch report
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: pufi-kids-batch-videos-${{ github.run_number }}
+          path: output/batch/
+          if-no-files-found: warn
+          retention-days: 30
