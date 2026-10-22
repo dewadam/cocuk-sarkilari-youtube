@@ -44,10 +44,16 @@ GitHub Actions üzerinde çalışacak, Türkçe çocuk şarkıları için özgü
 ## Müzik prompt standardı
 TR009 ve sonraki şarkılarda Gemini prompt'una `lyrics.txt` dosyasındaki sözlerin tamamı doğrudan eklenecek; yalnızca dosya yolu yazılmayacak. Her şarkının müzik tarzı besteye ve hikâyeye göre değiştirilecek; son dört şarkının tür/ritim/enstrüman kombinasyonu tekrar edilmeyecek. Şablon: `templates/music_prompt_template.txt`; ayrıntılar: `docs/music-prompt-rules.md`. Song library preflight yeni şarkılarda tam sözlerin prompt içinde olmasını kontrol eder.
 
-## Azure AI görsel üretimi ve YouTube yayınlama
+## Azure iptal edildi: ücretsiz toplu video üretimi
 
-- **Actions → Azure AI scene image test → Run workflow:** Azure AI Foundry FLUX dağıtımından 1–8 sahne görseli üretir. Kurulum: `docs/AZURE_AI_SCENE_TEST.md`. İş akışı yalnızca manuel başlatılır ve görselleri artifact olarak verir.
-- **YouTube OAuth bağlantısı:** `docs/YOUTUBE_UPLOAD_SETUP.md`. `Render vertical song video` iş akışı QC başarılı olduktan sonra, `publish_to_youtube=true` seçiliyse ve şarkı `metadata.json` durumu `ready` ise herkese açık yükleme yapabilir. OAuth secret yoksa yükleme tamamlanmaz. İlk yayın için MP3 söz eşleştirmesi ve sahne görselleri şarttır.
+Azure AI görsel/video üretimi aktif üretim hattından çıkarıldı. Yeni üretim akışı Pillow + FFmpeg ile prosedürel animasyon döngüsü oluşturur; Azure endpoint veya secret gerektirmez.
+
+- **Actions → Pufi Kids - Sequential batch render (up to 500) → Run workflow:** Hazır şarkı paketlerini sırayla işler. `max_videos` değeri 1–500 arasında seçilebilir.
+- Her şarkı için MP3 dosyası kontrol edilir, döngü animasyonu yoksa üretilir, dikey MP4 şarkının süresine göre render edilir ve QC kontrolünden geçirilir.
+- Çıktılar ve `batch-report.json`, `pufi-kids-batch-videos-<run>` artifact'inde tutulur.
+- Depoda şu an 8 şarkı paketi var. İş akışı en fazla 500 **mevcut ve uygun** paketi işler; 500 ayrı video için 500 farklı şarkı paketi/MP3 gerekir.
+- Toplu render YouTube'a yükleme yapmaz ve şarkıları kullanılmış olarak işaretlemez. Yayın ayrı bir adımdır.
+- Not: Aktif prosedürel animasyon 2D prototiptir; yüksek kaliteli 3D animasyonla aynı kalite seviyesinde değildir. Bu sınırlama Azure iptali sonrası açıkça belirtilmiştir.
 
 ## Testler
 - Ekran altyazısı ve otomatik SRT üretimi ana üretim hattından çıkarıldı. Okul öncesi videolar müzik ve görsel hikâyeye odaklanır; storyboard sahneleri doğrulanmamış şarkı sözlerinden değil konu ve öğrenme hedefinden üretilir.
