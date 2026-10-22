@@ -1,0 +1,134 @@
+name: Pufi Kids - Match song to animation library and publish
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - "songs/**/song.mp3"
+      - "songs/**/metadata.json"
+      - "songs/**/lyrics.txt"
+      - "animation_library/catalog.json"
+  workflow_dispatch:
+    inputs:
+      song_id:
+        description: "Şarkı ID'si (ör. TR009)"
+        required: true
+        default: "TR009"
+        type: string
+      publish:
+        description: "QC başarılıysa YouTube'a yükle ve kaynak MP3'ü sil"
+        required: true
+        default: false
+        type: boolean
+
+permissions:
+  contents: write
+concurrency:
+  group: pufi-kids-song-pipeline
+  cancel-in-progress: false
+
+jobs:
+  produce-and-publish:
+    if: github.event_name == 'workflow_dispatch' || (github.event_name == 'push' && !contains(github.event.head_commit.message, '[pufi-cleanup]'))
+    runs-on: ubuntu-latest
+    timeout-minutes: 350
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+          persist-credentials: true
+      - name: Find song ID
+        id: song
+        env:
+          EVENT_NAME: ${{ github.event_name }}
+          INPUT_SONG_ID: ${{ inputs.song_id }}
+        run: |
+          if [ "$EVENT_NAME" = "workflow_dispatch" ]; then
+            SID="$INPUT_SONG_ID"
+          else
+            SID=""
+            while IFS= read -r file; do
+              case "$file" in
+                songs/*/song.mp3) SID="$(basename "$(dirname "$file")" | cut -d_ -f1)"; break ;;
+              esac
+            done < <(git diff-tree --no-commit-id --name-only -r "$GITHUB_SHA")
+          fi
+          if [ -z "$SID" ]; then echo "skip=true" >> "$GITHUB_OUTPUT"; else echo "song_id=$SID" >> "$GITHUB_OUTPUT"; echo "skip=false" >> "$GITHUB_OUTPUT"; fi
+      - name: Set up Python
+        if: steps.song.outputs.skip != 'true'
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+      - name: Install FFmpeg and YouTube API libraries
+        if: steps.song.outputs.skip != 'true'
+        run: |
+          sudo apt-get update
+          sudo apt-get install --yes ffmpeg
+          python -m pip install --disable-pip-version-check google-api-python-client google-auth google-auth-httplib2
+      - name: Test code and validate animation catalog
+        if: steps.song.outputs.skip != 'true'
+        run: |
+          python -m unittest discover -s tests -v
+          python app/animation_catalog.py validate
+      - name: Render from matched 30-second clips
+        if: steps.song.outputs.skip != 'true'
+        env:
+          SONG_ID: ${{ steps.song.outputs.song_id }}
+        run: |
+          python app/render_from_animation_library.py --song-id "$SONG_ID" --output "output/${SONG_ID}_final.mp4"
+          python app/validate_render.py --input "output/${SONG_ID}_final.mp4" --report "output/${SONG_ID}_qc-report.json"
+      - name: Save video and reports
+        if: always() && steps.song.outputs.skip != 'true'
+        uses: actions/upload-artifact@v4
+        with:
+          name: pufi-kids-${{ steps.song.outputs.song_id }}-render
+          path: |
+            output/${{ steps.song.outputs.song_id }}_final.mp4
+            output/${{ steps.song.outputs.song_id }}_qc-report.json
+            output/${{ steps.song.outputs.song_id }}_animation-match-report.json
+          if-no-files-found: warn
+          retention-days: 30
+      - name: Upload QC-passed video to YouTube
+        if: steps.song.outputs.skip != 'true' && (github.event_name == 'push' || inputs.publish == true)
+        env:
+          YOUTUBE_OAUTH_TOKEN_JSON: ${{ secrets.YOUTUBE_OAUTH_TOKEN_JSON }}
+          YOUTUBE_VIDEO_PATH: output/${{ steps.song.outputs.song_id }}_final.mp4
+          YOUTUBE_PRIVACY_STATUS: public
+          YOUTUBE_TAGS: çocuk şarkıları, Türkçe çocuk şarkıları, okul öncesi, çocuk müziği, Pufi Kids
+        run: |
+          SONG_FOLDER="$(find songs -maxdepth 1 -type d -name "${{ steps.song.outputs.song_id }}_*" -print -quit)"
+          test -n "$SONG_FOLDER"
+          export YOUTUBE_METADATA_PATH="$SONG_FOLDER/metadata.json"
+          python app/upload_youtube.py
+      - name: Mark published and delete source audio only after upload succeeds
+        if: steps.song.outputs.skip != 'true' && (github.event_name == 'push' || inputs.publish == true)
+        env:
+          SONG_ID: ${{ steps.song.outputs.song_id }}
+        run: |
+          export SONG_FOLDER="$(find songs -maxdepth 1 -type d -name "${SONG_ID}_*" -print -quit)"
+          test -n "$SONG_FOLDER"
+          python - <<'PY'
+          import json, os
+          from datetime import datetime, timezone
+          from pathlib import Path
+          folder=Path(os.environ["SONG_FOLDER"])
+          result=json.loads(Path("output/youtube-upload-result.json").read_text(encoding="utf-8"))
+          path=folder/"metadata.json"
+          meta=json.loads(path.read_text(encoding="utf-8"))
+          meta["usage_status"]="published"
+          meta["used_in_video_id"]=result["video_id"]
+          meta["used_at"]=datetime.now(timezone.utc).isoformat()
+          meta["video_status"]="published"
+          meta["youtube_url"]=result["url"]
+          path.write_text(json.dumps(meta,ensure_ascii=False,indent=2)+"\n",encoding="utf-8")
+          audio=folder/str(meta.get("audio_file","song.mp3"))
+          if not audio.is_file(): raise SystemExit("Upload succeeded but source MP3 is already absent.")
+          audio.unlink()
+          print("Confirmed upload:",result["url"],"; source MP3 removed.")
+          PY
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add "songs/${SONG_ID}_*/metadata.json"
+          git add -u songs/
+          git commit -m "[pufi-cleanup] Mark ${SONG_ID} published and remove source audio"
+          git push
