@@ -9,13 +9,13 @@
     "max": 150
   },
   "visual_style": "stylized_high_quality_3d",
-  "render_strategy": "hybrid_3d_ffmpeg",
+  "render_strategy": "procedural_pillow_ffmpeg",
   "target_audience": "made_for_kids",
   "auto_publish_enabled": false,
   "providers": {
     "lyrics": null,
     "music": null,
-    "visuals": null,
+    "visuals": "procedural_pillow_ffmpeg",
     "youtube": "youtube_data_api_v3"
   },
   "safety": {
@@ -23,5 +23,12 @@
     "require_asset_license_check": true,
     "prevent_duplicate_uploads": true,
     "publish_only_after_manual_test": true
+  },
+  "batch_render": {
+    "enabled": true,
+    "max_videos_per_run": 500,
+    "sequential": true,
+    "azure_enabled": false,
+    "auto_publish": false
   }
 }
