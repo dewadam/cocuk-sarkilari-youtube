@@ -127,7 +127,7 @@ def main() -> int:
         "note": "Only song packages already present in songs/ are processed. This workflow does not invent 500 songs or upload videos.",
     }
     report_path = output_dir / "batch-report.json"
-    report_path.write_text(json.dumps(report, ensure_ascii=False, indent=2) + "\\n", encoding="utf-8")
+    report_path.write_text(json.dumps(report, ensure_ascii=False, indent=2) + "\n", encoding="utf-8")
     print(json.dumps({k: report[k] for k in ("packages_found", "attempted", "succeeded", "failed")}, ensure_ascii=False))
     return 0 if report["succeeded"] > 0 else 1
 
