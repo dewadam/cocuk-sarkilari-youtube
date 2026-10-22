@@ -1,5 +1,5 @@
 {
-  "project_name": "Turkce Cocuk Sarkilari",
+  "project_name": "Pufi Kids",
   "language": "tr-TR",
   "timezone": "Europe/Istanbul",
   "publishing_interval_days": 4,
@@ -9,13 +9,13 @@
     "max": 150
   },
   "visual_style": "stylized_high_quality_3d",
-  "render_strategy": "procedural_pillow_ffmpeg",
+  "render_strategy": "approved_animation_library_30s_clips_plus_ffmpeg",
   "target_audience": "made_for_kids",
-  "auto_publish_enabled": false,
+  "auto_publish_enabled": true,
   "providers": {
     "lyrics": null,
     "music": null,
-    "visuals": "procedural_pillow_ffmpeg",
+    "visuals": "github_release_animation_library",
     "youtube": "youtube_data_api_v3"
   },
   "safety": {
@@ -25,10 +25,25 @@
     "publish_only_after_manual_test": true
   },
   "batch_render": {
-    "enabled": true,
+    "enabled": false,
     "max_videos_per_run": 500,
     "sequential": true,
     "azure_enabled": false,
-    "auto_publish": false
+    "auto_publish": true
+  },
+  "animation_library": {
+    "enabled": true,
+    "storage": "github_release_assets",
+    "target_clip_duration_seconds": 30,
+    "max_clips": 500,
+    "keyword_matching": "turkish_lyrics_line_matching",
+    "require_approved_clips": true,
+    "random_fallback": false
+  },
+  "song_lifecycle": {
+    "auto_process_on_song_mp3_push": true,
+    "require_status_ready": true,
+    "delete_source_audio_after_confirmed_youtube_upload": true,
+    "retain_metadata_and_youtube_video_id": true
   }
 }
