@@ -7,6 +7,7 @@ runs MP4 QC. It never publishes to YouTube and never marks a song as consumed.
 from __future__ import annotations
 
 import argparse
+import hashlib
 import json
 import os
 import subprocess
@@ -92,9 +93,35 @@ def main() -> int:
     output_dir = (ROOT / args.output_dir).resolve()
     output_dir.mkdir(parents=True, exist_ok=True)
     all_candidates = candidates()
-    selected = all_candidates[:args.limit]
+    selected = []
+    skipped = []
+    seen_audio_hashes = {}
+    allowed_statuses = {"ready", "audio_uploaded_lyrics_check"}
+    for song_id, folder, metadata in all_candidates:
+        reason = None
+        if metadata.get("_metadata_error"):
+            reason = f"metadata.json unreadable: {metadata['_metadata_error']}"
+        elif metadata.get("status") not in allowed_statuses:
+            reason = f"not ready: status={metadata.get('status')!r}"
+        elif metadata.get("usage_status", "available") != "available" or metadata.get("used_in_video_id"):
+            reason = "already used or unavailable"
+        else:
+            audio = folder / str(metadata.get("audio_file", "song.mp3"))
+            if not audio.is_file():
+                reason = f"audio missing: {audio.name}"
+            else:
+                digest = hashlib.sha256(audio.read_bytes()).hexdigest()
+                if digest in seen_audio_hashes:
+                    reason = f"duplicate audio content matches {seen_audio_hashes[digest]}"
+                else:
+                    seen_audio_hashes[digest] = song_id
+        if reason:
+            skipped.append({"song_id": song_id, "title": metadata.get("title", folder.name), "status": "skipped", "reason": reason})
+        elif len(selected) < args.limit:
+            selected.append((song_id, folder, metadata))
+
     results = []
-    print(f"Packages found: {len(all_candidates)}; processing at most: {len(selected)}; Azure: disabled")
+    print(f"Packages found: {len(all_candidates)}; eligible unique-audio packages: {len(selected)}; limit: {args.limit}; Azure: disabled")
     for index, (song_id, folder, metadata) in enumerate(selected, start=1):
         print(f"\\n[{index}/{len(selected)}] {song_id}: {metadata.get('title', folder.name)}")
         try:
@@ -120,15 +147,18 @@ def main() -> int:
         "youtube_publishing": False,
         "limit": args.limit,
         "packages_found": len(all_candidates),
+        "eligible_unique_audio_packages": len(selected),
         "attempted": len(results),
         "succeeded": sum(x["status"] == "success" for x in results),
         "failed": sum(x["status"] == "failed" for x in results),
+        "skipped": len(skipped),
+        "skip_reasons": skipped,
         "results": results,
         "note": "Only song packages already present in songs/ are processed. This workflow does not invent 500 songs or upload videos.",
     }
     report_path = output_dir / "batch-report.json"
     report_path.write_text(json.dumps(report, ensure_ascii=False, indent=2) + "\n", encoding="utf-8")
-    print(json.dumps({k: report[k] for k in ("packages_found", "attempted", "succeeded", "failed")}, ensure_ascii=False))
+    print(json.dumps({k: report[k] for k in ("packages_found", "eligible_unique_audio_packages", "attempted", "succeeded", "failed", "skipped")}, ensure_ascii=False))
     return 0 if report["succeeded"] > 0 else 1
 
 
