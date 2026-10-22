@@ -20,8 +20,8 @@ def song_folder(sid):
 def choose_playlist(lyrics,catalog,target):
     clips=[c for c in catalog["clips"] if c.get("approved",False) and str(c.get("asset_url","")).startswith("https://") and 20<=float(c.get("duration_seconds",0))<=40]
     if not clips: raise RuntimeError("No approved 20-40s HTTPS clips in animation_library/catalog.json")
-    lines=[re.sub(r"^[\\[({].*?[\\])}]\\s*","",x).strip() for x in lyrics.splitlines()]
-    lines=[x for x in lines if len(x.split())>=2 and not x.startswith("#")]
+    lines=[x.strip() for x in lyrics.splitlines() if x.strip() and not x.strip().startswith(("[","#","(")]
+    lines=[x for x in lines if len(x.split())>=2]
     matched=[]
     for line in lines:
         ranked=[(score_clip(c,line)[0],c) for c in clips]
@@ -36,7 +36,7 @@ def choose_playlist(lyrics,catalog,target):
     if not matched: raise RuntimeError("No keyword match found. Add Turkish tags/keywords; random fallback is disabled.")
     playlist=[]; total=0
     while total<target and len(playlist)<200:
-        c=matched[len(playlist)%len(matched)]; playlist.append(c); total+=min(30,float(c["duration_seconds"]))
+        c=matched[len(playlist)%len(matched)]; playlist.append(c); total+=30
     return playlist
 def main():
     p=argparse.ArgumentParser(); p.add_argument("--song-id",required=True); p.add_argument("--output"); p.add_argument("--catalog",type=Path,default=DEFAULT_CATALOG); a=p.parse_args()
