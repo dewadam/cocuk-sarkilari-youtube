@@ -1,4 +1,4 @@
-name: Produce song video preview
+name: Produce song video preview (no Azure)
 
 on:
   workflow_dispatch:
@@ -15,7 +15,7 @@ permissions:
 jobs:
   produce:
     runs-on: ubuntu-latest
-    timeout-minutes: 50
+    timeout-minutes: 90
     steps:
       - name: Checkout repository
         uses: actions/checkout@v4
@@ -30,39 +30,16 @@ jobs:
           sudo apt-get update
           sudo apt-get install --yes ffmpeg fonts-dejavu-core
 
-      - name: Run unit tests before paid image requests
+      - name: Run unit tests
         run: python -m unittest discover -s tests -v
 
-      - name: Check production script syntax before paid requests
-        run: python -m py_compile app/generate_song_visuals.py app/build_storyboards.py app/render_video.py app/validate_assets.py app/validate_render.py
+      - name: Install Pillow
+        run: python -m pip install --disable-pip-version-check "Pillow>=10,<13"
 
-      - name: Build selected song storyboard
+      - name: Generate free procedural animation loop (no Azure)
         env:
           SONG_ID: ${{ inputs.song_id }}
-        run: |
-          python app/build_storyboards.py --song-id "$SONG_ID"
-          python app/export_visual_prompt_pack.py --song-id "$SONG_ID"
-          python app/validate_visual_prompt_pack.py --song-id "$SONG_ID"
-
-      - name: Generate 6 storyboard-driven Azure images (no automatic retries)
-        env:
-          SONG_ID: ${{ inputs.song_id }}
-          AZURE_ENDPOINT: ${{ secrets.AZURE_ENDPOINT }}
-          AZURE_API_KEY: ${{ secrets.AZURE_API_KEY }}
-          AZURE_IMAGE_MODEL: ${{ vars.AZURE_IMAGE_MODEL }}
-          AZURE_IMAGE_SIZE: "1024x1536"
-          MAX_SCENES: "6"
-        run: python app/generate_song_visuals.py
-
-      - name: Validate scene assets
-        if: always()
-        env:
-          SONG_ID: ${{ inputs.song_id }}
-        run: |
-          SONG_FOLDER="$(find songs -maxdepth 1 -type d -name "${SONG_ID}_*" -print -quit)"
-          if [ -n "$SONG_FOLDER" ]; then
-            python app/validate_assets.py --song-folder "$SONG_FOLDER" --report "output/${SONG_ID}_asset-preflight-report.json" || true
-          fi
+        run: python app/generate_procedural_dance_loop.py
 
       - name: Render vertical MP4 preview
         env:
