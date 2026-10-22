@@ -1,4 +1,4 @@
-name: Generate seamless dance video and publish song
+name: Generate procedural dance video and optionally publish song
 
 on:
   workflow_dispatch:
@@ -19,9 +19,8 @@ permissions:
 
 jobs:
   produce:
-    # The Azure worker may take up to 100 minutes; leave time for setup, rendering, QC, and artifacts.
     runs-on: ubuntu-latest
-    timeout-minutes: 150
+    timeout-minutes: 90
     steps:
       - name: Checkout repository
         uses: actions/checkout@v4
@@ -60,13 +59,12 @@ jobs:
           print(f"Release status: {metadata.get('status')}")
           PY
 
-      - name: Generate real AI 3D animation on Azure GPU
+      - name: Generate free procedural animation loop (no Azure)
         env:
           SONG_ID: ${{ inputs.song_id }}
-          AZURE_VIDEO_WORKER_URL: ${{ secrets.AZURE_VIDEO_WORKER_URL }}
-          AZURE_VIDEO_WORKER_TOKEN: ${{ secrets.AZURE_VIDEO_WORKER_TOKEN }}
-          AZURE_VIDEO_MODEL: ${{ vars.AZURE_VIDEO_MODEL }}
-        run: python app/generate_azure_video_worker.py --song-id "$SONG_ID" --seconds 30 --timeout-minutes 100
+        run: |
+          python -m pip install --disable-pip-version-check "Pillow>=10,<13"
+          python app/generate_procedural_dance_loop.py
 
       - name: Render loop to full song length
         env:
