@@ -17,6 +17,32 @@ ROOT = Path(__file__).resolve().parents[1]
 def truthy(value):
     return str(value).strip().casefold() in {"yes", "true", "1", "evet"}
 
+def infer_turkish_actions(prompts):
+    """Map common English prompt actions to Turkish search terms used by song lyrics."""
+    rules = [
+        (("waves hello", "lifts one arm to wave", "raises one arm to wave"), ("el sallama", "selamlama")),
+        (("raises both arms", "lifts both arms"), ("kolları kaldırma",)),
+        (("spins around", "little twirl", "twirls"), ("dönme", "dönüş")),
+        (("claps", "clapping"), ("alkışlama",)),
+        (("sways side to side", "sways"), ("sağa sola sallanma", "sallanma")),
+        (("dances", "dancing", "dances with joy"), ("dans etme", "dans")),
+        (("walks happily", "walks through"), ("yürüme",)),
+        (("hops", "bounces", "jumping", "jumps"), ("zıplama",)),
+        (("watches", "looks at", "looks around"), ("izleme", "bakma")),
+        (("giggles", "laughs", "laughing"), ("gülme",)),
+        (("smiles", "smiling", "big smile"), ("gülümseme",)),
+        (("settles into a calm", "calm happy pose"), ("sakin poz",)),
+        (("stretches", "stretching"), ("gerinme",)),
+        (("nods", "nodding"), ("başını sallama",)),
+        (("waves", "wave"), ("el sallama",)),
+    ]
+    text = " ".join(str(p).casefold() for p in prompts)
+    found = []
+    for phrases, terms in rules:
+        if any(phrase in text for phrase in phrases):
+            found.extend(terms)
+    return list(dict.fromkeys(found))
+
 def main():
     p = argparse.ArgumentParser()
     p.add_argument("--csv", type=Path, default=ROOT/"animation_library/source/video_catalog_500.csv")
@@ -60,6 +86,7 @@ def main():
             row.get("setting", ""), row.get("learning_goal_tr", "")
         ] if str(x).strip()))
         prompts = [str(row.get(f"prompt_seg{i}", "")).strip() for i in range(1, 6)]
+        actions = infer_turkish_actions(prompts)
         try:
             duration = float(row.get("duration_target_sec") or 30)
             scene_no = int(float(row.get("scene_no") or 0))
@@ -73,7 +100,7 @@ def main():
             "asset_url": "", "approved": False,
             "source_model": "user-generated-from-provided-prompt", "prompt_id": cid,
             "characters": [str(row.get("character", "")).strip()] if row.get("character") else [],
-            "actions": [], "environments": [str(row.get("setting", "")).strip()] if row.get("setting") else [],
+            "actions": actions, "environments": [str(row.get("setting", "")).strip()] if row.get("setting") else [],
             "moods": ["çocuk dostu"], "theme_code": str(row.get("theme_code", "")).strip(),
             "scene_no": scene_no, "learning_goal_tr": str(row.get("learning_goal_tr", "")).strip(),
             "aspect_ratio": str(row.get("aspect_ratio", "9:16")).strip(),
