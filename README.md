@@ -90,3 +90,12 @@ TR002 ön izlemesindeki genel balon benzeri görünüm yerine ayrı bir kuzu sil
 - `app/animation_catalog.py` katalog doğrulama ve Türkçe arama yapar. `app/select_animation_clips.py` şarkı sözlerinden etiket eşleşmeleri bulup şarkı süresine göre tekrar edilebilir bir oynatma listesi üretir.
 - Aylık şarkı temizliği geçici dosyaları temizlemeli; Release varlıkları ve katalog kayıtları kalıcı kalmalıdır.
 - Depo henüz kalıcı MP4 animasyon arşiviyle doldurulmadı. Aktif toplu üretim, şarkı başına prosedürel animasyon döngüsü oluşturur ve YouTube'a otomatik yükleme yapmaz.
+
+
+### CSV ile üretilen 500 klip kaydını içe aktarma
+
+- CSV kataloğunu `animation_library/source/video_catalog_500.csv` konumuna koyun; MP4'leri `animation_library/inbox/<THEME_CODE>/CLIP###.mp4` altında tema koduna göre düzenleyin.
+- `python app/import_video_catalog_csv.py` komutu, CSV ile aynı ID'ye sahip gerçek MP4 dosyalarını eşleştirir, `animation_library/upload_batch/` içine MP4 + JSON yan dosyaları hazırlar ve eksik ID'leri `import-report.json` dosyasına yazar.
+- İçe aktarıcı hiçbir klibi otomatik onaylamaz: `approved: false` ve boş `asset_url` ile başlar. Görsel kontrol sonrası onaylanan klipler `app/publish_animation_batch.py` ile GitHub Release'e yüklenmelidir; ancak o zaman gerçek `asset_url` oluşur.
+- Örnek `CLIP001.mp4` teknik olarak 30 saniye, 720×1280, H.264 ve 24 FPS'tir. Proje hattı son videoyu 1080×1920 / 30 FPS olarak yeniden kodlar.
+- CSV'de 500 kayıt olması 500 MP4'ün mevcut olduğu anlamına gelmez. Şu an depoya gelen örnek yalnızca CLIP001; kalan dosyalar yüklenmeden kütüphane tamamlanmış sayılmaz.
