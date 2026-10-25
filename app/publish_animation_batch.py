@@ -44,6 +44,8 @@ def main() -> int:
         meta = json.loads(sidecar.read_text(encoding="utf-8"))
         if not isinstance(meta, dict):
             raise ValueError(f"Sidecar must be a JSON object: {sidecar}")
+        if meta.get("approved") is not True:
+            raise ValueError(f"{sidecar.name}: approved must be true after visual/content QC; refusing to publish unapproved clip.")
         clip_id = meta.get("clip_id") or "ANIM_" + re.sub(r"[^A-Z0-9]+", "_", video.stem.upper()).strip("_")
         if clip_id in known:
             raise ValueError(f"Duplicate clip_id {clip_id}; use a new stable ID")
@@ -51,7 +53,7 @@ def main() -> int:
         meta["clip_id"] = clip_id
         meta["file_name"] = video.name
         meta["asset_url"] = f"{release_base}/{video.name}"
-        meta.setdefault("approved", True)
+        meta["approved"] = True
         meta.setdefault("source_model", "unknown")
         meta.setdefault("prompt_id", "")
         errors = validate_clip(meta)
