@@ -25,7 +25,7 @@ class TestImportVideoCatalogCSV(unittest.TestCase):
                     "scene_no":"1","title_tr":"Kırmızı Laleler","character":"duckling",
                     "setting":"red tulips","learning_goal_tr":"Renkleri tanımak",
                     "duration_target_sec":"30","aspect_ratio":"9:16",
-                    "prompt_seg1":"one","prompt_seg2":"two","prompt_seg3":"three",
+                    "prompt_seg1":"A chubby duckling waves hello and hops happily.","prompt_seg2":"two","prompt_seg3":"three",
                     "prompt_seg4":"four","prompt_seg5":"five","negative_prompt":"blur",
                     "tags":"çocuk şarkısı; renkler","loopable":"yes"
                 })
@@ -49,6 +49,8 @@ class TestImportVideoCatalogCSV(unittest.TestCase):
             self.assertEqual(report["found_video_files"], 1)
             self.assertEqual(report["missing_video_ids"], ["CLIP002"])
             self.assertFalse(sidecar["approved"])
+            self.assertIn("el sallama", sidecar["actions"])
+            self.assertIn("zıplama", sidecar["actions"])
             self.assertEqual(sidecar["asset_url"], "")
             self.assertTrue((out / "CLIP001.mp4").is_file())
 
