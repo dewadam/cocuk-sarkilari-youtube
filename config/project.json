@@ -11,7 +11,7 @@
   "visual_style": "stylized_high_quality_3d",
   "render_strategy": "approved_animation_library_30s_clips_plus_ffmpeg",
   "target_audience": "made_for_kids",
-  "auto_publish_enabled": true,
+  "auto_publish_enabled": false,
   "providers": {
     "lyrics": null,
     "music": null,
@@ -29,7 +29,7 @@
     "max_videos_per_run": 500,
     "sequential": true,
     "azure_enabled": false,
-    "auto_publish": true
+    "auto_publish": false
   },
   "animation_library": {
     "enabled": true,
