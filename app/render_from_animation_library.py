@@ -14,8 +14,9 @@ def run(cmd,capture=False):
 def duration(p):
     return float(run(["ffprobe","-v","error","-show_entries","format=duration","-of","default=noprint_wrappers=1:nokey=1",str(p)],True))
 def song_folder(sid):
-    m=sorted(p for p in (ROOT/"songs").glob(sid.upper()+"_*") if p.is_dir())
-    if len(m)!=1: raise RuntimeError(f"Expected one songs/{sid}_* folder; found {len(m)}")
+    sid=sid.upper()
+    m=sorted(p for p in (ROOT/"songs").iterdir() if p.is_dir() and (p.name.upper()==sid or p.name.upper().startswith(sid+"_")))
+    if len(m)!=1: raise RuntimeError(f"Expected one songs/{sid} or songs/{sid}_* folder; found {len(m)}")
     return m[0]
 def choose_playlist(lyrics,catalog,target):
     clips=[c for c in catalog["clips"] if c.get("approved",False) and str(c.get("asset_url","")).startswith("https://") and 20<=float(c.get("duration_seconds",0))<=40]
