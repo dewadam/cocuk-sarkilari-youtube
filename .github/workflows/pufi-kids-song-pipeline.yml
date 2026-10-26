@@ -18,7 +18,7 @@ on:
       publish:
         description: "QC başarılıysa YouTube'a yükle ve kaynak MP3'ü sil"
         required: true
-        default: false
+        default: true
         type: boolean
 
 permissions:
