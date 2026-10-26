@@ -25,7 +25,7 @@ permissions:
   contents: write
 concurrency:
   group: pufi-kids-song-pipeline
-  cancel-in-progress: false
+  cancel-in-progress: true
 
 jobs:
   produce-and-publish:
@@ -62,8 +62,10 @@ jobs:
       - name: Install FFmpeg and YouTube API libraries
         if: steps.song.outputs.skip != 'true'
         run: |
-          sudo apt-get update
-          sudo apt-get install --yes ffmpeg
+          if ! command -v ffmpeg >/dev/null 2>&1; then
+            sudo apt-get update -o Acquire::Retries=2 -o Acquire::http::Timeout=30
+            sudo apt-get install --yes ffmpeg
+          fi
           python -m pip install --disable-pip-version-check google-api-python-client google-auth google-auth-httplib2
       - name: Test code and validate animation catalog
         if: steps.song.outputs.skip != 'true'
