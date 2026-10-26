@@ -53,6 +53,16 @@ if errorlevel 1 (
   set "GH_EXE=gh"
 )
 
+if /I not "%GH_EXE%"=="gh" (
+  for %%I in ("%GH_EXE%") do set "PATH=%%~dpI;%PATH%"
+)
+
+where gh >nul 2>&1
+if errorlevel 1 (
+  echo ERROR: GitHub CLI could not be found on PATH after setup.
+  goto :finish_error
+)
+
 where git >nul 2>&1
 if errorlevel 1 (
   echo ERROR: Git for Windows is not installed.
@@ -111,7 +121,8 @@ goto :finish
 
 :finish_error
 echo.
-echo The upload did not complete. Read the error above before retrying.
+echo ERROR: Upload did not complete. Do not treat this run as successful.
+echo Resolve the error above, then run this launcher again. The saved tag allows resuming.
 
 :finish
 echo.
