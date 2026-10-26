@@ -52,7 +52,7 @@ Aktif hedef akış, yeni şarkı üretmek için otomatik müzik servisi kullanma
 2. 500'e kadar yaklaşık 30 saniyelik MP4 klibini GitHub Release asset'leri olarak saklarsın. Büyük MP4'leri normal Git geçmişine ekleme.
 3. Her klip için `animation_library/catalog.json` kaydı gerekir: `clip_id`, `asset_url`, `duration_seconds`, `approved`, Türkçe `keywords` ve `tags` ile karakter/eylem/ortam alanları. Video adının tek başına yeterli olduğu varsayılmaz.
 4. `.github/workflows/pufi-kids-song-pipeline.yml`, yeni `songs/**/song.mp3` push edildiğinde çalışır. Şarkı sözlerini satır satır tarar, anahtar kelimelerle onaylı klipleri seçer, klipleri art arda birleştirir ve MP3'ü ekleyerek şarkı süresinde 1080×1920 MP4 oluşturur.
-5. QC başarısızsa YouTube'a yükleme ve MP3 silme adımı çalışmaz. Push ile başlayan üretimde QC başarılıysa YouTube Data API üzerinden yükleme yapılır. Yükleme başarılı video ID'si döndürdükten sonra kaynak `song.mp3` silinir ve `metadata.json` içinde yayın bilgisi korunur.
+5. QC başarısızsa YouTube'a yükleme ve MP3 silme adımı çalışmaz. Push ile başlayan üretimde QC başarılıysa YouTube Data API üzerinden yükleme yapılır. YouTube yüklemesi başarılı olduktan sonra şarkı klasörü GitHub'dan kaldırılır. Yayın kimliği, URL'si ve tarihi kökteki `published_songs.json` dosyasında saklanır; başarısız yüklemede klasör korunur.
 6. YouTube kimlik bilgileri GitHub Actions secret `YOUTUBE_OAUTH_TOKEN_JSON` içinde bulunmalıdır. YouTube yüklemesi çocuklara yönelik (`Made for Kids`) olarak işaretlenir.
 
 ### İlk kullanım öncesi önemli
@@ -60,7 +60,7 @@ Aktif hedef akış, yeni şarkı üretmek için otomatik müzik servisi kullanma
 - `animation_library/catalog.json` şu anda boş; 500 klibin kendisi ve eşleştirme metadata kayıtları henüz eklenmiş değil. Bu nedenle kütüphane dolmadan üretim iş akışı bilinçli olarak hata verir; rastgele klip seçmez.
 - Mevcut şarkı klasörlerinin hepsi otomatik yayına hazır kabul edilmez. Yalnızca `metadata.json` içinde `status: "ready"` olan şarkılar yayınlanabilir.
 - Otomatik tetiklenen iş akışı MP3 yüklemesi sonrası yayın yapar. Önce yalnızca önizleme denemek için workflow'u elle başlatıp `publish=false` bırak; yayın için `publish=true` seç.
-- GitHub Actions'ın `contents: write` izni, yükleme doğrulandıktan sonra kaynak MP3'ü kaldırıp metadata güncellemesini depoya commit etmek için kullanılır.
+- GitHub Actions'ın `contents: write` izni, YouTube yüklemesi doğrulandıktan sonra yayın kaydını `published_songs.json` dosyasına ekleyip şarkı klasörünü depodan kaldırmak için kullanılır.
 - Eski `Pufi Kids - Sequential batch render (up to 500)` iş akışı önceki prosedürel render prototipidir; 500 hazır klip kütüphanesiyle yayın akışının yerine geçmez.
 
 ## Testler
