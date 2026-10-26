@@ -99,3 +99,16 @@ TR002 ön izlemesindeki genel balon benzeri görünüm yerine ayrı bir kuzu sil
 - İçe aktarıcı hiçbir klibi otomatik onaylamaz: `approved: false` ve boş `asset_url` ile başlar. Görsel kontrol sonrası onaylanan klipler `app/publish_animation_batch.py` ile GitHub Release'e yüklenmelidir; ancak o zaman gerçek `asset_url` oluşur.
 - Örnek `CLIP001.mp4` teknik olarak 30 saniye, 720×1280, H.264 ve 24 FPS'tir. Proje hattı son videoyu 1080×1920 / 30 FPS olarak yeniden kodlar.
 - CSV'de 500 kayıt olması 500 MP4'ün mevcut olduğu anlamına gelmez. Bu konuşmada yalnızca CLIP001.mp4 örneği incelendi; bu dosya ve CSV henüz bu commit ile GitHub'a yüklenmedi. GitHub'daki kalıcı katalog/Release asset'leri ayrıca doldurulmalıdır; kalan 499 MP4 olmadan kütüphane tamamlanmış sayılmaz.
+
+## Tek komutla 500 kliplik animasyon kütüphanesini yükleme
+
+Hazırlanmış MP4 + JSON klasörünü GitHub Release'e yüklemek ve `animation_library/catalog.json` dosyasını otomatik güncellemek için Windows yükleyicisi kullanılır. MP4'ler normal Git geçmişine eklenmez; her MP4 kendi JSON yan dosyasıyla eşleştirilir ve yalnızca katalog metadata'sı Git'e commit edilir.
+
+1. Ön koşullar: Git for Windows ve GitHub CLI kurulu olmalı; ilk kullanımda Komut İstemi'nde `gh auth login` ile GitHub hesabına giriş yapılmalı. Hesabın bu depoda yazma ve Release oluşturma yetkisi olmalı.
+2. CSV'den hazırlanan klasörde `CLIP001.mp4` + `CLIP001.json` gibi aynı adlı çiftler bulunmalı.
+3. Komut: `py scripts/upload_animation_library.py --batch-dir "C:\\path\\to\\upload_batch_generated"`
+4. Betik videoları 20'li gruplar hâlinde Release'e yükler, katalog kayıtlarını günceller ve `main` dalına commit/push yapar. `--tag` verilmezse benzersiz bir Release etiketi oluşturulur.
+5. Kullanıcının talebi doğrultusunda katalog kayıtları yükleme sırasında `approved: true` olarak etkinleştirilir; bu işlem YouTube'a video yüklemez. YouTube hattı ayrı iş akışıdır.
+
+Kısmi bir yükleme kesilirse, komut çıktısında gösterilen aynı etiketi `--tag` ile yeniden kullanmak varlıkları `--clobber` ile tamamlar. Betik katalog güncellemesini yalnızca Release varlıkları yüklendikten sonra yapar.
+
