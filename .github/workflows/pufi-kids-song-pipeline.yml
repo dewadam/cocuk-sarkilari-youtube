@@ -74,8 +74,15 @@ jobs:
         if: steps.song.outputs.skip != 'true'
         env:
           SONG_ID: ${{ steps.song.outputs.song_id }}
+        env:
+          EVENT_NAME: ${{ github.event_name }}
+          PUBLISH_REQUESTED: ${{ inputs.publish }}
         run: |
-          python app/render_from_animation_library.py --song-id "$SONG_ID" --output "output/${SONG_ID}_final.mp4"
+          if [ "$EVENT_NAME" = "workflow_dispatch" ] && [ "$PUBLISH_REQUESTED" != "true" ]; then
+            python app/render_from_animation_library.py --song-id "$SONG_ID" --preview-only --output "output/${SONG_ID}_final.mp4"
+          else
+            python app/render_from_animation_library.py --song-id "$SONG_ID" --output "output/${SONG_ID}_final.mp4"
+          fi
           python app/validate_render.py --input "output/${SONG_ID}_final.mp4" --report "output/${SONG_ID}_qc-report.json"
       - name: Save video and reports
         if: always() && steps.song.outputs.skip != 'true'
