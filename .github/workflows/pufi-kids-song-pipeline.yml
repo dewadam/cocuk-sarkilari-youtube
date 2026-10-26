@@ -71,16 +71,32 @@ jobs:
           python -m unittest discover -s tests -v
           python app/animation_catalog.py validate
       - name: Render from matched 30-second clips
+        id: render
         if: steps.song.outputs.skip != 'true'
         env:
           SONG_ID: ${{ steps.song.outputs.song_id }}
           EVENT_NAME: ${{ github.event_name }}
           PUBLISH_REQUESTED: ${{ inputs.publish }}
         run: |
-          if [ "$EVENT_NAME" = "workflow_dispatch" ] && [ "$PUBLISH_REQUESTED" != "true" ]; then
-            python app/render_from_animation_library.py --song-id "$SONG_ID" --preview-only --output "output/${SONG_ID}_final.mp4"
-          else
+          SONG_FOLDER="$(find songs -maxdepth 1 -type d \\( -name "$SONG_ID" -o -name "${SONG_ID}_*" \\) -print -quit)"
+          test -n "$SONG_FOLDER"
+          STATUS="$(python -c 'import json,sys; print(json.load(open(sys.argv[1], encoding="utf-8")).get("status", ""))' "$SONG_FOLDER/metadata.json")"
+          if [ "$EVENT_NAME" = "workflow_dispatch" ]; then
+            if [ "$PUBLISH_REQUESTED" = "true" ]; then
+              echo "publish=true" >> "$GITHUB_OUTPUT"
+              python app/render_from_animation_library.py --song-id "$SONG_ID" --output "output/${SONG_ID}_final.mp4"
+            else
+              echo "publish=false" >> "$GITHUB_OUTPUT"
+              echo "Mode: preview only (manual run with publish=false)."
+              python app/render_from_animation_library.py --song-id "$SONG_ID" --preview-only --output "output/${SONG_ID}_final.mp4"
+            fi
+          elif [ "$STATUS" = "ready" ]; then
+            echo "publish=true" >> "$GITHUB_OUTPUT"
             python app/render_from_animation_library.py --song-id "$SONG_ID" --output "output/${SONG_ID}_final.mp4"
+          else
+            echo "publish=false" >> "$GITHUB_OUTPUT"
+            echo "Mode: preview only (song status is $STATUS)."
+            python app/render_from_animation_library.py --song-id "$SONG_ID" --preview-only --output "output/${SONG_ID}_final.mp4"
           fi
           python app/validate_render.py --input "output/${SONG_ID}_final.mp4" --report "output/${SONG_ID}_qc-report.json"
       - name: Save video and reports
@@ -95,23 +111,23 @@ jobs:
           if-no-files-found: warn
           retention-days: 30
       - name: Upload QC-passed video to YouTube
-        if: steps.song.outputs.skip != 'true' && (github.event_name == 'push' || inputs.publish == true)
+        if: steps.song.outputs.skip != 'true' && steps.render.outputs.publish == 'true'
         env:
           YOUTUBE_OAUTH_TOKEN_JSON: ${{ secrets.YOUTUBE_OAUTH_TOKEN_JSON }}
           YOUTUBE_VIDEO_PATH: output/${{ steps.song.outputs.song_id }}_final.mp4
           YOUTUBE_PRIVACY_STATUS: public
           YOUTUBE_TAGS: çocuk şarkıları, Türkçe çocuk şarkıları, okul öncesi, çocuk müziği, Pufi Kids
         run: |
-          SONG_FOLDER="$(find songs -maxdepth 1 -type d -name "${{ steps.song.outputs.song_id }}_*" -print -quit)"
+          SONG_FOLDER="$(find songs -maxdepth 1 -type d \\( -name "${{ steps.song.outputs.song_id }}" -o -name "${{ steps.song.outputs.song_id }}_*" \\) -print -quit)"
           test -n "$SONG_FOLDER"
           export YOUTUBE_METADATA_PATH="$SONG_FOLDER/metadata.json"
           python app/upload_youtube.py
       - name: Mark published and delete source audio only after upload succeeds
-        if: steps.song.outputs.skip != 'true' && (github.event_name == 'push' || inputs.publish == true)
+        if: steps.song.outputs.skip != 'true' && steps.render.outputs.publish == 'true'
         env:
           SONG_ID: ${{ steps.song.outputs.song_id }}
         run: |
-          export SONG_FOLDER="$(find songs -maxdepth 1 -type d -name "${SONG_ID}_*" -print -quit)"
+          export SONG_FOLDER="$(find songs -maxdepth 1 -type d \\( -name "$SONG_ID" -o -name "${SONG_ID}_*" \\) -print -quit)"
           test -n "$SONG_FOLDER"
           python - <<'PY'
           import json, os
