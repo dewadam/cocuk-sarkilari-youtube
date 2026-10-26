@@ -106,7 +106,7 @@ Hazırlanmış MP4 + JSON klasörünü GitHub Release'e yüklemek ve `animation_
 
 1. Ön koşullar: Git for Windows ve GitHub CLI kurulu olmalı; ilk kullanımda Komut İstemi'nde `gh auth login` ile GitHub hesabına giriş yapılmalı. Hesabın bu depoda yazma ve Release oluşturma yetkisi olmalı.
 2. CSV'den hazırlanan klasörde `CLIP001.mp4` + `CLIP001.json` gibi aynı adlı çiftler bulunmalı.
-3. Komut: `py scripts/upload_animation_library.py --batch-dir "C:\\path\\to\\upload_batch_generated"`
+3. Tek tıkla çalıştırmak için `scripts/UPLOAD_PUFI_KIDS_LIBRARY.bat` dosyasını indirip çift tıkla. Bu Windows başlatıcısı, bilinen yerel klasör yolunu kullanır ve güncel Python yükleyicisini depodan indirir. Alternatif komut: `py scripts/upload_animation_library.py --batch-dir "C:\\path\\to\\upload_batch_generated"`
 4. Betik videoları 20'li gruplar hâlinde Release'e yükler, katalog kayıtlarını günceller ve `main` dalına commit/push yapar. `--tag` verilmezse benzersiz bir Release etiketi oluşturulur.
 5. Kullanıcının talebi doğrultusunda katalog kayıtları yükleme sırasında `approved: true` olarak etkinleştirilir; bu işlem YouTube'a video yüklemez. YouTube hattı ayrı iş akışıdır.
 
