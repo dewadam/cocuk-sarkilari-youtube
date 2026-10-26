@@ -78,7 +78,7 @@ jobs:
           EVENT_NAME: ${{ github.event_name }}
           PUBLISH_REQUESTED: ${{ inputs.publish }}
         run: |
-          SONG_FOLDER="$(find songs -maxdepth 1 -type d \\( -name "$SONG_ID" -o -name "${SONG_ID}_*" \\) -print -quit)"
+          SONG_FOLDER="$(find songs -maxdepth 1 -type d \( -name "$SONG_ID" -o -name "${SONG_ID}_*" \) -print -quit)"
           test -n "$SONG_FOLDER"
           STATUS="$(python -c 'import json,sys; print(json.load(open(sys.argv[1], encoding="utf-8")).get("status", ""))' "$SONG_FOLDER/metadata.json")"
           if [ "$EVENT_NAME" = "workflow_dispatch" ]; then
@@ -118,7 +118,7 @@ jobs:
           YOUTUBE_PRIVACY_STATUS: public
           YOUTUBE_TAGS: çocuk şarkıları, Türkçe çocuk şarkıları, okul öncesi, çocuk müziği, Pufi Kids
         run: |
-          SONG_FOLDER="$(find songs -maxdepth 1 -type d \\( -name "${{ steps.song.outputs.song_id }}" -o -name "${{ steps.song.outputs.song_id }}_*" \\) -print -quit)"
+          SONG_FOLDER="$(find songs -maxdepth 1 -type d \( -name "${{ steps.song.outputs.song_id }}" -o -name "${{ steps.song.outputs.song_id }}_*" \) -print -quit)"
           test -n "$SONG_FOLDER"
           export YOUTUBE_METADATA_PATH="$SONG_FOLDER/metadata.json"
           python app/upload_youtube.py
@@ -127,7 +127,7 @@ jobs:
         env:
           SONG_ID: ${{ steps.song.outputs.song_id }}
         run: |
-          export SONG_FOLDER="$(find songs -maxdepth 1 -type d \\( -name "$SONG_ID" -o -name "${SONG_ID}_*" \\) -print -quit)"
+          export SONG_FOLDER="$(find songs -maxdepth 1 -type d \( -name "$SONG_ID" -o -name "${SONG_ID}_*" \) -print -quit)"
           test -n "$SONG_FOLDER"
           python - <<'PY'
           import json, os
