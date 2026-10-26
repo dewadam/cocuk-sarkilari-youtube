@@ -6,6 +6,7 @@ set "ROOT=C:\Users\hakan\Desktop\children_video_library_automation"
 set "BATCH_DIR=%ROOT%\output\upload_batch_generated"
 set "SCRIPT=%TEMP%\pufi_upload_animation_library.py"
 set "SCRIPT_URL=https://raw.githubusercontent.com/dewadam/cocuk-sarkilari-youtube/main/scripts/upload_animation_library.py"
+set "TAG_FILE=%BATCH_DIR%\.pufi-release-tag"
 
 echo ============================================
 echo Pufi Kids - 500 Clip Animation Library Upload
@@ -45,6 +46,13 @@ if errorlevel 1 (
   set "PY_CMD=py"
 )
 
+if exist "%TAG_FILE%" (
+  set /p RELEASE_TAG=<"%TAG_FILE%"
+) else (
+  powershell -NoProfile -ExecutionPolicy Bypass -Command "$tag='animation-library-'+(Get-Date -Format 'yyyyMMdd-HHmmss'); Set-Content -NoNewline -Encoding ASCII -Path '%TAG_FILE%' -Value $tag"
+  set /p RELEASE_TAG=<"%TAG_FILE%"
+)
+
 echo Downloading the current uploader from the Pufi Kids GitHub repository...
 powershell -NoProfile -ExecutionPolicy Bypass -Command "Invoke-WebRequest -UseBasicParsing -Uri '%SCRIPT_URL%' -OutFile '%SCRIPT%'"
 if errorlevel 1 (
@@ -63,8 +71,9 @@ echo.
 echo Upload starts now. This uploads clips to GitHub Releases and updates catalog.json.
 echo It does NOT upload anything to YouTube.
 echo.
-%PY_CMD% "%SCRIPT%" --batch-dir "%BATCH_DIR%" --repo "dewadam/cocuk-sarkilari-youtube"
+%PY_CMD% "%SCRIPT%" --batch-dir "%BATCH_DIR%" --repo "dewadam/cocuk-sarkilari-youtube" --tag "%RELEASE_TAG%"
 if errorlevel 1 goto :finish_error
+if exist "%TAG_FILE%" del "%TAG_FILE%" >nul 2>&1
 
 echo.
 echo SUCCESS: Animation library upload and catalog update completed.
