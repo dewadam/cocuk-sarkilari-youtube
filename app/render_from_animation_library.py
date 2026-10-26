@@ -20,7 +20,7 @@ def song_folder(sid):
 def choose_playlist(lyrics,catalog,target):
     clips=[c for c in catalog["clips"] if c.get("approved",False) and str(c.get("asset_url","")).startswith("https://") and 20<=float(c.get("duration_seconds",0))<=40]
     if not clips: raise RuntimeError("No approved 20-40s HTTPS clips in animation_library/catalog.json")
-    lines=[x.strip() for x in lyrics.splitlines() if x.strip() and not x.strip().startswith(("[","#","(")]
+    lines=[x.strip() for x in lyrics.splitlines() if x.strip() and not x.strip().startswith(("[", "#", "("))]
     lines=[x for x in lines if len(x.split())>=2]
     matched=[]
     for line in lines:
