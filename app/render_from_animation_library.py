@@ -41,12 +41,16 @@ def choose_playlist(lyrics,catalog,target):
 def main():
     p=argparse.ArgumentParser(); p.add_argument("--song-id",required=True); p.add_argument("--output"); p.add_argument("--catalog",type=Path,default=DEFAULT_CATALOG); p.add_argument("--preview-only",action="store_true",help="Allow visual-only preview before lyrics/audio verification; never authorizes YouTube publishing."); a=p.parse_args()
     sid=a.song_id.upper(); folder=song_folder(sid); meta_path=folder/"metadata.json"; meta=json.loads(meta_path.read_text(encoding="utf-8"))
+    audio=folder/str(meta.get("audio_file","song.mp3")); lyrics=folder/str(meta.get("lyrics_file","lyrics.txt"))
     if meta.get("status")!="ready":
-        if not (a.preview_only and meta.get("status")=="audio_uploaded_lyrics_check"):
-            raise RuntimeError("YouTube publishing requires metadata status=ready. Use --preview-only only for a non-publishing visual preview while lyrics/audio are being checked.")
+        if not a.preview_only:
+            raise RuntimeError("YouTube publishing requires metadata status=ready.")
+        if meta.get("status") not in {"awaiting_audio_upload","audio_uploaded_lyrics_check"}:
+            raise RuntimeError("Preview is allowed only while audio upload or lyrics/audio review is pending; publishing requires metadata status=ready.")
+        if not audio.is_file():
+            raise RuntimeError(f"Preview cannot render because {audio.relative_to(ROOT)} is missing. Upload song.mp3 first.")
         print("PREVIEW_ONLY: lyrics/audio verification is pending; this render must not be published.")
     if meta.get("usage_status","available")!="available" or meta.get("used_in_video_id"): raise RuntimeError("Song already used/unavailable.")
-    audio=folder/str(meta.get("audio_file","song.mp3")); lyrics=folder/str(meta.get("lyrics_file","lyrics.txt"))
     if not audio.is_file() or not lyrics.is_file(): raise RuntimeError("Song MP3 or lyrics.txt missing.")
     if not shutil.which("ffmpeg") or not shutil.which("ffprobe"): raise RuntimeError("FFmpeg/ffprobe missing.")
     target=duration(audio); playlist=choose_playlist(lyrics.read_text(encoding="utf-8"),load_catalog(a.catalog),target)
