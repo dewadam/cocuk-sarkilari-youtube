@@ -90,10 +90,10 @@ if errorlevel 1 (
   goto :finish_error
 )
 
-gh auth status >nul 2>&1
+"%GH_EXE%" auth status >nul 2>&1
 if errorlevel 1 (
   echo GitHub login is required. Follow the browser/terminal prompts.
-  gh auth login
+  "%GH_EXE%" auth login
   if errorlevel 1 goto :finish_error
 )
 
