@@ -16,7 +16,7 @@ on:
         default: "TR002"
         type: string
       publish:
-        description: "QC başarılıysa YouTube'a yükle ve kaynak MP3'ü sil"
+        description: "QC başarılıysa YouTube'a yükle ve şarkı klasörünü arşivle"
         required: true
         default: true
         type: boolean
