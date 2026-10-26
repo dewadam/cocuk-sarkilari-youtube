@@ -129,7 +129,7 @@ jobs:
         env:
           SONG_ID: ${{ steps.song.outputs.song_id }}
         run: |
-          SONG_FOLDER="$(find songs -maxdepth 1 -type d \( -name "$SONG_ID" -o -name "${SONG_ID}_*" \) -print -quit)"
+          export SONG_FOLDER="$(find songs -maxdepth 1 -type d \( -name "$SONG_ID" -o -name "${SONG_ID}_*" \) -print -quit)"
           test -n "$SONG_FOLDER"
           python - <<'PY'
           import json, os, shutil
