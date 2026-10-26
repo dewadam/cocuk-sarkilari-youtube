@@ -190,6 +190,8 @@ def main() -> int:
         raise ValueError("Invalid release tag; use letters, digits, dot, underscore or hyphen.")
 
     batch_dir = args.batch_dir.expanduser().resolve()
+    print(f"Release tag: {tag}")
+    print("If the upload is interrupted, rerun with this same tag using --tag " + tag)
     records = load_batch(batch_dir, args.repo, tag)
     videos = sorted(batch_dir.glob("*.mp4"), key=lambda p: p.name.casefold())
     upload_release_assets(args.repo, tag, batch_dir, videos)
