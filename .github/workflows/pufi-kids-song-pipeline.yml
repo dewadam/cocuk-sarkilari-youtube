@@ -81,21 +81,21 @@ jobs:
           SONG_FOLDER="$(find songs -maxdepth 1 -type d \( -name "$SONG_ID" -o -name "${SONG_ID}_*" \) -print -quit)"
           test -n "$SONG_FOLDER"
           STATUS="$(python -c 'import json,sys; print(json.load(open(sys.argv[1], encoding="utf-8")).get("status", ""))' "$SONG_FOLDER/metadata.json")"
-          if [ "$EVENT_NAME" = "workflow_dispatch" ]; then
-            if [ "$PUBLISH_REQUESTED" = "true" ]; then
-              echo "publish=true" >> "$GITHUB_OUTPUT"
-              python app/render_from_animation_library.py --song-id "$SONG_ID" --output "output/${SONG_ID}_final.mp4"
-            else
-              echo "publish=false" >> "$GITHUB_OUTPUT"
-              echo "Mode: preview only (manual run with publish=false)."
-              python app/render_from_animation_library.py --song-id "$SONG_ID" --preview-only --output "output/${SONG_ID}_final.mp4"
-            fi
-          elif [ "$STATUS" = "ready" ]; then
+          if [ "$EVENT_NAME" = "workflow_dispatch" ] && [ "$PUBLISH_REQUESTED" = "true" ] && [ "$STATUS" = "ready" ]; then
             echo "publish=true" >> "$GITHUB_OUTPUT"
+            echo "Mode: publish (song status is ready)."
+            python app/render_from_animation_library.py --song-id "$SONG_ID" --output "output/${SONG_ID}_final.mp4"
+          elif [ "$EVENT_NAME" = "push" ] && [ "$STATUS" = "ready" ]; then
+            echo "publish=true" >> "$GITHUB_OUTPUT"
+            echo "Mode: publish (pushed song status is ready)."
             python app/render_from_animation_library.py --song-id "$SONG_ID" --output "output/${SONG_ID}_final.mp4"
           else
             echo "publish=false" >> "$GITHUB_OUTPUT"
-            echo "Mode: preview only (song status is $STATUS)."
+            if [ "$STATUS" != "ready" ]; then
+              echo "Mode: preview only (song status is $STATUS; YouTube publishing requires ready)."
+            else
+              echo "Mode: preview only (publishing was not requested)."
+            fi
             python app/render_from_animation_library.py --song-id "$SONG_ID" --preview-only --output "output/${SONG_ID}_final.mp4"
           fi
           python app/validate_render.py --input "output/${SONG_ID}_final.mp4" --report "output/${SONG_ID}_qc-report.json"
