@@ -15,7 +15,7 @@
   "lyrics_must_match_final_audio": true,
   "audio_sha256": null,
   "duration_seconds": null,
-  "video_status": "not_started",
+  "video_status": "queued",
   "usage_status": "available",
   "used_in_video_id": null,
   "used_at": null,
