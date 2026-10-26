@@ -6,7 +6,7 @@
   "core_idea": "Bir çiftlik sabahında çocuk, her hayvanın sesini ve hareketini keşfeder; hayvanlar sırayla ritme katılır.",
   "learning_goal": "Hayvanları ve seslerini eşleştirme",
   "target_age": "preschool",
-  "status": "audio_uploaded_lyrics_check",
+  "status": "ready",
   "audio_file": "song.mp3",
   "lyrics_file": "lyrics.txt",
   "music_prompt_file": "music_prompt.txt",
@@ -26,7 +26,7 @@
     "ördek göleti",
     "kuzu ve horoz"
   ],
-  "notes": "song.mp3 depoda mevcut. Nihai görsel hedefi Azure üzerinde çalışan gerçek AI üretimli stilize 3D karakter animasyonudur; prosedürel çizim nihai üretim yöntemi değildir. Azure GPU worker ve model kotası doğrulandıktan sonra klipler üretilip kalıcı animasyon kataloğuna eklenecektir. lyrics_must_match_final_audio=true olduğu için söz-ses eşleşmesi kontrol edilene kadar YouTube'a herkese açık yayın kilitli kalır.",
+  "notes": "song.mp3 depoda mevcut. Nihai görsel hedefi Azure üzerinde çalışan gerçek AI üretimli stilize 3D karakter animasyonudur; prosedürel çizim nihai üretim yöntemi değildir. Azure GPU worker ve model kotası doğrulandıktan sonra klipler üretilip kalıcı animasyon kataloğuna eklenecektir. Yayın, kullanıcının açık talimatıyla başlatılıyor; son video lyrics.txt içeriğiyle eşleşmelidir.",
   "youtube_title": "Hayvan Dostlarım 🐮🦆 | Türkçe Çocuk Şarkısı",
   "youtube_description": "İnek, kuzu, ördek ve horozla çiftlikte neşeli bir dans! Hayvan seslerini ve hareketlerini keşfeden minikler için Türkçe çocuk şarkısı. #ÇocukŞarkıları #HayvanSesleri #TürkçeÇocukŞarkısı"
 }
