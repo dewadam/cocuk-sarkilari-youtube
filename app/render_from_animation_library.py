@@ -67,7 +67,9 @@ def main():
         segments.append(out)
     listing=work/"concat.txt"; listing.write_text("".join(f"file '{x.as_posix()}'\n" for x in segments),encoding="utf-8")
     joined=work/"joined.mp4"; run(["ffmpeg","-y","-hide_banner","-loglevel","error","-f","concat","-safe","0","-i",str(listing),"-c","copy",str(joined)])
-    output=Path(a.output) if a.output else ROOT/"output"/(sid+"_final.mp4"); output.parent.mkdir(parents=True,exist_ok=True)
+    output=Path(a.output) if a.output else ROOT/"output"/(sid+"_final.mp4")
+    if not output.is_absolute(): output=ROOT/output
+    output=output.resolve(); output.parent.mkdir(parents=True,exist_ok=True)
     run(["ffmpeg","-y","-hide_banner","-loglevel","error","-i",str(joined),"-i",str(audio),"-map","0:v:0","-map","1:a:0","-t",f"{target:.3f}","-vf","scale=1080:1920,fps=30,format=yuv420p","-c:v","libx264","-preset","veryfast","-crf","20","-c:a","aac","-b:a","192k","-shortest","-movflags","+faststart",str(output)])
     report={"song_id":sid,"title":meta.get("title"),"audio_duration_seconds":round(target,3),"clip_uses":[{"clip_id":c["clip_id"],"keywords":c.get("keywords",[]),"asset_url":c["asset_url"]} for c in playlist],"unique_clips":len(sources),"video":str(output.relative_to(ROOT)),"video_sha256":hashlib.sha256(output.read_bytes()).hexdigest(),"matching":"lyric-line keyword matching; no random fallback"}
     (ROOT/"output"/(sid+"_animation-match-report.json")).write_text(json.dumps(report,ensure_ascii=False,indent=2)+"\n",encoding="utf-8")
