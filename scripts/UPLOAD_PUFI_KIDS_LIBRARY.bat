@@ -52,6 +52,10 @@ if exist "%TAG_FILE%" (
   powershell -NoProfile -ExecutionPolicy Bypass -Command "$tag='animation-library-'+(Get-Date -Format 'yyyyMMdd-HHmmss'); Set-Content -NoNewline -Encoding ASCII -Path '%TAG_FILE%' -Value $tag"
   set /p RELEASE_TAG=<"%TAG_FILE%"
 )
+if not exist "%TAG_FILE%" (
+  echo ERROR: Could not create a resumable upload tag file.
+  goto :finish_error
+)
 
 echo Downloading the current uploader from the Pufi Kids GitHub repository...
 powershell -NoProfile -ExecutionPolicy Bypass -Command "Invoke-WebRequest -UseBasicParsing -Uri '%SCRIPT_URL%' -OutFile '%SCRIPT%'"
