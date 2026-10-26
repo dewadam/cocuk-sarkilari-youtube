@@ -122,35 +122,43 @@ jobs:
           test -n "$SONG_FOLDER"
           export YOUTUBE_METADATA_PATH="$SONG_FOLDER/metadata.json"
           python app/upload_youtube.py
-      - name: Mark published and delete source audio only after upload succeeds
+      - name: Archive published song and remove its GitHub folder
         if: steps.song.outputs.skip != 'true' && steps.render.outputs.publish == 'true'
         env:
           SONG_ID: ${{ steps.song.outputs.song_id }}
         run: |
-          export SONG_FOLDER="$(find songs -maxdepth 1 -type d \( -name "$SONG_ID" -o -name "${SONG_ID}_*" \) -print -quit)"
+          SONG_FOLDER="$(find songs -maxdepth 1 -type d \\( -name "$SONG_ID" -o -name "${SONG_ID}_*" \\) -print -quit)"
           test -n "$SONG_FOLDER"
           python - <<'PY'
-          import json, os
+          import json, os, shutil
           from datetime import datetime, timezone
           from pathlib import Path
+
           folder=Path(os.environ["SONG_FOLDER"])
           result=json.loads(Path("output/youtube-upload-result.json").read_text(encoding="utf-8"))
-          path=folder/"metadata.json"
-          meta=json.loads(path.read_text(encoding="utf-8"))
-          meta["usage_status"]="published"
-          meta["used_in_video_id"]=result["video_id"]
-          meta["used_at"]=datetime.now(timezone.utc).isoformat()
-          meta["video_status"]="published"
-          meta["youtube_url"]=result["url"]
-          path.write_text(json.dumps(meta,ensure_ascii=False,indent=2)+"\n",encoding="utf-8")
+          meta=json.loads((folder/"metadata.json").read_text(encoding="utf-8"))
           audio=folder/str(meta.get("audio_file","song.mp3"))
-          if not audio.is_file(): raise SystemExit("Upload succeeded but source MP3 is already absent.")
-          audio.unlink()
-          print("Confirmed upload:",result["url"],"; source MP3 removed.")
+          if not audio.is_file():
+              raise SystemExit("Upload succeeded but source MP3 is already absent; song folder preserved.")
+
+          manifest_path=Path("published_songs.json")
+          manifest=json.loads(manifest_path.read_text(encoding="utf-8")) if manifest_path.exists() else []
+          if not isinstance(manifest,list):
+              raise SystemExit("published_songs.json must contain a JSON array; song folder preserved.")
+          manifest.append({
+              "song_id": meta.get("id", folder.name.split("_",1)[0]),
+              "title": meta.get("title"),
+              "video_id": result["video_id"],
+              "youtube_url": result["url"],
+              "published_at": datetime.now(timezone.utc).isoformat()
+          })
+          manifest_path.write_text(json.dumps(manifest,ensure_ascii=False,indent=2)+"\\n",encoding="utf-8")
+          shutil.rmtree(folder)
+          print("Confirmed YouTube upload:",result["url"],"; archived metadata and removed",folder)
           PY
           git config user.name "github-actions[bot]"
           git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
-          git add "songs/${SONG_ID}_*/metadata.json"
-          git add -u songs/
-          git commit -m "[pufi-cleanup] Mark ${SONG_ID} published and remove source audio"
+          git add published_songs.json
+          git add -A songs/
+          git commit -m "[pufi-cleanup] Archive and remove ${SONG_ID} after publication"
           git push
