@@ -127,7 +127,7 @@ jobs:
         env:
           SONG_ID: ${{ steps.song.outputs.song_id }}
         run: |
-          SONG_FOLDER="$(find songs -maxdepth 1 -type d \\( -name "$SONG_ID" -o -name "${SONG_ID}_*" \\) -print -quit)"
+          SONG_FOLDER="$(find songs -maxdepth 1 -type d \( -name "$SONG_ID" -o -name "${SONG_ID}_*" \) -print -quit)"
           test -n "$SONG_FOLDER"
           python - <<'PY'
           import json, os, shutil
@@ -152,7 +152,7 @@ jobs:
               "youtube_url": result["url"],
               "published_at": datetime.now(timezone.utc).isoformat()
           })
-          manifest_path.write_text(json.dumps(manifest,ensure_ascii=False,indent=2)+"\\n",encoding="utf-8")
+          manifest_path.write_text(json.dumps(manifest,ensure_ascii=False,indent=2)+"\n",encoding="utf-8")
           shutil.rmtree(folder)
           print("Confirmed YouTube upload:",result["url"],"; archived metadata and removed",folder)
           PY
