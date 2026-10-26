@@ -22,9 +22,35 @@ if not exist "%BATCH_DIR%" (
 
 where gh >nul 2>&1
 if errorlevel 1 (
-  echo ERROR: GitHub CLI is not installed.
-  echo Install GitHub CLI: https://cli.github.com/
-  goto :finish_error
+  echo GitHub CLI is missing. Trying automatic installation with winget...
+  where winget >nul 2>&1
+  if errorlevel 1 (
+    echo ERROR: winget is not available on this Windows installation.
+    echo Install GitHub CLI from https://cli.github.com/ and run this file again.
+    goto :finish_error
+  )
+  winget install --id GitHub.cli --exact --silent --accept-package-agreements --accept-source-agreements
+  if errorlevel 1 (
+    echo ERROR: Automatic GitHub CLI installation failed.
+    echo Install it from https://cli.github.com/ and run this file again.
+    goto :finish_error
+  )
+  set "PATH=%PATH%;%ProgramFiles%\GitHub CLI;%LOCALAPPDATA%\Programs\GitHub CLI"
+)
+
+where gh >nul 2>&1
+if errorlevel 1 (
+  if exist "%ProgramFiles%\GitHub CLI\gh.exe" (
+    set "GH_EXE=%ProgramFiles%\GitHub CLI\gh.exe"
+  ) else if exist "%LOCALAPPDATA%\Programs\GitHub CLI\gh.exe" (
+    set "GH_EXE=%LOCALAPPDATA%\Programs\GitHub CLI\gh.exe"
+  ) else (
+    echo ERROR: GitHub CLI was installed but gh.exe could not be found.
+    echo Restart Command Prompt and run this file again.
+    goto :finish_error
+  )
+) else (
+  set "GH_EXE=gh"
 )
 
 where git >nul 2>&1
