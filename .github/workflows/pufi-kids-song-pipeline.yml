@@ -13,7 +13,7 @@ on:
       song_id:
         description: "Şarkı ID'si (ör. TR009)"
         required: true
-        default: "TR009"
+        default: "TR002"
         type: string
       publish:
         description: "QC başarılıysa YouTube'a yükle ve kaynak MP3'ü sil"
