@@ -127,11 +127,31 @@ def upload_release_assets(repo: str, tag: str, batch_dir: Path, videos: list[Pat
             "--title", f"Pufi Kids animation library {tag}",
             "--notes", f"Reusable animation clip batch. Clip count: {len(videos)}. Metadata is indexed in animation_library/catalog.json.",
         ])
+    # Resume safely: skip assets already uploaded with the same byte size.
+    listing = run([
+        "gh", "release", "view", tag, "--repo", repo,
+        "--json", "assets", "--jq", '.assets[] | [.name, (.size|tostring)] | @tsv',
+    ], capture=True)
+    existing_sizes = {}
+    for line in listing.splitlines():
+        parts = line.split("\\t")
+        if len(parts) == 2:
+            try:
+                existing_sizes[parts[0]] = int(parts[1])
+            except ValueError:
+                continue
+    pending = []
+    for video in videos:
+        current_size = video.stat().st_size
+        if existing_sizes.get(video.name) == current_size:
+            print(f"Already uploaded; skipping: {video.name}")
+        else:
+            pending.append(video)
     # Chunk uploads to keep Windows command-line lengths comfortably below limits.
     chunk_size = 20
-    for offset in range(0, len(videos), chunk_size):
-        chunk = videos[offset:offset + chunk_size]
-        print(f"Uploading clips {offset + 1}-{offset + len(chunk)} of {len(videos)}...")
+    for offset in range(0, len(pending), chunk_size):
+        chunk = pending[offset:offset + chunk_size]
+        print(f"Uploading clips {offset + 1}-{offset + len(chunk)} of {len(pending)} pending files...")
         run(["gh", "release", "upload", tag, *[str(p) for p in chunk], "--repo", repo, "--clobber"])
 
 
