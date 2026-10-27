@@ -8,12 +8,15 @@ on:
       - "songs/**/metadata.json"
       - "songs/**/lyrics.txt"
       - "animation_library/catalog.json"
+  schedule:
+    # Daily at 12:00 Türkiye time (09:00 UTC)
+    - cron: "0 9 * * *"
   workflow_dispatch:
     inputs:
       song_id:
         description: "Şarkı ID'si (ör. TR009)"
         required: true
-        default: "TR002"
+        default: "TR003"
         type: string
       publish:
         description: "QC başarılıysa YouTube'a yükle ve şarkı klasörünü arşivle"
@@ -45,6 +48,13 @@ jobs:
         run: |
           if [ "$EVENT_NAME" = "workflow_dispatch" ]; then
             SID="$INPUT_SONG_ID"
+          elif [ "$EVENT_NAME" = "schedule" ]; then
+            SID=""
+            for n in $(seq 3 100); do
+              candidate=$(printf 'TR%03d' "$n")
+              folder="$(find songs -maxdepth 1 -type d \( -name "$candidate" -o -name "${candidate}_*" \) -print -quit)"
+              if [ -n "$folder" ]; then SID="$candidate"; break; fi
+            done
           else
             SID=""
             while IFS= read -r file; do
@@ -83,7 +93,14 @@ jobs:
           SONG_FOLDER="$(find songs -maxdepth 1 -type d \( -name "$SONG_ID" -o -name "${SONG_ID}_*" \) -print -quit)"
           test -n "$SONG_FOLDER"
           STATUS="$(python -c 'import json,sys; print(json.load(open(sys.argv[1], encoding="utf-8")).get("status", ""))' "$SONG_FOLDER/metadata.json")"
-          if [ "$EVENT_NAME" = "workflow_dispatch" ] && [ "$PUBLISH_REQUESTED" = "true" ] && [ "$STATUS" = "ready" ]; then
+          if [ "$EVENT_NAME" = "schedule" ] && [ "$STATUS" != "ready" ]; then
+            echo "Next song $SONG_ID is not ready (status=$STATUS). Refusing to skip ahead or publish unverified audio." >&2
+            exit 1
+          elif [ "$EVENT_NAME" = "schedule" ] && [ "$STATUS" = "ready" ]; then
+            echo "publish=true" >> "$GITHUB_OUTPUT"
+            echo "Mode: scheduled publish (next song $SONG_ID is ready)."
+            python app/render_from_animation_library.py --song-id "$SONG_ID" --output "output/${SONG_ID}_final.mp4"
+          elif [ "$EVENT_NAME" = "workflow_dispatch" ] && [ "$PUBLISH_REQUESTED" = "true" ] && [ "$STATUS" = "ready" ]; then
             echo "publish=true" >> "$GITHUB_OUTPUT"
             echo "Mode: publish (song status is ready)."
             python app/render_from_animation_library.py --song-id "$SONG_ID" --output "output/${SONG_ID}_final.mp4"
